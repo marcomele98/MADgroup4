@@ -9,6 +9,7 @@ import android.view.MenuItem
 class ShowProfileActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        println("Ciao")
         setContentView(R.layout.activity_main)
     }
 
