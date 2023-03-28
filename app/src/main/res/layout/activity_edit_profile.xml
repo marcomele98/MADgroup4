@@ -28,8 +28,15 @@
                 android:layout_height="match_parent"
                 android:src="@drawable/profile"
                 />
-        </FrameLayout>
 
+
+        </FrameLayout>
+        <ImageButton
+            android:id="@+id/camera_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/edit"
+             />
 
 
     </LinearLayout>
@@ -43,7 +50,7 @@
         android:orientation="vertical"
         >
 
-        <TextView
+        <EditText
             android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -52,7 +59,7 @@
             android:textColor="@color/textPrimary"
             android:layout_gravity="center_horizontal"/>
 
-        <TextView
+        <EditText
             android:id="@+id/nickname"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -61,7 +68,7 @@
             android:textColor="@color/textPrimary"
             android:layout_gravity="center_horizontal"/>
 
-        <TextView
+        <EditText
             android:id="@+id/textView6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -74,13 +81,9 @@
             android:layout_height="wrap_content"
             android:numStars="5"
             android:rating="3"
-            android:isIndicator="true"
             android:layout_gravity="center_horizontal"/>
 
     </LinearLayout>
 
 
 </LinearLayout>
-
-    
-
