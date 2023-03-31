@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/menu_m" android:title="Male" app:showAsAction="never"/>
+    <item android:id="@+id/menu_f" android:title="Female" app:showAsAction="never" />
+    <item android:id="@+id/menu_o" android:title="Other" app:showAsAction="never"/>
+
+</menu>

@@ -16,6 +16,7 @@ class ShowProfileActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         super.onCreateOptionsMenu(menu)
         menuInflater.inflate(R.menu.menu, menu)
+        //menuInflater.inflate(R.menu.dropdown_menu, menu)   for gender
         return true
     }
 
@@ -26,6 +27,19 @@ class ShowProfileActivity : AppCompatActivity() {
                 startActivity(intent)
                 true
             }
+            /* starting working for dropdown menu for choosing the gender
+            R.id.menu_m -> {
+                item.isChecked = true
+                true
+            }
+            R.id.menu_f -> {
+                item.isChecked = true
+                true
+            }
+            R.id.menu_o -> {
+                item.isChecked = true
+                true
+            } */
             else -> super.onOptionsItemSelected(item)
         }
     }

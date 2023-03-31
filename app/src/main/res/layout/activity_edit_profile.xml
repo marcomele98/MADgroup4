@@ -52,6 +52,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:inputType="text"
             android:text="Full Name"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1"
             android:textColor="@color/textPrimary" />
@@ -61,15 +62,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:inputType="text"
             android:text="Nickname"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="@color/textPrimary" />
 
         <EditText
-            android:id="@+id/textView6"
+            android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:inputType="text"
             android:text="TextView" />
 
         <RatingBar
@@ -103,6 +106,7 @@
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:inputType="text"
                     android:text="Male"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -130,6 +134,7 @@
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:inputType="text|date"
                     android:text="01/01/2000"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -156,6 +161,7 @@
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:inputType="text"
                     android:text="Turin"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent" />
