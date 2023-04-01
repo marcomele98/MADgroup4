@@ -5,6 +5,123 @@ import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import android.Manifest
+import android.app.Activity
+import android.content.ContentValues
+import android.net.Uri
+import android.widget.EditText
+import androidx.activity.result.contract.ActivityResultContracts
+
+
+class EditProfileActivity : AppCompatActivity() {
+
+    private lateinit var etName: EditText
+    private var imageUri: Uri? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_edit_profile)
+        etName = findViewById(R.id.name)
+        val imageButton = findViewById<android.widget.ImageButton>(R.id.camera_button)
+        imageButton.setOnClickListener {
+            val options = arrayOf<CharSequence>("Take Photo", "Choose from Gallery")
+            val builder = android.app.AlertDialog.Builder(this)
+            builder.setTitle("Choose an option")
+            builder.setItems(options) { _, item ->
+                when (options[item]) {
+                    "Take Photo" -> {
+                        openCameraForResult()
+                    }
+                    "Choose from Gallery" -> {
+                        openGallery()
+
+                    }
+                }
+            }
+            builder.show()
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 1) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openCameraForResult()
+            }
+        }
+    }
+
+    private fun hasCameraPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this, Manifest.permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString("tv_name", etName.text.toString())
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        etName.setText(savedInstanceState.getString("tv_name"))
+    }
+
+    private fun openCameraForResult() {
+        val values = ContentValues()
+        println("openCameraForResult")
+        imageUri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+        val takePicture = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        takePicture.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
+//        if(takePicture.resolveActivity(packageManager) != null)
+        if (!hasCameraPermission()) {
+            ActivityCompat.requestPermissions(
+                this, arrayOf(Manifest.permission.CAMERA), 1
+            )
+        } else {
+            cameraLauncher.launch(takePicture)
+        }
+
+    }
+
+    private fun openGallery() {
+        val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        galleryLauncher.launch(galleryIntent)
+    }
+
+    private var cameraLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val profile_image = findViewById<android.widget.ImageView>(R.id.profile_image)
+                profile_image.setImageURI(imageUri)
+            }
+        }
+
+    private var galleryLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val profile_image = findViewById<android.widget.ImageView>(R.id.profile_image)
+                imageUri = result.data?.data
+                profile_image.setImageURI(imageUri)
+            }
+        }
+
+}
+
+
+/*package it.polito.madgroup4
+
+import android.content.Intent
+import android.content.pm.PackageManager
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.provider.MediaStore
 import android.Manifest
 import android.app.Activity
 import android.content.ContentValues
@@ -111,66 +228,9 @@ class EditProfileActivity : AppCompatActivity() {
         return null
     }
 
-    /*
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 1) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                val takePicture = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                resultLauncher.launch(takePicture)
-            }
-        }
-    }
 
-    fun hasCameraPermission(): Boolean {
-        return ContextCompat.checkSelfPermission(
-            this, Manifest.permission.CAMERA
-        ) == PackageManager.PERMISSION_GRANTED
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString("tv_name", et_name.text.toString())
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        et_name.setText(savedInstanceState.getString("tv_name"))
-    }
-
-    fun openCameraForResult() {
-        println("openCameraForResult")
-        val takePicture = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        if (takePicture.resolveActivity(packageManager) != null)
-            println("ciao")
-            if (!hasCameraPermission()) {
-                println("ciao1")
-            ActivityCompat.requestPermissions(
-                this, arrayOf(Manifest.permission.CAMERA), 1
-            )
-        } else {
-            println("ciao2")
-            resultLauncher.launch(takePicture)
-        }
-    }
-
-    var resultLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                // There are no request codes
-                val data: Intent? = result.data
-                val profile_image = findViewById<android.widget.ImageView>(R.id.profile_image)
-                val imageData: ByteArray? = data?.getByteArrayExtra("data")
-                val bitmap = imageData?.let { android.graphics.BitmapFactory.decodeByteArray(it, 0, it.size) }
-                profile_image.setImageBitmap(bitmap)
-            }
-        }
+}*/
 
 
-     */
-}
+
 
