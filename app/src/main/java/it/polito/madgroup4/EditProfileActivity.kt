@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat
 import android.Manifest
 import android.app.Activity
 import android.content.ContentValues
+import android.content.Context
 import android.net.Uri
 import android.widget.EditText
 import androidx.activity.result.contract.ActivityResultContracts
@@ -24,6 +25,8 @@ class EditProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_profile)
         etName = findViewById(R.id.name)
+        val sharedPref = getSharedPreferences("USER", Context.MODE_PRIVATE)
+        etName.setText(sharedPref.getString("NAME", ""))
         val imageButton = findViewById<android.widget.ImageButton>(R.id.camera_button)
         imageButton.setOnClickListener {
             val options = arrayOf<CharSequence>("Take Photo", "Choose from Gallery")
@@ -43,6 +46,16 @@ class EditProfileActivity : AppCompatActivity() {
             builder.show()
         }
     }
+
+    override fun onPause() {
+        super.onPause()
+        val sharedPref = getSharedPreferences("USER", Context.MODE_PRIVATE) ?: return
+        with(sharedPref.edit()) {
+            putString("NAME", etName.text.toString())
+            apply()
+        }
+    }
+
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -111,6 +124,7 @@ class EditProfileActivity : AppCompatActivity() {
                 profile_image.setImageURI(imageUri)
             }
         }
+
 
 }
 
