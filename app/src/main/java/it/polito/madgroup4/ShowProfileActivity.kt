@@ -2,11 +2,14 @@ package it.polito.madgroup4
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.ImageView
 import android.widget.TextView
+import com.google.gson.Gson
 
 class ShowProfileActivity : AppCompatActivity() {
 
@@ -14,11 +17,17 @@ class ShowProfileActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        println("Ciao")
         setContentView(R.layout.activity_main)
         tvName = findViewById(R.id.name)
+
         val sharedPref = getSharedPreferences("USER", Context.MODE_PRIVATE)
-        tvName.setText(sharedPref.getString("NAME", ""))
+        val profile: Profile = Profile.getFromPreferences(sharedPref)
+        tvName.text = profile.name
+
+        profile.imageUri?.let {
+            findViewById<ImageView>(R.id.profile_image).setImageURI(Uri.parse(it))
+        }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -55,6 +64,11 @@ class ShowProfileActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         val sharedPref = getSharedPreferences("USER", Context.MODE_PRIVATE)
-        tvName.setText(sharedPref.getString("NAME", ""))
+        val profile: Profile = Profile.getFromPreferences(sharedPref)
+        tvName.text = profile.name
+
+        profile.imageUri?.let {
+            findViewById<ImageView>(R.id.profile_image).setImageURI(Uri.parse(it))
+        }
     }
 }
