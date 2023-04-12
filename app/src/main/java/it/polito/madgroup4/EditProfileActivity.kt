@@ -150,10 +150,8 @@ class EditProfileActivity : AppCompatActivity() {
     }
 
     private fun openCameraForResult() {
-        //val values = ContentValues()
-        //imageUri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+        val values = ContentValues()
         val takePicture = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        //takePicture.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
         //if(takePicture.resolveActivity(packageManager) != null)
         if (!hasCameraPermission()) {
             ActivityCompat.requestPermissions(
@@ -190,11 +188,13 @@ class EditProfileActivity : AppCompatActivity() {
     private var cameraLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                imageUri = result.data?.data
-                val imageBitmap = MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
-                imageUri = save_propic_internally(imageBitmap)
-                val profile_image = findViewById<android.widget.ImageView>(R.id.profile_image)
-                profile_image.setImageURI(imageUri)
+                val data: Intent? = result.data
+                val bitmap = data?.extras?.get("data") as Bitmap
+                if(bitmap != null) {
+                    imageUri = save_propic_internally(bitmap)
+                    val profile_image = findViewById<android.widget.ImageView>(R.id.profile_image)
+                    profile_image.setImageURI(imageUri)
+                }
             }
         }
 
