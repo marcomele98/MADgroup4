@@ -6,8 +6,10 @@ import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.os.SystemClock
 import android.provider.MediaStore
 import android.widget.EditText
 import android.widget.ImageView
@@ -15,8 +17,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.MutableLiveData
-import com.google.gson.Gson
+import java.io.ByteArrayOutputStream
 
 
 class EditProfileActivity : AppCompatActivity() {
@@ -34,7 +35,8 @@ class EditProfileActivity : AppCompatActivity() {
         val profile: Profile = Profile.getFromPreferences(sharedPref)
         etName.setText(profile.name)
         profile.imageUri?.let {
-           findViewById<ImageView>(R.id.profile_image).setImageURI(Uri.parse(it))
+            imageUri = Uri.parse(it)
+            findViewById<ImageView>(R.id.profile_image).setImageURI(Uri.parse(it))
         }
         val imageButton = findViewById<android.widget.ImageButton>(R.id.camera_button)
         imageButton.setOnClickListener {
@@ -47,7 +49,7 @@ class EditProfileActivity : AppCompatActivity() {
                         openCameraForResult()
                     }
                     "Choose from Gallery" -> {
-                        openGallery()
+                        openGalleryForResult()
 
                     }
                 }
@@ -55,6 +57,35 @@ class EditProfileActivity : AppCompatActivity() {
             builder.show()
         }
     }
+
+    fun save_propic_internally(image: Bitmap): Uri? {
+        // Check for permission
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // Request permission if not granted
+            println("Permission not granted")
+            return null
+        } else {
+            val filename =  "img_${SystemClock.uptimeMillis()}"+ ".jpeg"
+            val outputStream = openFileOutput(filename, Context.MODE_PRIVATE)
+            val byteArrayOutputStream = ByteArrayOutputStream()
+            image.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+            val byteArray = byteArrayOutputStream.toByteArray()
+            outputStream.write(byteArray)
+            outputStream.close()
+
+            return Uri.fromFile(getFileStreamPath(filename))
+
+        }
+    }
+
 
     override fun onPause() {
         super.onPause()
@@ -75,12 +106,37 @@ class EditProfileActivity : AppCompatActivity() {
                 openCameraForResult()
             }
         }
+        if (requestCode == 2) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openGalleryForResult()
+            }
+        }
+    }
+
+    private fun hasGalleryPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        ) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ) == PackageManager.PERMISSION_GRANTED
     }
 
     private fun hasCameraPermission(): Boolean {
         return ContextCompat.checkSelfPermission(
-            this, Manifest.permission.CAMERA
-        ) == PackageManager.PERMISSION_GRANTED
+            this,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        ) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ) == PackageManager.PERMISSION_GRANTED
+                &&
+                ContextCompat.checkSelfPermission(
+                    this, Manifest.permission.CAMERA
+                ) == PackageManager.PERMISSION_GRANTED
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -94,14 +150,20 @@ class EditProfileActivity : AppCompatActivity() {
     }
 
     private fun openCameraForResult() {
-        val values = ContentValues()
-        imageUri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+        //val values = ContentValues()
+        //imageUri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
         val takePicture = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        takePicture.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
-//        if(takePicture.resolveActivity(packageManager) != null)
+        //takePicture.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
+        //if(takePicture.resolveActivity(packageManager) != null)
         if (!hasCameraPermission()) {
             ActivityCompat.requestPermissions(
-                this, arrayOf(Manifest.permission.CAMERA), 1
+                this,
+                arrayOf(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.CAMERA
+                ),
+                1
             )
         } else {
             cameraLauncher.launch(takePicture)
@@ -109,14 +171,28 @@ class EditProfileActivity : AppCompatActivity() {
 
     }
 
-    private fun openGallery() {
+    private fun openGalleryForResult() {
         val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        galleryLauncher.launch(galleryIntent)
+        if (!hasGalleryPermission()) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                ),
+                2
+            )
+        } else {
+            galleryLauncher.launch(galleryIntent)
+        }
     }
 
     private var cameraLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
+                imageUri = result.data?.data
+                val imageBitmap = MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
+                imageUri = save_propic_internally(imageBitmap)
                 val profile_image = findViewById<android.widget.ImageView>(R.id.profile_image)
                 profile_image.setImageURI(imageUri)
             }
@@ -125,8 +201,10 @@ class EditProfileActivity : AppCompatActivity() {
     private var galleryLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                val profile_image = findViewById<android.widget.ImageView>(R.id.profile_image)
                 imageUri = result.data?.data
+                val imageBitmap = MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
+                imageUri = save_propic_internally(imageBitmap)
+                val profile_image = findViewById<android.widget.ImageView>(R.id.profile_image)
                 profile_image.setImageURI(imageUri)
             }
         }
