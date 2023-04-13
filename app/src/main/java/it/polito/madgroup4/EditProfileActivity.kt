@@ -23,6 +23,11 @@ import java.io.ByteArrayOutputStream
 class EditProfileActivity : AppCompatActivity() {
 
     private lateinit var etName: EditText
+    private lateinit var etNickname: EditText
+    private lateinit var etPhone: EditText
+    private lateinit var etMail: EditText
+    private lateinit var etGender: EditText
+    private lateinit var etBirthdate: EditText
     private var imageUri: Uri? = null
 
 
@@ -30,10 +35,22 @@ class EditProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_profile)
         etName = findViewById(R.id.name)
+        etNickname = findViewById(R.id.nickname)
+        etPhone = findViewById(R.id.phone)
+        etMail = findViewById(R.id.email)
+        etGender = findViewById(R.id.gender)
+        etBirthdate = findViewById(R.id.birthdate)
+
         // deserialize the object from json format
         val sharedPref = getSharedPreferences("USER", Context.MODE_PRIVATE)
         val profile: Profile = Profile.getFromPreferences(sharedPref)
         etName.setText(profile.name)
+        etNickname.setText(profile.nickname)
+        etPhone.setText(profile.phone)
+        etMail.setText(profile.email)
+        etGender.setText(profile.gender)
+        etBirthdate.setText(profile.birthdate)
+
         profile.imageUri?.let {
             imageUri = Uri.parse(it)
             findViewById<ImageView>(R.id.profile_image).setImageURI(Uri.parse(it))
@@ -90,7 +107,13 @@ class EditProfileActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         val sharedPref = getSharedPreferences("USER", Context.MODE_PRIVATE) ?: return
-        val profile = Profile(etName.text.toString(), imageUri.toString())
+        val profile = Profile(etName.text.toString(),
+            etNickname.text.toString(),
+            etPhone.text.toString(),
+            etMail.text.toString(),
+            etGender.text.toString(),
+            etBirthdate.text.toString(),
+            imageUri.toString())
         profile.saveToPreferences(sharedPref)
     }
 
@@ -142,15 +165,25 @@ class EditProfileActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString("tv_name", etName.text.toString())
+        outState.putString("tv_nickname", etNickname.text.toString())
+        outState.putString("tv_phone", etPhone.text.toString())
+        outState.putString("tv_mail", etMail.text.toString())
+        outState.putString("tv_gender", etGender.text.toString())
+        outState.putString("tv_birthdate", etBirthdate.text.toString())
+
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         etName.setText(savedInstanceState.getString("tv_name"))
+        etNickname.setText(savedInstanceState.getString("tv_nickname"))
+        etPhone.setText(savedInstanceState.getString("tv_phone"))
+        etMail.setText(savedInstanceState.getString("tv_mail"))
+        etGender.setText(savedInstanceState.getString("tv_gender"))
+        etBirthdate.setText(savedInstanceState.getString("tv_birthdate"))
     }
 
     private fun openCameraForResult() {
-        val values = ContentValues()
         val takePicture = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         //if(takePicture.resolveActivity(packageManager) != null)
         if (!hasCameraPermission()) {

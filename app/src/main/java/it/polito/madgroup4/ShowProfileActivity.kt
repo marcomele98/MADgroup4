@@ -5,24 +5,42 @@ import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.ContactsContract.CommonDataKinds.Nickname
+import android.provider.ContactsContract.CommonDataKinds.Phone
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.res.ResourcesCompat
 import com.google.gson.Gson
 
 class ShowProfileActivity : AppCompatActivity() {
 
     private lateinit var tvName: TextView
+    private lateinit var tvNickname: TextView
+    private lateinit var tvPhone: TextView
+    private lateinit var tvMail: TextView
+    private lateinit var tvGender: TextView
+    private lateinit var tvBirthdate: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         tvName = findViewById(R.id.name)
+        tvNickname = findViewById(R.id.nickname)
+        tvPhone = findViewById(R.id.phone)
+        tvMail = findViewById(R.id.email)
+        tvGender = findViewById(R.id.gender)
+        tvBirthdate = findViewById(R.id.birthdate)
 
         val sharedPref = getSharedPreferences("USER", Context.MODE_PRIVATE)
         val profile: Profile = Profile.getFromPreferences(sharedPref)
         tvName.text = profile.name
+        tvNickname.text = "@"+profile.nickname
+        tvPhone.text = profile.phone
+        tvMail.text = profile.email
+        tvGender.text = profile.gender
+        tvBirthdate.text = profile.birthdate
 
         profile.imageUri?.let {
             findViewById<ImageView>(R.id.profile_image).setImageURI(Uri.parse(it))
@@ -66,6 +84,11 @@ class ShowProfileActivity : AppCompatActivity() {
         val sharedPref = getSharedPreferences("USER", Context.MODE_PRIVATE)
         val profile: Profile = Profile.getFromPreferences(sharedPref)
         tvName.text = profile.name
+        tvNickname.text = "@"+profile.nickname
+        tvPhone.text = profile.phone
+        tvMail.text = profile.email
+        tvGender.text = profile.gender
+        tvBirthdate.text = profile.birthdate
 
         profile.imageUri?.let {
             findViewById<ImageView>(R.id.profile_image).setImageURI(Uri.parse(it))
