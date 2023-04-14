@@ -1,16 +1,21 @@
 package it.polito.madgroup4
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.database.Cursor
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.net.Uri
 import android.os.Bundle
 import android.os.SystemClock
 import android.provider.MediaStore
+import android.util.Log
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
@@ -18,6 +23,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import java.io.ByteArrayOutputStream
+import java.io.FileDescriptor
+import java.io.IOException
 
 
 class EditProfileActivity : AppCompatActivity() {
@@ -28,6 +35,7 @@ class EditProfileActivity : AppCompatActivity() {
     private lateinit var etMail: EditText
     private lateinit var etGender: EditText
     private lateinit var etBirthdate: EditText
+    private var editImageUri: Uri? = null
     private var imageUri: Uri? = null
 
 
@@ -90,7 +98,7 @@ class EditProfileActivity : AppCompatActivity() {
             println("Permission not granted")
             return null
         } else {
-            val filename =  "img_${SystemClock.uptimeMillis()}"+ ".jpeg"
+            val filename = "img_${SystemClock.uptimeMillis()}" + ".jpeg"
             val outputStream = openFileOutput(filename, Context.MODE_PRIVATE)
             val byteArrayOutputStream = ByteArrayOutputStream()
             image.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
@@ -107,13 +115,15 @@ class EditProfileActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         val sharedPref = getSharedPreferences("USER", Context.MODE_PRIVATE) ?: return
-        val profile = Profile(etName.text.toString(),
+        val profile = Profile(
+            etName.text.toString(),
             etNickname.text.toString(),
             etPhone.text.toString(),
             etMail.text.toString(),
             etGender.text.toString(),
             etBirthdate.text.toString(),
-            imageUri.toString())
+            imageUri.toString()
+        )
         profile.saveToPreferences(sharedPref)
     }
 
@@ -140,22 +150,22 @@ class EditProfileActivity : AppCompatActivity() {
         return ContextCompat.checkSelfPermission(
             this,
             Manifest.permission.READ_EXTERNAL_STORAGE
-        ) == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ) == PackageManager.PERMISSION_GRANTED
+        ) == PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ) == PackageManager.PERMISSION_GRANTED
     }
 
     private fun hasCameraPermission(): Boolean {
         return ContextCompat.checkSelfPermission(
             this,
             Manifest.permission.READ_EXTERNAL_STORAGE
-        ) == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ) == PackageManager.PERMISSION_GRANTED
+        ) == PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ) == PackageManager.PERMISSION_GRANTED
                 &&
                 ContextCompat.checkSelfPermission(
                     this, Manifest.permission.CAMERA
@@ -184,7 +194,6 @@ class EditProfileActivity : AppCompatActivity() {
     }
 
     private fun openCameraForResult() {
-        val takePicture = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         //if(takePicture.resolveActivity(packageManager) != null)
         if (!hasCameraPermission()) {
             ActivityCompat.requestPermissions(
@@ -197,13 +206,19 @@ class EditProfileActivity : AppCompatActivity() {
                 1
             )
         } else {
+            val values = ContentValues()
+            values.put(MediaStore.Images.Media.TITLE, "New Picture")
+            values.put(MediaStore.Images.Media.DESCRIPTION, "From the Camera")
+            editImageUri =
+                contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+            val takePicture = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            takePicture.putExtra(MediaStore.EXTRA_OUTPUT, editImageUri)
             cameraLauncher.launch(takePicture)
         }
 
     }
 
     private fun openGalleryForResult() {
-        val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         if (!hasGalleryPermission()) {
             ActivityCompat.requestPermissions(
                 this,
@@ -214,6 +229,8 @@ class EditProfileActivity : AppCompatActivity() {
                 2
             )
         } else {
+            val galleryIntent =
+                Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
             galleryLauncher.launch(galleryIntent)
         }
     }
@@ -221,26 +238,57 @@ class EditProfileActivity : AppCompatActivity() {
     private var cameraLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                val data: Intent? = result.data
-                val bitmap = data?.extras?.get("data") as Bitmap
-                if(bitmap != null) {
-                    imageUri = save_propic_internally(bitmap)
-                    val profile_image = findViewById<android.widget.ImageView>(R.id.profile_image)
-                    profile_image.setImageURI(imageUri)
-                }
+
+                val imageBitmap = uriToBitmap(editImageUri!!)
+                val rotatedBitmap = rotateBitmap(imageBitmap!!)
+                imageUri = save_propic_internally(rotatedBitmap!!)
+                val profile_image = findViewById<ImageView>(R.id.profile_image)
+                profile_image.setImageURI(imageUri)
+//                }
             }
         }
 
     private var galleryLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                imageUri = result.data?.data
-                val imageBitmap = MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
-                imageUri = save_propic_internally(imageBitmap)
-                val profile_image = findViewById<android.widget.ImageView>(R.id.profile_image)
+                editImageUri = result.data?.data
+                val imageBitmap = uriToBitmap(editImageUri!!)
+                val rotatedBitmap = rotateBitmap(imageBitmap!!)
+                imageUri = save_propic_internally(rotatedBitmap!!)
+                val profile_image = findViewById<ImageView>(R.id.profile_image)
                 profile_image.setImageURI(imageUri)
             }
         }
+
+    @SuppressLint("Range")
+    fun rotateBitmap(input: Bitmap): Bitmap? {
+        val orientationColumn =
+            arrayOf(MediaStore.Images.Media.ORIENTATION)
+        val cur: Cursor? =
+            contentResolver.query(editImageUri!!, orientationColumn, null, null, null)
+        var orientation = -1
+        if (cur != null && cur.moveToFirst()) {
+            orientation = cur.getInt(cur.getColumnIndex(orientationColumn[0]))
+        }
+        Log.d("tryOrientation", orientation.toString() + "")
+        val rotationMatrix = Matrix()
+        rotationMatrix.setRotate(orientation.toFloat())
+        return Bitmap.createBitmap(input, 0, 0, input.width, input.height, rotationMatrix, true)
+    }
+
+    private fun uriToBitmap(selectedFileUri: Uri): Bitmap? {
+        try {
+            val parcelFileDescriptor = contentResolver.openFileDescriptor(selectedFileUri, "r")
+            val fileDescriptor: FileDescriptor = parcelFileDescriptor!!.fileDescriptor
+            val image = BitmapFactory.decodeFileDescriptor(fileDescriptor)
+            parcelFileDescriptor.close()
+            return image
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return null
+    }
+
 }
 
 
