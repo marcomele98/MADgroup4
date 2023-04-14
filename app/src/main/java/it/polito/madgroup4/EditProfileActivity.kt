@@ -3,6 +3,7 @@ package it.polito.madgroup4
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.DatePickerDialog
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
@@ -25,6 +26,7 @@ import androidx.core.content.ContextCompat
 import java.io.ByteArrayOutputStream
 import java.io.FileDescriptor
 import java.io.IOException
+import java.util.*
 
 
 class EditProfileActivity : AppCompatActivity() {
@@ -58,6 +60,40 @@ class EditProfileActivity : AppCompatActivity() {
         etMail.setText(profile.email)
         etGender.setText(profile.gender)
         etBirthdate.setText(profile.birthdate)
+
+        etBirthdate.setOnClickListener {
+
+            // on below line we are getting
+            // the instance of our calendar.
+            val c = Calendar.getInstance()
+
+            // on below line we are getting
+            // our day, month and year.
+            val year = c.get(Calendar.YEAR)
+            val month = c.get(Calendar.MONTH)
+            val day = c.get(Calendar.DAY_OF_MONTH)
+
+            // on below line we are creating a
+            // variable for date picker dialog.
+            val datePickerDialog = DatePickerDialog(
+                // on below line we are passing context.
+                this, R.style.Theme_DatePicker,
+                { view, year, monthOfYear, dayOfMonth ->
+                    // on below line we are setting
+                    // date to our edit text.
+                    val dat = (dayOfMonth.toString() + "-" + (monthOfYear + 1) + "-" + year)
+                    etBirthdate.setText(dat)
+                },
+                // on below line we are passing year, month
+                // and day for the selected date in our date picker.
+                year,
+                month,
+                day
+            )
+            // at last we are calling show
+            // to display our date picker dialog.
+            datePickerDialog.show()
+        }
 
         profile.imageUri?.let {
             imageUri = Uri.parse(it)

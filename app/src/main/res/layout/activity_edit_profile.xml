@@ -75,10 +75,14 @@
 
         <EditText
             android:id="@+id/nickname"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:hint="Nickname"
+            android:layout_marginRight="40dp"
+            android:layout_marginLeft="40dp"
+            android:drawableStart="@drawable/person"
+            android:drawablePadding="5dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="@color/textPrimary"
             app:layout_constraintEnd_toEndOf="parent"
@@ -88,10 +92,14 @@
 
         <EditText
             android:id="@+id/phone"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="28dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginLeft="40dp"
+            android:drawableStart="@drawable/phone"
+            android:drawablePadding="5dp"
             android:inputType="phone"
             android:hint="Phone"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
@@ -105,10 +113,14 @@
 
         <EditText
             android:id="@+id/email"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="28dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginLeft="40dp"
+            android:drawableStart="@drawable/email"
+            android:drawablePadding="5dp"
             android:inputType="textEmailAddress"
             android:hint="Email"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
@@ -120,10 +132,14 @@
 
         <EditText
             android:id="@+id/gender"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="28dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginLeft="40dp"
+            android:drawableStart="@drawable/person"
+            android:drawablePadding="5dp"
             android:hint="Gender"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
 
@@ -136,11 +152,15 @@
 
         <EditText
             android:id="@+id/birthdate"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="28dp"
-            android:hint="Birthday"
+            android:layout_marginRight="40dp"
+            android:layout_marginLeft="40dp"
+            android:drawableStart="@drawable/cake"
+            android:drawablePadding="5dp"
+            android:hint="Date of birth"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
 
             android:textColor="@color/textPrimary"
