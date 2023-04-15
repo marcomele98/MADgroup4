@@ -17,8 +17,8 @@ import android.os.Bundle
 import android.os.SystemClock
 import android.provider.MediaStore
 import android.util.Log
-import android.widget.EditText
-import android.widget.ImageView
+import android.view.View
+import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -35,11 +35,12 @@ class EditProfileActivity : AppCompatActivity() {
     private lateinit var etNickname: EditText
     private lateinit var etPhone: EditText
     private lateinit var etMail: EditText
-    private lateinit var etGender: EditText
-    private lateinit var etBirthdate: EditText
+
+    //private lateinit var etGender: EditText
+    private lateinit var etBirthdate: TextView
     private var editImageUri: Uri? = null
     private var imageUri: Uri? = null
-
+    private lateinit var genderSpinner: Spinner
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,8 +49,17 @@ class EditProfileActivity : AppCompatActivity() {
         etNickname = findViewById(R.id.nickname)
         etPhone = findViewById(R.id.phone)
         etMail = findViewById(R.id.email)
-        etGender = findViewById(R.id.gender)
+        //etGender = findViewById(R.id.gender)
         etBirthdate = findViewById(R.id.birthdate)
+        genderSpinner = findViewById(R.id.gender)
+
+        val adapter = ArrayAdapter.createFromResource(
+                    this,
+                    R.array.gender_options,
+                    android.R.layout.simple_spinner_item
+                )
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        genderSpinner.adapter = adapter
 
         // deserialize the object from json format
         val sharedPref = getSharedPreferences("USER", Context.MODE_PRIVATE)
@@ -58,7 +68,8 @@ class EditProfileActivity : AppCompatActivity() {
         etNickname.setText(profile.nickname)
         etPhone.setText(profile.phone)
         etMail.setText(profile.email)
-        etGender.setText(profile.gender)
+        //etGender.setText(profile.gender)
+        genderSpinner.setSelection(adapter.getPosition(profile.gender))
         etBirthdate.setText(profile.birthdate)
 
         etBirthdate.setOnClickListener {
@@ -117,6 +128,26 @@ class EditProfileActivity : AppCompatActivity() {
             }
             builder.show()
         }
+
+
+
+        genderSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                val gender = parent?.getItemAtPosition(position).toString()
+                println("Selected gender: $gender")
+                profile.gender = gender
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // Do nothing
+            }
+        }
+
     }
 
     fun save_propic_internally(image: Bitmap): Uri? {
@@ -156,7 +187,8 @@ class EditProfileActivity : AppCompatActivity() {
             etNickname.text.toString(),
             etPhone.text.toString(),
             etMail.text.toString(),
-            etGender.text.toString(),
+            //etGender.text.toString(),
+            genderSpinner.selectedItem.toString(),
             etBirthdate.text.toString(),
             imageUri.toString()
         )
@@ -214,7 +246,8 @@ class EditProfileActivity : AppCompatActivity() {
         outState.putString("tv_nickname", etNickname.text.toString())
         outState.putString("tv_phone", etPhone.text.toString())
         outState.putString("tv_mail", etMail.text.toString())
-        outState.putString("tv_gender", etGender.text.toString())
+        //outState.putString("tv_gender", etGender.text.toString())
+        outState.putString("tv_gender",genderSpinner.selectedItem.toString())
         outState.putString("tv_birthdate", etBirthdate.text.toString())
 
     }
@@ -225,7 +258,8 @@ class EditProfileActivity : AppCompatActivity() {
         etNickname.setText(savedInstanceState.getString("tv_nickname"))
         etPhone.setText(savedInstanceState.getString("tv_phone"))
         etMail.setText(savedInstanceState.getString("tv_mail"))
-        etGender.setText(savedInstanceState.getString("tv_gender"))
+        //etGender.setText(savedInstanceState.getString("tv_gender"))
+        genderSpinner.setSelection((genderSpinner.adapter as ArrayAdapter<String>).getPosition(savedInstanceState.getString("tv_gender")))
         etBirthdate.setText(savedInstanceState.getString("tv_birthdate"))
     }
 
