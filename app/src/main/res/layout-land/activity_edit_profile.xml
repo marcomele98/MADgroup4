@@ -7,9 +7,9 @@
     android:orientation="horizontal">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="2"
+        android:layout_weight="1"
         android:orientation="vertical">
 
 
@@ -20,10 +20,11 @@
             android:scaleType="fitXY"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0"
             app:srcCompat="@drawable/left_background" />
-
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/profile_image"
@@ -49,12 +50,16 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2">
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
         android:orientation="vertical"
-        android:paddingHorizontal="16dp">
+        android:padding="16dp">
 
         <EditText
             android:id="@+id/name"
@@ -67,221 +72,105 @@
             app:layout_constraintBottom_toTopOf="@+id/nickname"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.5"
-            app:layout_constraintVertical_chainStyle="packed" />
+            app:layout_constraintTop_toTopOf="parent" />
 
 
         <EditText
             android:id="@+id/nickname"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="40dp"
+            android:layout_marginTop="27dp"
+            android:layout_marginRight="40dp"
+            android:drawableStart="@drawable/person"
+            android:drawablePadding="5dp"
             android:hint="Nickname"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="@color/textPrimary"
-            app:layout_constraintBottom_toTopOf="@+id/phone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/name"
-            app:layout_constraintVertical_bias="0.5" />
+            app:layout_constraintTop_toBottomOf="@+id/name" />
 
 
         <EditText
             android:id="@+id/phone"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="40dp"
             android:layout_marginTop="24dp"
+            android:layout_marginRight="40dp"
+            android:drawableStart="@drawable/phone"
+            android:drawablePadding="5dp"
             android:hint="Phone"
             android:inputType="phone"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="@color/textPrimary"
-            app:layout_constraintBottom_toTopOf="@+id/email"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.506"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/nickname"
-            app:layout_constraintVertical_bias="0.5" />
+            app:layout_constraintTop_toBottomOf="@+id/nickname" />
 
         <EditText
             android:id="@+id/email"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="8dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginRight="40dp"
+            android:drawableStart="@drawable/email"
+            android:drawablePadding="5dp"
             android:hint="Email"
             android:inputType="textEmailAddress"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="@color/textPrimary"
-            app:layout_constraintBottom_toTopOf="@+id/gender"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/phone"
-            app:layout_constraintVertical_bias="0.5" />
-
-        <!--
-        <EditText
-            android:id="@+id/gender"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="8dp"
-            android:hint="Gender"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-
-            android:textColor="@color/textPrimary"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toTopOf="@+id/birthdate"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.501"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/email"
-            app:layout_constraintVertical_bias="0.5" />
-            -->
+            app:layout_constraintTop_toBottomOf="@+id/phone" />
 
-        <Spinner
-            android:id="@+id/gender"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginLeft="40dp"
-            android:layout_marginTop="28dp"
-            android:layout_marginRight="40dp"
-            android:drawableLeft="@drawable/person"
-            android:drawablePadding="5dp"
-            android:entries="@array/gender_options"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/email" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginLeft="40dp"
-            android:layout_marginTop="3dp"
-            android:layout_marginRight="40dp"
-            android:background="@color/textPrimary"
-            app:layout_constraintTop_toBottomOf="@+id/gender" />
-
-        <TextView
+        <EditText
             android:id="@+id/birthdate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
+            android:layout_gravity="center_vertical"
             android:layout_marginLeft="40dp"
-            android:layout_marginTop="28dp"
+            android:gravity="center_vertical"
+            android:layout_marginTop="24dp"
             android:layout_marginRight="40dp"
             android:drawableStart="@drawable/cake"
             android:drawablePadding="5dp"
             android:hint="Date of birth"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="@color/textPrimary"
             android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/gender" />
+            app:layout_constraintTop_toBottomOf="@+id/email" />
 
-        <View
+        <EditText
+            android:id="@+id/gender"
             android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:layout_marginLeft="40dp"
-            android:layout_marginTop="3dp"
+            android:layout_marginTop="24dp"
             android:layout_marginRight="40dp"
-            android:background="@color/textPrimary"
+            android:editable="false"
+            android:hint="Male"
+            android:drawableLeft="@drawable/gender"
+            android:drawablePadding="5dp"
+            android:entries="@array/gender_options"
+            android:textColor="@color/textPrimary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/birthdate" />
 
+
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 
 </LinearLayout>
-
-
-    <!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#FFFFFF"
-        android:orientation="horizontal"
-        android:paddingHorizontal="16dp"
-        tools:context=".ShowProfileActivity">
-    
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="horizontal">
-    
-            <FrameLayout
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:background="@drawable/round"
-                android:padding="20dp">
-    
-                <ImageView
-                    android:id="@+id/profile_image"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/profile" />
-    
-            </FrameLayout>
-    
-            <ImageButton
-                android:id="@+id/camera_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/edit" />
-    
-    
-        </LinearLayout>
-    
-    
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="2"
-            android:gravity="center_vertical"
-            android:orientation="vertical">
-    
-            <EditText
-                android:id="@+id/name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:inputType="text"
-                android:text="Full Name"
-                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-                android:textColor="@color/textPrimary" />
-    
-            <EditText
-                android:id="@+id/nickname"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:inputType="text"
-                android:text="Nickname"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:textColor="@color/textPrimary" />
-    
-            <EditText
-                android:id="@+id/textView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:inputType="text"
-                android:text="TextView" />
-    
-            <RatingBar
-                android:id="@+id/ratingBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:numStars="5"
-                android:rating="3" />
-    
-        </LinearLayout>
-    
-    
-    </LinearLayout>-->
