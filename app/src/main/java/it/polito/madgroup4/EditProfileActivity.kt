@@ -63,22 +63,28 @@ class EditProfileActivity : AppCompatActivity() {
         etGender.setText(profile.gender)
         etBirthdate.setText(profile.birthdate)
 
-        etGender.setOnClickListener{
-            etGender.setOnClickListener{
-                val options = arrayOf<CharSequence>("Male", "Female", "Non-binary", "Prefer not to say")
-                val builder = AlertDialog.Builder(this)
-                builder.setTitle("Select your gender")
-                builder.setItems(options) { _, item ->
-                    val selectedGender = options[item]
-                    etGender.setText(selectedGender)
-                }
-                builder.show()
+        fun showGenderDialog() {
+            val options = arrayOf<CharSequence>("Male", "Female", "Non-binary", "Prefer not to say")
+            val builder = AlertDialog.Builder(this)
+            builder.setTitle("Select your gender")
+            builder.setItems(options) { _, item ->
+                val selectedGender = options[item]
+                etGender.setText(selectedGender)
             }
-
+            builder.show()
         }
 
-        etBirthdate.setOnClickListener {
+        etGender.setOnFocusChangeListener { view, b ->
+            if(b == true){
+                showGenderDialog()
+            }
+        }
 
+        etGender.setOnClickListener{
+           showGenderDialog()
+        }
+
+        fun showBirthdayDialog(){
             // on below line we are getting
             // the instance of our calendar.
             val c = Calendar.getInstance()
@@ -106,10 +112,22 @@ class EditProfileActivity : AppCompatActivity() {
                 month,
                 day
             )
+
+            datePickerDialog.datePicker.maxDate = System.currentTimeMillis()
             // at last we are calling show
             // to display our date picker dialog.
 
             datePickerDialog.show()
+        }
+
+        etBirthdate.setOnFocusChangeListener { view, b ->
+            if(b == true){
+                showBirthdayDialog()
+            }
+        }
+
+        etBirthdate.setOnClickListener {
+            showBirthdayDialog()
         }
 
         profile.imageUri?.let {
