@@ -135,6 +135,7 @@
 
         <EditText
             android:id="@+id/birthdate"
+            android:editable="false"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -145,7 +146,7 @@
             android:drawableStart="@drawable/cake"
             android:drawablePadding="5dp"
             android:hint="Date of birth"
-            android:editable="false"
+            android:focusable="false"
             android:textColor="@color/textPrimary"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             app:layout_constraintEnd_toEndOf="parent"
@@ -153,6 +154,7 @@
             app:layout_constraintTop_toBottomOf="@+id/email" />
 
         <EditText
+            android:focusable="false"
             android:id="@+id/gender"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -160,11 +162,11 @@
             android:layout_marginLeft="40dp"
             android:layout_marginTop="15dp"
             android:layout_marginRight="40dp"
-            android:editable="false"
             android:hint="Male"
             android:drawableLeft="@drawable/gender"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:drawablePadding="5dp"
+            android:editable="false"
             android:entries="@array/gender_options"
             android:textColor="@color/textPrimary"
             app:layout_constraintEnd_toEndOf="parent"

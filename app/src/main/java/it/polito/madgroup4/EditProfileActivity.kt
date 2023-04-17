@@ -74,13 +74,9 @@ class EditProfileActivity : AppCompatActivity() {
             builder.show()
         }
 
-        etGender.setOnFocusChangeListener { view, b ->
-            if(b == true){
-                showGenderDialog()
-            }
-        }
 
         etGender.setOnClickListener{
+            println("click")
            showGenderDialog()
         }
 
@@ -120,11 +116,6 @@ class EditProfileActivity : AppCompatActivity() {
             datePickerDialog.show()
         }
 
-        etBirthdate.setOnFocusChangeListener { view, b ->
-            if(b == true){
-                showBirthdayDialog()
-            }
-        }
 
         etBirthdate.setOnClickListener {
             showBirthdayDialog()
