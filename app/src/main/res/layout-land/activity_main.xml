@@ -113,7 +113,7 @@
                 android:layout_marginRight="40dp"
                 android:drawableStart="@drawable/email"
                 android:drawablePadding="5dp"
-                android:inputType="textEmailAddress"
+                android:inputType="textMultiLine|textEmailAddress"
                 android:text="marco@gmail.com"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:textColor="@color/textPrimary"
