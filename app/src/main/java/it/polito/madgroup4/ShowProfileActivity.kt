@@ -13,6 +13,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import com.google.gson.Gson
+import dagger.hilt.android.HiltAndroidApp
 
 class ShowProfileActivity : AppCompatActivity() {
 

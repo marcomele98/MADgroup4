@@ -76,7 +76,6 @@ class EditProfileActivity : AppCompatActivity() {
 
 
         etGender.setOnClickListener{
-            println("click")
            showGenderDialog()
         }
 
