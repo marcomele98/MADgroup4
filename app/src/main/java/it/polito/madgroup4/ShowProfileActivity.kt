@@ -13,8 +13,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import com.google.gson.Gson
+import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
 
+@AndroidEntryPoint
 class ShowProfileActivity : AppCompatActivity() {
 
     private lateinit var tvName: TextView
