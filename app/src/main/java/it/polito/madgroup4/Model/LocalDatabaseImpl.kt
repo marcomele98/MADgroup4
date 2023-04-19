@@ -13,18 +13,4 @@ abstract class LocalDatabaseImpl():
     abstract override fun playingCourtDAO(): PlayingCourtDAO
     abstract override fun reservationDAO(): ReservationDAO
 
-    //E' necessario il companion object per poter accedere al database anche se posso usare @Singleton e @Inject? Chiedere!
-    //https://stackoverflow.com/questions/58225000/how-to-use-room-database-with-dagger-hilt
-    /*companion object {
-        @Volatile
-        private var INSTANCE: LocalDatabaseImpl? = null
-        fun getDatabase(context: Context): LocalDatabaseImpl  =
-            (INSTANCE ?: synchronized(this) {
-                val i = INSTANCE ?: Room.databaseBuilder(
-                    context.applicationContext, LocalDatabaseImpl::class.java, "local_database"
-                ).build()
-                INSTANCE = i
-                INSTANCE
-            })!!
-    }*/
     }
