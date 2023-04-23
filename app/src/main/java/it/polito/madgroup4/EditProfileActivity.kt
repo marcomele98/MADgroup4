@@ -30,12 +30,9 @@ import java.io.ByteArrayOutputStream
 import java.io.FileDescriptor
 import java.io.IOException
 import java.util.*
-import it.polito.madgroup4.ViewModel.MainViewModel
 
 @AndroidEntryPoint
 class EditProfileActivity : AppCompatActivity() {
-
-    val vm by viewModels<MainViewModel>()       // da spostare nella nuova activity per il lab3, quella dove gestiremo le prenotazioni
 
     private lateinit var etName: EditText
     private lateinit var etNickname: EditText
