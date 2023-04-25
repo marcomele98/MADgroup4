@@ -2,7 +2,9 @@ package it.polito.madgroup4.Model
 
 import java.util.*
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class Repository @Inject constructor(private val reservationDAO: ReservationDAO, private val playingCourtDAO: PlayingCourtDAO) {
     fun getAllReservations() = reservationDAO.getAll()
     fun getAllReservationsByCourtId(courtId: String) = reservationDAO.getAllByCourtId(courtId)

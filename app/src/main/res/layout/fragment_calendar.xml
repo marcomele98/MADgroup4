@@ -4,16 +4,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- qui ci metteremo il componente del Calendario -->
-    <TextView
-        android:id="@+id/calendar"
-        android:layout_width="wrap_content"
+    <com.stacktips.view.CustomCalendarView
+        android:id="@+id/calendar_view"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Calendar"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        android:background="@color/white"
+        app:calendarBackgroundColor="@color/white"
+        app:calendarTitleTextColor="@color/black"
+        app:currentDayOfMonthColor="@color/black"
+        app:dayOfMonthTextColor="@color/black"
+        app:dayOfWeekTextColor="@color/black"
+        app:disabledDayBackgroundColor="@color/white"
+        app:disabledDayTextColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.474"
+        app:selectedDayBackgroundColor="@color/black"
+        app:titleLayoutBackgroundColor="@color/white"
+        app:weekLayoutBackgroundColor="@color/white"></com.stacktips.view.CustomCalendarView>
 </androidx.constraintlayout.widget.ConstraintLayout>

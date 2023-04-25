@@ -9,14 +9,14 @@ import java.util.Date
 
 @Entity(
     tableName = "reservations",
-    foreignKeys = [
+    /*foreignKeys = [
         ForeignKey(
             entity = PlayingCourt::class,
             parentColumns = ["id"],
             childColumns = ["court_id"],
             onDelete = ForeignKey.CASCADE
         )
-    ]
+    ]*/
 )
 
 data class Reservation(

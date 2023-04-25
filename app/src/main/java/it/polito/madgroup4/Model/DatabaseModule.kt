@@ -18,6 +18,18 @@ class DatabaseModule {
     fun provideLocalDatabase(@ApplicationContext context: Context): LocalDatabase {
         return Room.databaseBuilder(
             context.applicationContext, LocalDatabaseImpl::class.java, "local_database"
-        ).build()
+        ).allowMainThreadQueries().build()
+    }
+
+    @Singleton
+    @Provides
+    fun providePlayingCourtDAO(localDatabase: LocalDatabase): PlayingCourtDAO {
+        return localDatabase.playingCourtDAO()
+    }
+
+    @Singleton
+    @Provides
+    fun provideReservationDAO(localDatabase: LocalDatabase): ReservationDAO {
+        return localDatabase.reservationDAO()
     }
 }

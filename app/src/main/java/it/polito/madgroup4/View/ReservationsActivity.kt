@@ -1,25 +1,42 @@
 package it.polito.madgroup4.View
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.ViewGroup
+import android.widget.Button
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import it.polito.madgroup4.Model.Reservation
 import it.polito.madgroup4.R
-import it.polito.madgroup4.ViewModel.MainViewModel
+import it.polito.madgroup4.ViewModel.ReservationViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
 
 @AndroidEntryPoint
 class ReservationsActivity : AppCompatActivity() {
 
-  val viewModel by viewModels<MainViewModel>()
+  val vm by viewModels<ReservationViewModel>()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_reservations)
+    val formatter = SimpleDateFormat(
+      "dd/MM/yyyy"
+    )
+    val reservation = Reservation(1, "Ciao", 1, formatter.parse(formatter.format(Date())))
+    val reservation2 = Reservation(2, "Ciao2", 1, formatter.parse(formatter.format(Date())))
+
+/*    val b = findViewById<Button>(R.id.button)
+    b.setOnClickListener {
+      vm.saveReservation(reservation)
+      vm.saveReservation(reservation2)
+    }
+
+    val get = findViewById<Button>(R.id.button2)
+    get.setOnClickListener {
+      vm.getReservationsByDate(formatter.parse(formatter.format(Date()))).observe(this) { reservations ->
+        println(reservations)
+      }
+    }*/
 
 
     /*var reservationsAdapter = ReservationsAdapter()
