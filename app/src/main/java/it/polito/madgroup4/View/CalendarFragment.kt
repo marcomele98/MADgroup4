@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.stacktips.view.CalendarListener
 import com.stacktips.view.CustomCalendarView
@@ -18,7 +19,7 @@ import java.util.Locale
 @AndroidEntryPoint
 class CalendarFragment : Fragment(R.layout.fragment_calendar) {
 
-    val vm: ReservationViewModel by viewModels()
+    val vm: ReservationViewModel by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -44,6 +45,11 @@ class CalendarFragment : Fragment(R.layout.fragment_calendar) {
             }
         })
 
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        vm.reservations.removeObservers(viewLifecycleOwner)
     }
 
 }

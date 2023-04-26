@@ -22,10 +22,12 @@ class ReservationsActivity : AppCompatActivity() {
     val formatter = SimpleDateFormat(
       "dd/MM/yyyy"
     )
+
+/*
     val reservation = Reservation(1, "Ciao", 1, formatter.parse(formatter.format(Date())))
     val reservation2 = Reservation(2, "Ciao2", 1, formatter.parse(formatter.format(Date())))
 
-/*    val b = findViewById<Button>(R.id.button)
+    val b = findViewById<Button>(R.id.button)
     b.setOnClickListener {
       vm.saveReservation(reservation)
       vm.saveReservation(reservation2)
@@ -51,6 +53,11 @@ class ReservationsActivity : AppCompatActivity() {
       // caricare le reservations
       reservationsAdapter.updateReservations(reservations)
     } */
+  }
+
+  override fun onDestroy() {
+    super.onDestroy()
+    vm.reservations.removeObservers(this)
   }
 
   // Inner class representing a RecyclerView Adapter for reservations
