@@ -6,7 +6,6 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
 
-
     <application
         android:name=".HiltApplication"
         android:allowBackup="true"
@@ -18,12 +17,24 @@
         android:theme="@style/Theme.MADgroup4"
         tools:targetApi="31">
         <activity
+            android:name=".View.ReservationActivityCompose"
+            android:exported="true"
+            android:label="@string/title_activity_reservation_compose"
+            android:theme="@style/Theme.MADgroup4">
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+        </activity>
+        <activity
             android:name=".View.ReservationsActivity"
             android:exported="true">
+            <!--
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            -->
         </activity>
         <activity
             android:name=".EditProfileActivity"
@@ -31,13 +42,13 @@
         <activity
             android:name=".ShowProfileActivity"
             android:exported="false">
-           <!-- <intent-filter>
+            <!--
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
+            </intent-filter>
+            -->
         </activity>
-
     </application>
-
 
 </manifest>
