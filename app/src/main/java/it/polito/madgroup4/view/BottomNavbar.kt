@@ -2,6 +2,9 @@ package it.polito.madgroup4.view
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.FabPosition
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
@@ -11,6 +14,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
@@ -32,14 +36,14 @@ fun Navbar(
     Scaffold(
         bottomBar = {
             BottomAppBar() {
-                IconButton(
+                /*IconButton(
                     onClick = {
                         navController.navigate("Home")
                     },
                     modifier = Modifier.weight(1f)
                 ) {
                     Icon(Icons.Default.Home, "Home")
-                }
+                }*/
                 IconButton(
                     onClick = { navController.navigate("Home") },
                     modifier = Modifier.weight(1f)
@@ -53,7 +57,20 @@ fun Navbar(
                     Icon(Icons.Default.AccountCircle, "Home")
                 }
             }
-        }
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    // Aggiungi qui la logica del click sul FAB
+                },
+                shape = CircleShape
+            ) {
+                Icon(Icons.Filled.Add, contentDescription = "Aggiungi")
+            }
+        },
+        floatingActionButtonPosition = FabPosition.Center,
+        isFloatingActionButtonDocked = true
+
     ) {
         Box(Modifier.padding(it)) {
             NavHost(navController = navController, startDestination = "Home") {
