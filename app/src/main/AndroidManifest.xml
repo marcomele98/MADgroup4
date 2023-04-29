@@ -17,7 +17,7 @@
         android:theme="@style/Theme.MADgroup4"
         tools:targetApi="31">
         <activity
-            android:name=".View.ReservationActivityCompose"
+            android:name=".view.ReservationActivityCompose"
             android:exported="true"
             android:label="@string/title_activity_reservation_compose"
             android:theme="@style/Theme.MADgroup4">
@@ -27,7 +27,7 @@
         </intent-filter>
         </activity>
         <activity
-            android:name=".View.ReservationsActivity"
+            android:name=".view.ReservationsActivity"
             android:exported="true">
             <!--
             <intent-filter>

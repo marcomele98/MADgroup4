@@ -1,4 +1,4 @@
-package it.polito.madgroup4.View.ui.theme
+package it.polito.madgroup4.view.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

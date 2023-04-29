@@ -1,4 +1,4 @@
-package it.polito.madgroup4.Model
+package it.polito.madgroup4.model
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
