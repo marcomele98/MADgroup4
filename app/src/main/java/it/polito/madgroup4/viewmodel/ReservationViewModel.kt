@@ -14,7 +14,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ReservationViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
 
-    private var _reservations = MutableLiveData<List<ReservationWithCourt>>().apply { value = emptyList() }
+    private var _reservations =
+        MutableLiveData<List<ReservationWithCourt>>().apply { value = emptyList() }
     var reservations: LiveData<List<ReservationWithCourt>> = _reservations
 
     private var _slots = MutableLiveData<List<Int>>().apply { value = emptyList() }
@@ -28,12 +29,14 @@ class ReservationViewModel @Inject constructor(private val repository: Repositor
     }
 
     fun getSlotsByCourtIdAndDate(courtId: Long, date: Date) {
-        repository.getAllSlotsByCourtIdAndDate(courtId, date).observeForever { slots->
+        repository.getAllSlotsByCourtIdAndDate(courtId, date).observeForever { slots ->
             _slots.value = slots
         }
     }
 
     fun saveReservation(reservation: Reservation) = repository.saveReservation(reservation)
+
+    fun deleteReservation(reservation: Reservation) = repository.deleteReservation(reservation)
 
     fun savePlayingCourt(playingCourt: PlayingCourt) = repository.savePlayingCourt(playingCourt)
 

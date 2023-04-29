@@ -28,13 +28,13 @@ private fun calculateTimeAsNum(time: String): Int {
     return timeArray[0].toInt() * 60 + timeArray[1].toInt()
 }
 
-
 fun calculateAvailableSlot(
     vm: ReservationViewModel,
     reservation: ReservationWithCourt
-): List<String> {
+): List<Slot> {
 
     var listOfReservation = listOf<Int>()
+    var listOfSlots = mutableListOf<Slot>()
     vm.getSlotsByCourtIdAndDate(reservation.reservation!!.courtId, reservation.reservation!!.date)
     listOfReservation = vm.slots.value!!
 
@@ -47,14 +47,12 @@ fun calculateAvailableSlot(
 
     var array = List<Int>(numSlots) { index -> index }
 
-    array = array.filter { !listOfReservation.contains(it) }
-
-    array.forEach { println(it) }
-
-    return array.map {
-        calculateStartEndTime(
+    for(i in array) {
+        listOfSlots.add(Slot(i, listOfReservation.contains(i), calculateStartEndTime(
             reservation.playingCourt!!.openingTime,
-            it
-        )
+            i
+        )))
     }
+
+    return listOfSlots
 }

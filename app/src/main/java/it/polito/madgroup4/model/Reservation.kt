@@ -27,7 +27,7 @@ data class Reservation(
     val courtId: Long,
 
     @ColumnInfo(name = "slot_number")
-    val slotNumber: Int,
+    var slotNumber: Int,
 
     val date: Date,
 )

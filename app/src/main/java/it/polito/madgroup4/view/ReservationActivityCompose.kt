@@ -36,6 +36,7 @@ class ReservationActivityCompose : ComponentActivity() {
     )
     val reservation = Reservation(1, 1, 1, formatter.parse(formatter.format(Date())))
     val reservation2 = Reservation(2, 2, 2, formatter.parse(formatter.format(Date())))
+    val reservation3 = Reservation(3, 1, 2, formatter.parse(formatter.format(Date())))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +44,7 @@ class ReservationActivityCompose : ComponentActivity() {
         vm.savePlayingCourt(playingCourt2)
         vm.saveReservation(reservation)
         vm.saveReservation(reservation2)
+        vm.saveReservation(reservation3)
         setContent {
             MADgroup4Theme {
                 // A surface container using the 'background' color from the theme

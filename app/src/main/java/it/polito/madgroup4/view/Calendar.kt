@@ -20,6 +20,7 @@ import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material3.Button
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -114,9 +115,10 @@ fun ReservationCard(
         elevation = 4.dp,
         modifier = Modifier
             .padding(8.dp)
-            .clickable { setReservation(reservation);
-
-                navController.navigate("ScreenOne") }
+            .clickable {
+                setReservation(reservation);
+                navController.navigate("ReservationDetails")
+            }
             .fillMaxWidth()
     ) {
         Row() {
@@ -167,52 +169,121 @@ fun SlotCard(slotId: Int, startTime: String) {
 
 
 @Composable
-fun ReservationDetail(reservation: ReservationWithCourt) {
+fun ReservationDetail(
+    reservation: ReservationWithCourt,
+    vm: ReservationViewModel,
+    navController: NavController
+) {
     Box(Modifier.fillMaxSize()) {
-        androidx.compose.material3.Text(
+        Text(
             reservation.playingCourt!!.name,
             modifier = Modifier.align(Alignment.Center),
             style = androidx.compose.material3.MaterialTheme.typography.headlineLarge
         )
+        Button(
+            onClick = {
+                navController.navigate("EditReservation")
+            },
+            modifier = Modifier.padding(start = 8.dp)
+        ) {
+            Text(text = "Edit")
+        }
+
+        Button(
+            onClick = {
+                vm.deleteReservation(reservation.reservation!!)
+                navController.navigate("Home")
+            },
+            modifier = Modifier.padding(100.dp)
+        ) {
+            Text(text = "Delete")
+        }
+
     }
 }
 
 
 @Composable
-fun EditReservation(reservation: ReservationWithCourt, vm: ReservationViewModel) {
+fun EditReservation(
+    reservation: ReservationWithCourt,
+    vm: ReservationViewModel,
+    navController: NavController
+) {
+
+    val (selected, setSelected) = remember {
+        mutableStateOf(reservation.reservation!!.slotNumber)
+    }
 
     val list =
         calculateAvailableSlot(vm, reservation)
 
-    LazyVerticalGrid(
-        columns = GridCells.Adaptive(128.dp),
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.TopCenter
+    ) {
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(128.dp),
 
-        // content padding
-        contentPadding = PaddingValues(
-            start = 12.dp,
-            top = 16.dp,
-            end = 12.dp,
-            bottom = 16.dp
-        ),
-        content = {
-            items(list.size) { index ->
-                Card(
-                    modifier = Modifier
-                        .padding(4.dp)
-                        .fillMaxWidth(),
-                    elevation = 8.dp,
-                ) {
-                    Text(
-                        text = list[index],
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(16.dp)
-                    )
+            // content padding
+            contentPadding = PaddingValues(
+                start = 12.dp,
+                top = 16.dp,
+                end = 12.dp,
+                bottom = 16.dp
+            ),
+            content = {
+                items(list.size) { index ->
+
+                    var color = Color.White;
+                    if (list[index].slotNumber == selected) {
+                        color = Color.Red
+                    } else if (list[index].isBooked && list[index].slotNumber != reservation.reservation!!.slotNumber) {
+                        color = Color.Gray
+                    }
+
+                    Card(
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .clickable {
+                                if (!list[index].isBooked || list[index].slotNumber == reservation.reservation!!.slotNumber) {
+                                    setSelected(list[index].slotNumber)
+                                }
+                            }
+                            .fillMaxWidth(),
+                        elevation = 8.dp,
+                        backgroundColor = color
+                    ) {
+                        Text(
+                            text = list[index].time,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
                 }
+
+
+            }
+        )
+        Row(
+            modifier = Modifier
+                .padding(16.dp)
+                .align(Alignment.BottomEnd)
+        ) {
+            Button(
+                onClick = {
+                    reservation.reservation!!.slotNumber = selected;
+                    vm.saveReservation(reservation.reservation)
+                    navController.navigate("Home")
+                },
+                modifier = Modifier.padding(start = 8.dp)
+            ) {
+                Text(text = "Save")
             }
         }
-    )
+    }
+
 }
 
 
