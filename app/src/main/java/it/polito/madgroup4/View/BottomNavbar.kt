@@ -37,7 +37,7 @@ fun Navbar() {
     }
   ) {
     Box(Modifier.padding(it)) {
-      NavHost(navController = navController, startDestination = "Profile") {
+      NavHost(navController = navController, startDestination = "Home") {
         composable("Profile") { Profile() }
         composable("Home") { Home() }
       }

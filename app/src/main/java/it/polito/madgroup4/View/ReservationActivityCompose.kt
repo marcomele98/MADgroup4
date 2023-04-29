@@ -23,7 +23,7 @@ class ReservationActivityCompose : ComponentActivity() {
           modifier = Modifier.fillMaxSize(),
           color = MaterialTheme.colorScheme.background
         ) {
-          MainScreen(this)
+          MainScreen()
         }
       }
     }
@@ -31,8 +31,8 @@ class ReservationActivityCompose : ComponentActivity() {
 }
 
 @Composable
-fun MainScreen(context: Context) {
-  Navbar() // non riesco a far apparire la navbar sotto, forse perché sono activity xml e non composable
+fun MainScreen() {
+  Navbar()
 }
 
 /*@Preview(showBackground = true)
