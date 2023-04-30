@@ -1,6 +1,10 @@
 package it.polito.madgroup4.utility
 
-import it.polito.madgroup4.model.Reservation
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
+import it.polito.madgroup4.R
+import it.polito.madgroup4.model.PlayingCourt
 import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.viewmodel.ReservationViewModel
 import java.util.Date
@@ -35,9 +39,9 @@ fun calculateAvailableSlot(
 
     var listOfReservation = listOf<Int>()
     var listOfSlots = mutableListOf<Slot>()
-/*
-    vm.getSlotsByCourtIdAndDate(reservation.reservation!!.courtId, reservation.reservation!!.date)
-*/
+    /*
+        vm.getSlotsByCourtIdAndDate(reservation.reservation!!.courtId, reservation.reservation!!.date)
+    */
     listOfReservation = vm.slots.value!!
 
     var start = calculateTimeAsNum(reservation.playingCourt!!.openingTime)
@@ -49,12 +53,30 @@ fun calculateAvailableSlot(
 
     var array = List<Int>(numSlots) { index -> index }
 
-    for(i in array) {
-        listOfSlots.add(Slot(i, listOfReservation.contains(i), calculateStartEndTime(
-            reservation.playingCourt!!.openingTime,
-            i
-        )))
+    for (i in array) {
+        listOfSlots.add(
+            Slot(
+                i, listOfReservation.contains(i), calculateStartEndTime(
+                    reservation.playingCourt!!.openingTime,
+                    i
+                )
+            )
+        )
     }
 
     return listOfSlots
 }
+
+
+@Composable
+fun ImageSelector(sport: String): Painter {
+    var image = painterResource(id = R.drawable.baseline_sports_soccer_24)
+
+    if (sport == "Tennis") {
+        image = painterResource(id = R.drawable.baseline_sports_tennis_24)
+    } else if (sport == "Football") {
+        image = painterResource(id = R.drawable.baseline_sports_soccer_24)
+    }
+    return image
+}
+

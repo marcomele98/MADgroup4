@@ -1,7 +1,9 @@
 package it.polito.madgroup4.model
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.map
 import androidx.room.*
+import java.util.*
 
 @Dao
 interface PlayingCourtDAO {

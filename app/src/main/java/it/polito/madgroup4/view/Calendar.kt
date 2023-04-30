@@ -28,7 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -36,8 +35,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import io.github.boguszpawlowski.composecalendar.SelectableCalendar
 import io.github.boguszpawlowski.composecalendar.rememberSelectableCalendarState
-import it.polito.madgroup4.R
 import it.polito.madgroup4.model.ReservationWithCourt
+import it.polito.madgroup4.utility.ImageSelector
 import it.polito.madgroup4.utility.calculateAvailableSlot
 import it.polito.madgroup4.utility.calculateStartEndTime
 import it.polito.madgroup4.viewmodel.ReservationViewModel
@@ -85,7 +84,6 @@ fun SelectableCalendarSample(
 }
 
 
-
 @Composable
 fun ReservationList(
     date: String,
@@ -104,8 +102,7 @@ fun ReservationList(
     LazyColumn(Modifier.fillMaxSize()) {
         items(reservations.value.size) { index ->
             ReservationCard(reservations.value[index], navController, setReservation)
-            Column {
-            }
+
         }
     }
 }
@@ -117,13 +114,7 @@ fun ReservationCard(
     setReservation: (ReservationWithCourt) -> Unit,
 ) {
 
-    var paint = painterResource(id = R.drawable.baseline_sports_soccer_24)
-
-    if (reservation.playingCourt?.sport == "Tennis") {
-        paint = painterResource(id = R.drawable.baseline_sports_tennis_24)
-    } else if (reservation.playingCourt?.sport == "Football") {
-        paint = painterResource(id = R.drawable.baseline_sports_soccer_24)
-    }
+    var image = ImageSelector(reservation.playingCourt!!.sport)
 
     Card(
         shape = RoundedCornerShape(16.dp),
@@ -146,8 +137,8 @@ fun ReservationCard(
                     Image(
                         modifier = Modifier
                             .size(size = 60.dp),
-                        painter = paint,
-                        contentDescription = "lucy pic",
+                        painter = image,
+                        contentDescription = "sport",
                         contentScale = ContentScale.Crop
                     )
                     Text(

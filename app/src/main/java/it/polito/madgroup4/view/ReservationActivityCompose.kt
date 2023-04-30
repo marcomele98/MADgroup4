@@ -29,6 +29,7 @@ class ReservationActivityCompose : ComponentActivity() {
 
     val playingCourt = PlayingCourt(1, "Campo 1", 10.0, "8:30", "20:30", "Tennis", "Via Filippo Turati, 7", "Torino", "TO", "3333333333", "campo1@gmail.com")
     val playingCourt2 = PlayingCourt(2, "Campo 2", 10.0, "8:30", "20:30", "Football", "Corso Francia", "Torino", "TO", "3333333334", "campo2@gmail.com")
+    val playingCourt3 = PlayingCourt(3, "Campo 3", 10.0, "8:30", "20:30", "Tennis", "Via Marconi", "Torino", "TO", "3333333335", "campo3@gmail.com")
 
 
     val formatter = SimpleDateFormat(
@@ -42,6 +43,7 @@ class ReservationActivityCompose : ComponentActivity() {
         super.onCreate(savedInstanceState)
         vm.savePlayingCourt(playingCourt)
         vm.savePlayingCourt(playingCourt2)
+        vm.savePlayingCourt(playingCourt3)
         vm.saveReservation(reservation)
         vm.saveReservation(reservation2)
         vm.saveReservation(reservation3)
@@ -65,9 +67,6 @@ fun MainScreen(vm: ReservationViewModel) {
     val (reservation, setReservation) = remember {
         mutableStateOf(ReservationWithCourt(null, null))
     }
-
-
-
     Navbar(vm, reservation, setReservation)
 }
 

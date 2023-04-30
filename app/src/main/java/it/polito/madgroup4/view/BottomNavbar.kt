@@ -21,6 +21,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import it.polito.madgroup4.R
+import it.polito.madgroup4.model.PlayingCourt
 import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.viewmodel.ReservationViewModel
 
@@ -46,10 +47,10 @@ fun Navbar(
                     Icon(Icons.Default.Home, "Home")
                 }*/
                 IconButton(
-                    onClick = { navController.navigate("Home") },
+                    onClick = { navController.navigate("Reservations") },
                     modifier = Modifier.weight(1f)
                 ) {
-                    Icon(Icons.Default.DateRange, "Home")
+                    Icon(Icons.Default.DateRange, "Reservations")
                 }
                 IconButton(
                     onClick = { navController.navigate("Profile") },
@@ -62,7 +63,7 @@ fun Navbar(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    // Aggiungi qui la logica del click sul FAB
+                    navController.navigate("CreateReservation")
                 },
                 shape = CircleShape
             ) {
@@ -73,12 +74,15 @@ fun Navbar(
         isFloatingActionButtonDocked = true
     ) {
         Box(Modifier.padding(it)) {
-            NavHost(navController = navController, startDestination = "Home") {
+            NavHost(navController = navController, startDestination = "Reservations") {
                 composable("Profile") {
                     Profile()
                 }
+                composable("CreateReservation") {
+                    CreateReservation(vm, navController)
+                }
 
-                composable("Home") {
+                composable("Reservations") {
                     SelectableCalendarSample(vm, navController, setReservationWithCourt)
                 }
 

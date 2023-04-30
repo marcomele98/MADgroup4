@@ -19,13 +19,8 @@ interface ReservationDAO {
     @Query("SELECT * FROM reservations WHERE date = :date")
     fun getAllByDate(date: Date): LiveData<List<ReservationWithCourt>>
 
-    @Transaction
-    @Query("SELECT * FROM reservations, playing_courts WHERE date = :date and sport = :sport")
-    fun getAllByDateAndSport(date: Date, sport: String): LiveData<List<ReservationWithCourt>>
-
     @Query("SELECT slot_number FROM reservations WHERE court_id = :courtId AND date = :date")
     fun getAllByCourtIdAndDate(courtId: Long, date: Date) : LiveData<List<Int>>
-
 
     @Insert(onConflict = REPLACE)
     fun save(reservation: Reservation)
