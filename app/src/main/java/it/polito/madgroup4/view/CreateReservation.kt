@@ -34,6 +34,7 @@ import androidx.navigation.NavController
 import io.github.boguszpawlowski.composecalendar.SelectableWeekCalendar
 import io.github.boguszpawlowski.composecalendar.rememberSelectableWeekCalendarState
 import it.polito.madgroup4.R
+import it.polito.madgroup4.model.CourtWithReservations
 import it.polito.madgroup4.model.PlayingCourt
 import it.polito.madgroup4.utility.ImageSelector
 import it.polito.madgroup4.viewmodel.ReservationViewModel
@@ -70,7 +71,12 @@ fun CreateReservation(vm: ReservationViewModel, navController: NavController) {
                 onSportSelected = { selectedSport = it })
         }
         SelectableWeekCalendar(calendarState = calendarState)
-        PlayingCourtList(date = date.toString(), sport = selectedSport, vm = vm, navController = navController)
+        PlayingCourtList(
+            date = date.toString(),
+            sport = selectedSport,
+            vm = vm,
+            navController = navController
+        )
     }
 }
 
@@ -147,11 +153,11 @@ fun SportSelector(sports: Array<String>, selectedSport: String, onSportSelected:
 fun PlayingCourtCard(
     date: String,
     vm: ReservationViewModel,
-    playingCourt: PlayingCourt,
+    playingCourt: CourtWithReservations,
     navController: NavController
 ) {
 
-    var image = ImageSelector(playingCourt.sport)
+    var image = ImageSelector(playingCourt.court.sport)
 
 
     Card(
@@ -180,19 +186,19 @@ fun PlayingCourtCard(
                     )
                     Column() {
                         Text(
-                            text = playingCourt.name,
+                            text = playingCourt.court.name,
                             style = MaterialTheme.typography.h6,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
                         Text(
-                            text = playingCourt.address + ", " + playingCourt.city + " (" + playingCourt.province + ")",
+                            text = playingCourt.court.address + ", " + playingCourt.court.city + " (" + playingCourt.court.province + ")",
                             style = MaterialTheme.typography.h6,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
                         Text(
-                            text = playingCourt.price.toString() + "€/h",
+                            text = playingCourt.court.price.toString() + "€/h",
                             style = MaterialTheme.typography.h6,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(bottom = 8.dp)
@@ -216,8 +222,16 @@ fun PlayingCourtList(
 
     val formatter = SimpleDateFormat("dd/MM/yyyy")
 
-    vm.getAllPlayingCourtsBySport(formatter.parse(formatter.format(java.sql.Date.valueOf(date))), sport)
+    vm.getAllPlayingCourtsBySportAndDate(
+        formatter.parse(formatter.format(java.sql.Date.valueOf(date))),
+        sport
+    )
     val playingCourts = vm.playingCourts.observeAsState(initial = emptyList())
+
+/*
+    playingCourts.value.forEach {
+        it.reservations.map { reservation -> reservation.slotNumber }
+    }*/
 
 
     LazyColumn(Modifier.fillMaxSize()) {
