@@ -35,7 +35,9 @@ fun calculateAvailableSlot(
 
     var listOfReservation = listOf<Int>()
     var listOfSlots = mutableListOf<Slot>()
+/*
     vm.getSlotsByCourtIdAndDate(reservation.reservation!!.courtId, reservation.reservation!!.date)
+*/
     listOfReservation = vm.slots.value!!
 
     var start = calculateTimeAsNum(reservation.playingCourt!!.openingTime)

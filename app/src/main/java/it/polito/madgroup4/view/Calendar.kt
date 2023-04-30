@@ -1,6 +1,8 @@
 package it.polito.madgroup4.view
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -20,6 +23,9 @@ import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.Button
+import androidx.compose.material.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -44,6 +50,8 @@ import java.sql.Date
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import it.polito.madgroup4.utility.calculateStartEndTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @Composable
 fun SelectableCalendarSample(
@@ -53,19 +61,36 @@ fun SelectableCalendarSample(
 ) {
     val calendarState = rememberSelectableCalendarState()
     Column(
-
+        Modifier.padding(horizontal = 16.dp)
     ) {
         SelectableCalendar(calendarState = calendarState)
-        Spacer(modifier = Modifier.height(16.dp))
+        val dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.getDefault())
         val date = if (calendarState.selectionState.selection.isEmpty()) {
-            LocalDate.now().toString()
+            LocalDate.now()
         } else {
-            calendarState.selectionState.selection[0].toString()
+            calendarState.selectionState.selection[0]
         }
-        ReservationList(date = date, vm = vm, navController, setReservation)
+        Row(
+            modifier = Modifier
+                .padding(vertical = 8.dp)
+                .height(48.dp)
+                .background(Color.LightGray, RoundedCornerShape(8.dp))
+                .padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = date.format(dateFormatter),
+                fontWeight = FontWeight.Bold,
+                fontSize = 24.sp,
+                modifier = Modifier.weight(1f)
+            )
+        }
+        ReservationList(date = date.toString(), vm = vm, navController, setReservation)
 
     }
 }
+
+
 
 @Composable
 fun ReservationList(
@@ -75,9 +100,7 @@ fun ReservationList(
     setReservation: (ReservationWithCourt) -> Unit
 ) {
 
-    val formatter = SimpleDateFormat(
-        "dd/MM/yyyy"
-    )
+    val formatter = SimpleDateFormat("dd/MM/yyyy")
 
     vm.getReservationsByDate(formatter.parse(formatter.format(Date.valueOf(date))))
     val reservations = vm.reservations.observeAsState(initial = emptyList())
@@ -112,7 +135,7 @@ fun ReservationCard(
         shape = RoundedCornerShape(16.dp),
         elevation = 4.dp,
         modifier = Modifier
-            .padding(8.dp)
+            .padding(vertical = 8.dp)
             .clickable {
                 setReservation(reservation);
                 navController.navigate("ReservationDetails")
@@ -172,6 +195,10 @@ fun ReservationDetail(
     vm: ReservationViewModel,
     navController: NavController
 ) {
+    vm.getSlotsByCourtIdAndDate(
+        reservation.playingCourt!!.id,
+        reservation.reservation!!.date
+    )
     Box(Modifier.fillMaxSize()) {
         Text(
             reservation.playingCourt!!.name,
@@ -231,14 +258,6 @@ fun EditReservation(
             ),
             content = {
                 items(list.size) { index ->
-
-                    var color = Color.White;
-                    if (list[index].slotNumber == selected) {
-                        color = Color.Red
-                    } else if (list[index].isBooked && list[index].slotNumber != reservation.reservation!!.slotNumber) {
-                        color = Color.Gray
-                    }
-
                     Card(
                         modifier = Modifier
                             .padding(4.dp)
@@ -249,8 +268,15 @@ fun EditReservation(
                             }
                             .fillMaxWidth(),
                         elevation = 8.dp,
-                        backgroundColor = color
-                    ) {
+                        backgroundColor = if (list[index].slotNumber == selected) {
+                            Color.Red
+                        } else if (list[index].isBooked && list[index].slotNumber != reservation.reservation!!.slotNumber) {
+                            Color.Gray
+                        } else {
+                            Color.White
+                        },
+
+                        ) {
                         Text(
                             text = list[index].time,
                             fontWeight = FontWeight.Bold,
