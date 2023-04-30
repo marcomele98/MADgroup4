@@ -13,6 +13,9 @@ class Repository @Inject constructor(
     fun getAllSlotsByCourtIdAndDate(courtId: Long, date: Date) =
         reservationDAO.getAllByCourtIdAndDate(courtId, date)
 
+    fun getAllSlotsBySportAndDate(date: Date, sport: String) =
+        reservationDAO.getAllByDateAndSport(date, sport)
+
     fun getAllReservationsByDate(date: Date) = reservationDAO.getAllByDate(date)
     fun saveReservation(reservation: Reservation) = reservationDAO.save(reservation)
     fun deleteReservation(reservation: Reservation) = reservationDAO.delete(reservation)

@@ -34,6 +34,12 @@ class ReservationViewModel @Inject constructor(private val repository: Repositor
         }
     }
 
+    fun getReservationsByDateAndSport(date: Date, sport: String) {
+        repository.getAllSlotsBySportAndDate(date, sport).observeForever { reservations ->
+            _reservations.value = reservations
+        }
+    }
+
     fun saveReservation(reservation: Reservation) = repository.saveReservation(reservation)
 
     fun deleteReservation(reservation: Reservation) = repository.deleteReservation(reservation)
