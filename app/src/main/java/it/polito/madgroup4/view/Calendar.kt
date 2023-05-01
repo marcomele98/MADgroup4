@@ -1,10 +1,8 @@
 package it.polito.madgroup4.view
 
-
-import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -18,16 +16,21 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.contentColorFor
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -45,6 +49,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import io.github.boguszpawlowski.composecalendar.SelectableCalendar
 import io.github.boguszpawlowski.composecalendar.day.DayState
+import io.github.boguszpawlowski.composecalendar.header.MonthState
 import io.github.boguszpawlowski.composecalendar.rememberSelectableCalendarState
 import io.github.boguszpawlowski.composecalendar.selection.DynamicSelectionState
 import it.polito.madgroup4.model.Reservation
@@ -55,9 +60,10 @@ import it.polito.madgroup4.utility.imageSelector
 import it.polito.madgroup4.viewmodel.ReservationViewModel
 import java.sql.Date
 import java.text.SimpleDateFormat
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
+import java.time.format.TextStyle
 import java.util.Locale
 
 @Composable
@@ -71,9 +77,15 @@ fun Calendar(
     val allReservations = vm.allRes.observeAsState().value
 
     Column(
-        Modifier.padding(horizontal = 16.dp)
+        Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)
     ) {
         SelectableCalendar(
+            daysOfWeekHeader = {
+                DaysOfWeekHeader(daysOfWeek = it)
+            },
+            monthHeader = {
+                MonthHeader(monthState = it)
+            },
             dayContent = { dayState ->
                 MyDay(
                     state = dayState,
@@ -84,35 +96,74 @@ fun Calendar(
                     },
                 )
             },
-            monthContainer = { MonthContainer(it) },
             calendarState = calendarState,
             showAdjacentMonths = false
         )
-        val dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.getDefault())
         val date = if (calendarState.selectionState.selection.isEmpty()) {
             LocalDate.now()
         } else {
             calendarState.selectionState.selection[0]
         }
-        //TODO: la data la mettiamo o no? ispirandomi alla chermata di google calendar, non la metterei
-        /*Row(
-            modifier = Modifier
-                .padding(vertical = 8.dp)
-                .height(48.dp)
-                .padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = date.format(dateFormatter),
-                fontWeight = FontWeight.Bold,
-                fontSize = 24.sp,
-                modifier = Modifier.weight(1f)
-            )
-        }*/
+        Spacer(modifier = Modifier.size(10.dp))
         ReservationList(date = date.toString(), vm = vm, navController, setReservation)
     }
 }
 
+@Composable
+fun MonthHeader(
+    monthState: MonthState,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        IconButton(
+            modifier = Modifier.testTag("Decrement"),
+            onClick = { monthState.currentMonth = monthState.currentMonth.minusMonths(1) }
+        ) {
+            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "back")
+        }
+        Spacer(modifier = Modifier.weight(1f))
+        Text(
+            modifier = Modifier.testTag("MonthLabel"),
+            text = monthState.currentMonth.month
+                .getDisplayName(TextStyle.FULL, Locale.getDefault())
+                .lowercase()
+                .replaceFirstChar { it.titlecase() }
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            text = monthState.currentMonth.year.toString()
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        IconButton(
+            modifier = Modifier.testTag("Increment"),
+            onClick = { monthState.currentMonth = monthState.currentMonth.plusMonths(1) }
+        ) {
+            Icon(imageVector = Icons.Default.ArrowForward, contentDescription = "forward")
+        }
+    }
+}
+
+@Composable
+fun DaysOfWeekHeader(
+    daysOfWeek: List<DayOfWeek>,
+    modifier: Modifier = Modifier,
+) {
+    Row(modifier = modifier) {
+        daysOfWeek.forEach { dayOfWeek ->
+            androidx.compose.material.Text(
+                textAlign = TextAlign.Center,
+                text = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
+                modifier = modifier
+                    .weight(1f)
+                    .wrapContentHeight()
+            )
+        }
+    }
+}
 
 @Composable
 fun MyDay(
@@ -122,51 +173,68 @@ fun MyDay(
 ) {
     val date = state.date
     val selectionState = state.selectionState
+    val isSelected =
+        if(selectionState.selection.isEmpty() && date == LocalDate.now()){
+            true
+        }else{
+            selectionState.isDateSelected(date)
+        }
 
-    val isSelected = selectionState.isDateSelected(date)
-
-    androidx.compose.material.Card(
+    Box(
         modifier = modifier
             .aspectRatio(1f)
-            .padding(2.dp),
-        elevation = if (state.isFromCurrentMonth) 4.dp else 0.dp,
-        border = if (state.isCurrentDay) BorderStroke(
-            1.dp,
-            androidx.compose.material.MaterialTheme.colors.primary
-        ) else null,
-        contentColor = if (isSelected) androidx.compose.material.MaterialTheme.colors.secondary else contentColorFor(
-            backgroundColor = androidx.compose.material.MaterialTheme.colors.surface
-        )
+            .padding(2.dp)
     ) {
         Column(
-            modifier = Modifier.clickable {
-                selectionState.onDateSelected(date)
-            },
+            modifier = Modifier
+                .align(Alignment.Center)
+                .clickable {
+                    selectionState.onDateSelected(date)
+                },
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            androidx.compose.material.Text(text = date.dayOfMonth.toString())
-            if (reservations != null) {
                 Box(
                     modifier = Modifier
-                        .padding(5.dp)
-                        .size(10.dp)
+                        .padding(2.dp)
+                        .size(30.dp)
                         .clip(CircleShape)
-                        .background(androidx.compose.material.MaterialTheme.colors.primary)
-                )
-            }
+                        .background(
+                            if (isSelected)
+                                MaterialTheme.colorScheme.surfaceVariant
+                            else
+                                Color.Transparent
+                        )
+                ){
+                    Text(
+                        text = date.dayOfMonth.toString(),
+                        modifier = Modifier.align(Alignment.Center),
+                        color =
+                        if(!state.isCurrentDay)
+                            contentColorFor(
+                                backgroundColor = if (isSelected)
+                                    MaterialTheme.colorScheme.surfaceVariant
+                                else
+                                    MaterialTheme.colorScheme.surface
+                            )
+                        else
+                            MaterialTheme.colorScheme.primary,
+                    )
+                }
+
+
+            Box(
+                modifier = Modifier
+                    .size(5.dp)
+                    .clip(CircleShape)
+                    .background(
+                        if (reservations != null)
+                            MaterialTheme.colorScheme.primary
+                        else
+                            Color.Transparent
+                    )
+            )
         }
     }
-}
-
-
-@Composable
-private fun MonthContainer(content: @Composable (PaddingValues) -> Unit) {
-    androidx.compose.material.Card(
-        elevation = 0.dp,
-        shape = RoundedCornerShape(10.dp),
-        border = BorderStroke(1.dp, Color.LightGray),
-        content = { content(PaddingValues(4.dp)) },
-    )
 }
 
 
@@ -192,17 +260,22 @@ fun ReservationList(
         }
     }*/
 
-    LazyColumn(
-        //columns = GridCells.Fixed(2),
+    Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp)
+            .fillMaxSize()
+            .clip(RoundedCornerShape(12.dp))
     ) {
-        items(reservations.value.size) { index ->
-            //ReservationCard(reservations.value[index], navController, setReservation)
-            ReservationCard(reservations.value[index], navController, setReservation)
-            if (index == reservations.value.size - 1) {
-                Spacer(modifier = Modifier.height(70.dp))
+        LazyColumn(
+            //columns = GridCells.Fixed(2),
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            items(reservations.value.size) { index ->
+                //ReservationCard(reservations.value[index], navController, setReservation)
+                ReservationCard(reservations.value[index], navController, setReservation)
+                if (index == reservations.value.size - 1) {
+                    Spacer(modifier = Modifier.height(70.dp))
+                }
             }
         }
     }
@@ -409,7 +482,7 @@ fun ReservationCard(
     )
     Card(
         modifier = Modifier
-            .padding(4.dp)
+            .padding(bottom = 4.dp)
             .fillMaxWidth()
             .clickable {
                 setReservation(reservation);
