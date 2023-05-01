@@ -35,14 +35,12 @@ import androidx.navigation.NavController
 import io.github.boguszpawlowski.composecalendar.SelectableWeekCalendar
 import io.github.boguszpawlowski.composecalendar.rememberSelectableWeekCalendarState
 import it.polito.madgroup4.R
-import it.polito.madgroup4.model.CourtWithReservations
-import it.polito.madgroup4.model.PlayingCourt
+import it.polito.madgroup4.utility.CourtWithSlots
 import it.polito.madgroup4.utility.imageSelector
 import it.polito.madgroup4.viewmodel.ReservationViewModel
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.Date
 import java.util.Locale
 
 @Composable
@@ -148,7 +146,7 @@ fun SportSelector(sports: Array<String>, selectedSport: String, onSportSelected:
 fun PlayingCourtCard(
     date: String,
     vm: ReservationViewModel,
-    playingCourt: CourtWithReservations,
+    courtWithSlots: CourtWithSlots,
     navController: NavController
 ) {
 
@@ -169,22 +167,22 @@ fun PlayingCourtCard(
             ) {
 
                 Row() {
-                    Icon(imageVector = imageSelector(playingCourt.court.sport), contentDescription = playingCourt.court.sport)
+                    Icon(imageVector = imageSelector(courtWithSlots.playingCourt.sport), contentDescription = courtWithSlots.playingCourt.sport)
                     Column() {
                         Text(
-                            text = playingCourt.court.name,
+                            text = courtWithSlots.playingCourt.name,
                             style = MaterialTheme.typography.h6,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
                         Text(
-                            text = playingCourt.court.address + ", " + playingCourt.court.city + " (" + playingCourt.court.province + ")",
+                            text = courtWithSlots.playingCourt.address + ", " + courtWithSlots.playingCourt.city + " (" + courtWithSlots.playingCourt.province + ")",
                             style = MaterialTheme.typography.h6,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
                         Text(
-                            text = playingCourt.court.price.toString() + "€/h",
+                            text = courtWithSlots.playingCourt.price.toString() + "€/h",
                             style = MaterialTheme.typography.h6,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(bottom = 8.dp)

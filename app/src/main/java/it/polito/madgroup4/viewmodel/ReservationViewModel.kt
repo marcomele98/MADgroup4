@@ -4,11 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import it.polito.madgroup4.model.CourtWithReservations
 import it.polito.madgroup4.model.PlayingCourt
 import it.polito.madgroup4.model.Repository
 import it.polito.madgroup4.model.Reservation
 import it.polito.madgroup4.model.ReservationWithCourt
+import it.polito.madgroup4.utility.CourtWithSlots
 import java.util.Date
 import javax.inject.Inject
 
@@ -22,8 +22,8 @@ class ReservationViewModel @Inject constructor(private val repository: Repositor
     private var _slots = MutableLiveData<List<Int>>().apply { value = emptyList() }
     var slots: LiveData<List<Int>> = _slots
 
-    private var _playingCourts = MutableLiveData<List<CourtWithReservations>>().apply { value = emptyList() }
-    var playingCourts: LiveData<List<CourtWithReservations>> = _playingCourts
+    private var _playingCourts = MutableLiveData<List<CourtWithSlots>>().apply { value = emptyList() }
+    var playingCourts: LiveData<List<CourtWithSlots>> = _playingCourts
 
 
     fun getReservationsByDate(date: Date) {

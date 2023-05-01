@@ -42,19 +42,26 @@ fun calculateAvailableSlot(
     reservation: ReservationWithCourt
 ): List<Slot> {
 
-    var listOfReservation = listOf<Int>()
-    var listOfSlots = mutableListOf<Slot>()
     /*
         vm.getSlotsByCourtIdAndDate(reservation.reservation!!.courtId, reservation.reservation!!.date)
     */
-    listOfReservation = vm.slots.value!!
 
-    var start = calculateTimeAsNum(reservation.playingCourt!!.openingTime)
-    var end = calculateTimeAsNum(reservation.playingCourt!!.closingTime)
+    var listOfReservation = vm.slots.value!!
+
+    return getAllSlots(listOfReservation, reservation.playingCourt!!.openingTime, reservation.playingCourt!!.closingTime)
+}
+
+fun getAllSlots(
+    listOfReservation: List<Int>,
+    openingTime : String,
+    closingTime : String
+): MutableList<Slot> {
+    var listOfSlots = mutableListOf<Slot>()
+
+    var start = calculateTimeAsNum(openingTime)
+    var end = calculateTimeAsNum(closingTime)
 
     var numSlots = (end - start) / 60
-
-    println(numSlots)
 
     var array = List<Int>(numSlots) { index -> index }
 
@@ -62,7 +69,7 @@ fun calculateAvailableSlot(
         listOfSlots.add(
             Slot(
                 i, listOfReservation.contains(i), calculateStartEndTime(
-                    reservation.playingCourt!!.openingTime,
+                    openingTime,
                     i
                 )
             )
@@ -71,7 +78,6 @@ fun calculateAvailableSlot(
 
     return listOfSlots
 }
-
 
 fun imageSelector(sport: String): ImageVector {
     return when (sport) {
