@@ -1,7 +1,12 @@
 package it.polito.madgroup4.utility
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.SportsFootball
+import androidx.compose.material.icons.filled.SportsSoccer
+import androidx.compose.material.icons.filled.SportsTennis
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import it.polito.madgroup4.R
 import it.polito.madgroup4.model.PlayingCourt
@@ -68,15 +73,11 @@ fun calculateAvailableSlot(
 }
 
 
-@Composable
-fun ImageSelector(sport: String): Painter {
-    var image = painterResource(id = R.drawable.baseline_sports_soccer_24)
-
-    if (sport == "Tennis") {
-        image = painterResource(id = R.drawable.baseline_sports_tennis_24)
-    } else if (sport == "Football") {
-        image = painterResource(id = R.drawable.baseline_sports_soccer_24)
+fun imageSelector(sport: String): ImageVector {
+    return when (sport) {
+        "Tennis" -> Icons.Default.SportsTennis
+        "Football" -> Icons.Default.SportsSoccer
+        else -> Icons.Default.SportsTennis
     }
-    return image
 }
 

@@ -18,6 +18,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,7 +37,7 @@ import io.github.boguszpawlowski.composecalendar.rememberSelectableWeekCalendarS
 import it.polito.madgroup4.R
 import it.polito.madgroup4.model.CourtWithReservations
 import it.polito.madgroup4.model.PlayingCourt
-import it.polito.madgroup4.utility.ImageSelector
+import it.polito.madgroup4.utility.imageSelector
 import it.polito.madgroup4.viewmodel.ReservationViewModel
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -101,13 +102,7 @@ fun SportSelector(sports: Array<String>, selectedSport: String, onSportSelected:
             TextField(
                 value = selectedSport,
                 leadingIcon = {
-                    Image(
-                        modifier = Modifier
-                            .size(size = 20.dp),
-                        painter = ImageSelector(sport = selectedSport),
-                        contentDescription = "sport",
-                        contentScale = ContentScale.Crop
-                    )
+                    Icon(imageVector = imageSelector(selectedSport), contentDescription = selectedSport)
                 },
                 onValueChange = {},
                 readOnly = true,
@@ -157,9 +152,6 @@ fun PlayingCourtCard(
     navController: NavController
 ) {
 
-    var image = ImageSelector(playingCourt.court.sport)
-
-
     Card(
         shape = RoundedCornerShape(16.dp),
         elevation = 4.dp,
@@ -177,13 +169,7 @@ fun PlayingCourtCard(
             ) {
 
                 Row() {
-                    Image(
-                        modifier = Modifier
-                            .size(size = 60.dp),
-                        painter = image,
-                        contentDescription = "sport",
-                        contentScale = ContentScale.Crop
-                    )
+                    Icon(imageVector = imageSelector(playingCourt.court.sport), contentDescription = playingCourt.court.sport)
                     Column() {
                         Text(
                             text = playingCourt.court.name,
