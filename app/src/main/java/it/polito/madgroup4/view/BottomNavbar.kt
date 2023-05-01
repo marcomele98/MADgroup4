@@ -95,7 +95,7 @@ fun Navbar(
                 }
 
                 composable("Reservations") {
-                    SelectableCalendarSample(vm, navController, setReservationWithCourt)
+                    Calendar(vm, navController, setReservationWithCourt)
                 }
 
                 composable("EditReservation") {
