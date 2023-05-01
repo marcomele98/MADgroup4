@@ -91,7 +91,7 @@ class ReservationActivityCompose : ComponentActivity() {
             MADgroup4Theme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    color = MaterialTheme.colorScheme.surface
                 ) {
                     MainScreen(vm)
                 }
