@@ -5,7 +5,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -34,7 +36,16 @@ fun TopBar(title: String, navController: NavController) {
                     )
                 }
             }
-
-        }
+        },
+        actions = {
+            if (title == "ReservationDetails") {
+                IconButton(onClick = { navController.navigate("EditReservation") }) {
+                    Icon(
+                        Icons.Outlined.Edit,
+                        contentDescription = "Edit"
+                    )
+                }
+            }
+        },
     )
 }

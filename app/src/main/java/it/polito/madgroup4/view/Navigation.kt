@@ -23,6 +23,8 @@ import it.polito.madgroup4.view.screens.ShowReservation
 import it.polito.madgroup4.view.screens.SportSelector
 import it.polito.madgroup4.viewmodel.ReservationViewModel
 import java.time.LocalDate
+import java.time.ZoneId
+import java.util.Date
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -86,7 +88,11 @@ fun Navigation(
                     EditReservation(reservation, vm, navController)
                 }
                 composable("ReservationDetails") {
-                    ShowReservation(reservation, vm, navController)
+                    ShowReservation(
+                        reservation,
+                        vm,
+                        navController
+                    )
                 }
                 composable("Select Sport") {
                     SportSelector(
@@ -107,7 +113,7 @@ fun Navigation(
 
                 composable("Confirm Your Reservation") {
                     ReservationConfirmation(
-                        playingCourt =  selectedCourt,
+                        playingCourt = selectedCourt,
                         reservationDate = creationDate,
                         reservationTimeSlot = selectedSlot,
                         vm = vm,

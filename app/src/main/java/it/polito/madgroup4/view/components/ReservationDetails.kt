@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import it.polito.madgroup4.model.PlayingCourt
 import it.polito.madgroup4.utility.CourtWithSlots
 import it.polito.madgroup4.utility.calculateStartEndTime
 import it.polito.madgroup4.utility.imageSelector
@@ -28,13 +29,15 @@ import java.util.Date
 
 @Composable
 fun ReservationDetails(
-    playingCourt: CourtWithSlots,
+    playingCourt: PlayingCourt,
     reservationDate: Date,
     reservationTimeSlot: Int,
 ) {
 
+    println("aaa" + playingCourt)
+
     val startEndTime = calculateStartEndTime(
-        playingCourt.playingCourt!!.openingTime,
+        playingCourt.openingTime,
         reservationTimeSlot
     )
 
@@ -46,13 +49,13 @@ fun ReservationDetails(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = playingCourt.playingCourt!!.name,
+                text = playingCourt!!.name,
                 fontWeight = FontWeight.Bold,
                 fontSize = 30.sp
             )
             Spacer(modifier = Modifier.weight(1f))
             Icon(
-                imageSelector(playingCourt.playingCourt!!.sport),
+                imageSelector(playingCourt!!.sport),
                 contentDescription = "Reservations",
                 modifier = Modifier
                     .size(35.dp)
@@ -64,7 +67,7 @@ fun ReservationDetails(
             Icon(Icons.Default.LocationOn, contentDescription = "Location")
             Spacer(modifier = Modifier.width(10.dp))
             Text(
-                text = playingCourt.playingCourt!!.address + ", " + playingCourt.playingCourt!!.city + " (" + playingCourt.playingCourt!!.province + ")",
+                text = playingCourt.address + ", " + playingCourt.city + " (" + playingCourt.province + ")",
                 fontSize = 22.sp
             )
         }
@@ -75,7 +78,7 @@ fun ReservationDetails(
             Icon(Icons.Default.Euro, contentDescription = "Location")
             Spacer(modifier = Modifier.width(10.dp))
             Text(
-                text = playingCourt.playingCourt!!.price.toString(),
+                text = playingCourt.price.toString(),
                 fontSize = 22.sp
             )
         }

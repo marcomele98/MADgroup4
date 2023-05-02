@@ -39,7 +39,7 @@ fun ReservationConfirmation(
         modifier = Modifier.padding(16.dp)
     ) {
         ReservationDetails(
-            playingCourt = playingCourt,
+            playingCourt = playingCourt.playingCourt!!,
             reservationDate = reservation.date!!,
             reservationTimeSlot = reservationTimeSlot
         )
