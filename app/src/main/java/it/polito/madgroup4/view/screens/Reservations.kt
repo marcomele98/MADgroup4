@@ -26,7 +26,7 @@ public fun Reservations(
     val allReservations = vm.allRes.observeAsState().value
 
     Column(
-        Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)
+        Modifier.padding(start = 16.dp, end = 16.dp)
     ) {
         val date = if (calendarState.selectionState.selection.isEmpty()) {
             LocalDate.now()

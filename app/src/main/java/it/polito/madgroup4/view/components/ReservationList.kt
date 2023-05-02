@@ -18,7 +18,7 @@ import java.sql.Date
 import java.text.SimpleDateFormat
 
 @Composable
-public fun ReservationList(
+fun ReservationList(
     date: String,
     vm: ReservationViewModel,
     navController: NavController,

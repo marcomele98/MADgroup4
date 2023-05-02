@@ -11,7 +11,7 @@ import androidx.navigation.NavHostController
 fun FloatingFab(navController: NavHostController) {
     FloatingActionButton(
         onClick = {
-            navController.navigate("CreateReservation")
+            navController.navigate("Create Reservation")
         }
     ) {
         Icon(Icons.Filled.Add, contentDescription = "Aggiungi")

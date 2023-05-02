@@ -1,4 +1,4 @@
-package it.polito.madgroup4.view.screens
+package it.polito.madgroup4.view.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -10,36 +10,27 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import it.polito.madgroup4.model.ReservationWithCourt
-import it.polito.madgroup4.utility.calculateAvailableSlot
-import it.polito.madgroup4.viewmodel.ReservationViewModel
-
+import it.polito.madgroup4.model.Reservation
+import it.polito.madgroup4.utility.Slot
 
 @Composable
-public fun EditReservation(
-    reservation: ReservationWithCourt,
-    vm: ReservationViewModel,
+fun SlotSelector(
+    slots: List<Slot>,
+    setSelectedSlot: (Int) -> Unit,
+    selectedSlot: Int,
     navController: NavController
 ) {
-
-    val (selected, setSelected) = remember {
-        mutableStateOf(reservation.reservation!!.slotNumber)
-    }
-
-    val list =
-        calculateAvailableSlot(vm, reservation)
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -56,28 +47,25 @@ public fun EditReservation(
                 bottom = 16.dp
             ),
             content = {
-                items(list.size) { index ->
-                    Card(
+                items(slots.size) { index ->
+                    ElevatedCard(
                         modifier = Modifier
                             .padding(4.dp)
-                            .clickable {
-                                if (!list[index].isBooked || list[index].slotNumber == reservation.reservation!!.slotNumber) {
-                                    setSelected(list[index].slotNumber)
+                            .clickable(
+                                enabled = !slots[index].isBooked
+                            ) {
+                                if (!slots[index].isBooked) {
+                                    setSelectedSlot(slots[index].slotNumber)
+                                    navController.navigate("Confirm Your Reservation")
                                 }
                             }
-                            .fillMaxWidth(),
-                        //elevation = 8.dp,
-                        /*backgroundColor = if (list[index].slotNumber == selected) {
-                            Color.Red
-                        } else if (list[index].isBooked && list[index].slotNumber != reservation.reservation!!.slotNumber) {
-                            Color.Gray
-                        } else {
-                            Color.White
-                        },*/
+                            .fillMaxWidth()
+                            .alpha(if (slots[index].isBooked) 0.5f else 1f),
 
-                    ) {
+
+                        ) {
                         Text(
-                            text = list[index].time,
+                            text = slots[index].time,
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp,
                             textAlign = TextAlign.Center,
@@ -89,25 +77,20 @@ public fun EditReservation(
 
             }
         )
-        Row(
+        /*Row(
             modifier = Modifier
                 .padding(16.dp)
                 .align(Alignment.BottomEnd)
         ) {
             Button(
                 onClick = {
-                    reservation.reservation!!.slotNumber = selected;
-                    vm.saveReservation(reservation.reservation)
-                    navController.navigate("Reservations")
+
                 },
                 modifier = Modifier.padding(start = 8.dp)
             ) {
                 Text(text = "Save")
             }
-        }
+        }*/
     }
+
 }
-
-
-
-

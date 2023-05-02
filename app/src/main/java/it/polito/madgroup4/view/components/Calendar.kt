@@ -5,63 +5,39 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material3.contentColorFor
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import io.github.boguszpawlowski.composecalendar.CalendarState
 import io.github.boguszpawlowski.composecalendar.SelectableCalendar
 import io.github.boguszpawlowski.composecalendar.day.DayState
 import io.github.boguszpawlowski.composecalendar.header.MonthState
-import io.github.boguszpawlowski.composecalendar.rememberSelectableCalendarState
+import io.github.boguszpawlowski.composecalendar.header.WeekState
 import io.github.boguszpawlowski.composecalendar.selection.DynamicSelectionState
 import it.polito.madgroup4.model.Reservation
-import it.polito.madgroup4.model.ReservationWithCourt
-import it.polito.madgroup4.utility.calculateAvailableSlot
-import it.polito.madgroup4.utility.calculateStartEndTime
-import it.polito.madgroup4.utility.imageSelector
-import it.polito.madgroup4.view.components.ReservationList
 import it.polito.madgroup4.viewmodel.ReservationViewModel
-import java.sql.Date
-import java.text.SimpleDateFormat
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.ZoneId
@@ -224,6 +200,46 @@ fun MyDay(
                             Color.Transparent
                     )
             )
+        }
+    }
+}
+
+
+
+@Composable
+fun WeekHeader(
+    weekState: WeekState,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        IconButton(
+            modifier = Modifier.testTag("Decrement"),
+            onClick = { weekState.currentWeek = weekState.currentWeek.plusWeeks(-1) }
+        ) {
+            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "back")
+        }
+        Spacer(modifier = Modifier.weight(1f))
+        Text(
+            modifier = Modifier.testTag("MonthLabel"),
+            text = weekState.currentWeek.yearMonth.month
+                .getDisplayName(TextStyle.FULL, Locale.getDefault())
+                .lowercase()
+                .replaceFirstChar { it.titlecase() }
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            text = weekState.currentWeek.yearMonth.year.toString()
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        IconButton(
+            modifier = Modifier.testTag("Increment"),
+            onClick = { weekState.currentWeek = weekState.currentWeek.plusWeeks(1) }
+        ) {
+            Icon(imageVector = Icons.Default.ArrowForward, contentDescription = "forward")
         }
     }
 }

@@ -16,8 +16,10 @@ import it.polito.madgroup4.view.ui.theme.MADgroup4Theme
 import it.polito.madgroup4.model.PlayingCourt
 import it.polito.madgroup4.model.Reservation
 import it.polito.madgroup4.model.ReservationWithCourt
+import it.polito.madgroup4.utility.CourtWithSlots
 import it.polito.madgroup4.viewmodel.ReservationViewModel
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.util.Date
 
 
@@ -107,9 +109,30 @@ fun MainScreen(vm: ReservationViewModel) {
         mutableStateOf(ReservationWithCourt(null, null))
     }
 
+    val sports = listOf<String>("Tennis", "Football")
+    val (selectedSport, setSelectedSport) = remember { mutableStateOf(sports[0]) }
+    val (creationDate, setCreationDate) = remember { mutableStateOf(LocalDate.now()) }
+    val (selectedCourt, setSelectedCourt) = remember { mutableStateOf(CourtWithSlots(null, null)) }
+    val (selectedSlot, setSelectedSlot) = remember {
+        mutableStateOf(-1)
+    }
+
     vm.getAllReservations()
 
-    Navbar(vm, reservation, setReservation)
+    Navigation(
+        vm,
+        reservation,
+        setReservation,
+        sports,
+        selectedSport,
+        setSelectedSport,
+        creationDate,
+        setCreationDate,
+        selectedCourt,
+        setSelectedCourt,
+        selectedSlot,
+        setSelectedSlot
+    )
 
 }
 

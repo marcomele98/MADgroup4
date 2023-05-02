@@ -42,7 +42,7 @@ public fun ReservationDetail(
         Button(
             onClick = {
                 vm.deleteReservation(reservation.reservation!!)
-                navController.navigate("Home")
+                navController.navigate("Reservations")
             },
             modifier = Modifier.padding(100.dp)
         ) {

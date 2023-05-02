@@ -43,7 +43,7 @@ interface PlayingCourtDAO {
         for (courtWithReservations in courtsWithReservations) {
             val court = courtWithReservations.court
             val reservations = courtWithReservations.reservations
-            var slotsNotAvailable: List<Int> = reservations.map { it.slotNumber }
+            var slotsNotAvailable: List<Int> = reservations.filter { it.date == date }.map { it.slotNumber }
             val totSlot : List<Slot> = getAllSlots(slotsNotAvailable, court.openingTime, court.closingTime);
             courtWithSlots.add(CourtWithSlots(court, totSlot))
         }
