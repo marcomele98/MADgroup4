@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.utility.calculateAvailableSlot
+import it.polito.madgroup4.view.components.SlotSelector
 import it.polito.madgroup4.viewmodel.ReservationViewModel
 
 
@@ -33,79 +34,17 @@ public fun EditReservation(
     vm: ReservationViewModel,
     navController: NavController
 ) {
-
-    val (selected, setSelected) = remember {
-        mutableStateOf(reservation.reservation!!.slotNumber)
-    }
-
     val list =
         calculateAvailableSlot(vm, reservation)
+    val initialSlot = reservation.reservation!!.slotNumber
 
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.TopCenter
-    ) {
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(128.dp),
+    SlotSelector(slots = list, onClick = {
+        reservation.reservation!!.slotNumber = it
+        if(reservation.reservation.slotNumber != initialSlot)
+            reservation.reservation.particularRequests = ""
+        navController.navigate("Confirm Changes")
+    })
 
-            // content padding
-            contentPadding = PaddingValues(
-                start = 12.dp,
-                top = 16.dp,
-                end = 12.dp,
-                bottom = 16.dp
-            ),
-            content = {
-                items(list.size) { index ->
-                    Card(
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .clickable {
-                                if (!list[index].isBooked || list[index].slotNumber == reservation.reservation!!.slotNumber) {
-                                    setSelected(list[index].slotNumber)
-                                }
-                            }
-                            .fillMaxWidth(),
-                        //elevation = 8.dp,
-                        /*backgroundColor = if (list[index].slotNumber == selected) {
-                            Color.Red
-                        } else if (list[index].isBooked && list[index].slotNumber != reservation.reservation!!.slotNumber) {
-                            Color.Gray
-                        } else {
-                            Color.White
-                        },*/
-
-                    ) {
-                        Text(
-                            text = list[index].time,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(16.dp)
-                        )
-                    }
-                }
-
-
-            }
-        )
-        Row(
-            modifier = Modifier
-                .padding(16.dp)
-                .align(Alignment.BottomEnd)
-        ) {
-            Button(
-                onClick = {
-                    reservation.reservation!!.slotNumber = selected;
-                    vm.saveReservation(reservation.reservation)
-                    navController.navigate("Reservations")
-                },
-                modifier = Modifier.padding(start = 8.dp)
-            ) {
-                Text(text = "Save")
-            }
-        }
-    }
 }
 
 

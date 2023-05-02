@@ -103,7 +103,6 @@ fun Navigation(
                 }
                 composable("Select A Time Slot") {
                     SlotSelectionReservation(
-                        vm = vm,
                         navController = navController,
                         selectedCourt = selectedCourt,
                         setSelectedSlot = setSelectedSlot,
@@ -118,6 +117,17 @@ fun Navigation(
                         reservationTimeSlot = selectedSlot,
                         vm = vm,
                         navController = navController
+                    )
+                }
+
+                composable("Confirm Changes"){
+                    ReservationConfirmation(
+                        playingCourt = selectedCourt,
+                        reservationDate = creationDate,
+                        reservationTimeSlot = selectedSlot,
+                        vm = vm,
+                        navController = navController,
+                        reservation = reservation.reservation!!
                     )
                 }
             }

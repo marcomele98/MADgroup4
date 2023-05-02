@@ -30,4 +30,6 @@ data class Reservation(
     var slotNumber: Int,
 
     val date: Date,
+
+    var particularRequests: String? = null,
 )

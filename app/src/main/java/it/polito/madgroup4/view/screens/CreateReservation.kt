@@ -122,7 +122,6 @@ fun PlayingCourtList(
 
 @Composable
 fun SlotSelectionReservation(
-    vm: ReservationViewModel,
     navController: NavController,
     selectedCourt: CourtWithSlots,
     selectedSlot: Int,
@@ -132,9 +131,12 @@ fun SlotSelectionReservation(
     println(selectedCourt)
     SlotSelector(
         slots = selectedCourt.slots!!,
-        setSelectedSlot = setSelectedSlot,
-        selectedSlot = selectedSlot,
-        navController = navController
+        onClick = {
+            if (!selectedCourt.slots!![it].isBooked) {
+                setSelectedSlot(selectedCourt.slots!![it].slotNumber)
+                navController.navigate("Confirm Your Reservation")
+            }
+        }
     )
 
 }

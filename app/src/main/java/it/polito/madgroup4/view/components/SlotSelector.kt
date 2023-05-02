@@ -27,9 +27,7 @@ import it.polito.madgroup4.utility.Slot
 @Composable
 fun SlotSelector(
     slots: List<Slot>,
-    setSelectedSlot: (Int) -> Unit,
-    selectedSlot: Int,
-    navController: NavController
+    onClick: (Int) -> Unit
 ) {
 
     Box(
@@ -54,14 +52,15 @@ fun SlotSelector(
                             .clickable(
                                 enabled = !slots[index].isBooked
                             ) {
-                                if (!slots[index].isBooked) {
+                                onClick(index)
+                                /*if (!slots[index].isBooked) {
                                     setSelectedSlot(slots[index].slotNumber)
                                     navController.navigate("Confirm Your Reservation")
-                                }
+                                }*/
                             }
                             .fillMaxWidth()
                             .alpha(if (slots[index].isBooked) 0.5f else 1f),
-
+                            //TODO: se sono nell'edit faccio vedere lo slot prenotato di colore surfaceVariant
 
                         ) {
                         Text(
@@ -77,20 +76,6 @@ fun SlotSelector(
 
             }
         )
-        /*Row(
-            modifier = Modifier
-                .padding(16.dp)
-                .align(Alignment.BottomEnd)
-        ) {
-            Button(
-                onClick = {
-
-                },
-                modifier = Modifier.padding(start = 8.dp)
-            ) {
-                Text(text = "Save")
-            }
-        }*/
     }
 
 }
