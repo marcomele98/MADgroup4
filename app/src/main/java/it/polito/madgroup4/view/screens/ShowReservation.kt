@@ -15,7 +15,7 @@ import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.viewmodel.ReservationViewModel
 
 @Composable
-public fun ReservationDetail(
+fun ShowReservation(
     reservation: ReservationWithCourt,
     vm: ReservationViewModel,
     navController: NavController

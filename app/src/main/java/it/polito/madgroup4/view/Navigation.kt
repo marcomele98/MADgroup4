@@ -19,7 +19,7 @@ import it.polito.madgroup4.view.components.FloatingFab
 import it.polito.madgroup4.view.components.TopBar
 import it.polito.madgroup4.view.screens.EditReservation
 import it.polito.madgroup4.view.screens.ReservationConfirmation
-import it.polito.madgroup4.view.screens.ReservationDetail
+import it.polito.madgroup4.view.screens.ShowReservation
 import it.polito.madgroup4.view.screens.SportSelector
 import it.polito.madgroup4.viewmodel.ReservationViewModel
 import java.time.LocalDate
@@ -86,7 +86,7 @@ fun Navigation(
                     EditReservation(reservation, vm, navController)
                 }
                 composable("ReservationDetails") {
-                    ReservationDetail(reservation, vm, navController)
+                    ShowReservation(reservation, vm, navController)
                 }
                 composable("Select Sport") {
                     SportSelector(
