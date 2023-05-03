@@ -27,14 +27,11 @@ import it.polito.madgroup4.viewmodel.ReservationViewModel
 @ExperimentalMaterial3Api
 @Composable
 fun ShowReservation(
-    reservation: ReservationWithCourt,
-    vm: ReservationViewModel,
-    navController: NavController
+    reservation: ReservationWithCourt, vm: ReservationViewModel, navController: NavController
 ) {
     val openDialog = remember { mutableStateOf(false) }
     vm.getSlotsByCourtIdAndDate(
-        reservation.playingCourt!!.id,
-        reservation.reservation!!.date
+        reservation.playingCourt!!.id, reservation.reservation!!.date
     )
     Column(
         Modifier
@@ -42,42 +39,31 @@ fun ShowReservation(
             .padding(16.dp)
     ) {
         if (openDialog.value) {
-            AlertDialog(
-                onDismissRequest = {
+            AlertDialog(onDismissRequest = {
+                openDialog.value = false
+            }, confirmButton = {
+                TextButton(onClick = {
+                    vm.deleteReservation(reservation.reservation)
                     openDialog.value = false
-                },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            vm.deleteReservation(reservation.reservation)
-                            openDialog.value = false
-                            navController.navigate("Reservations")
-                        }
-                    ) {
-                        Text("Delete")
-                    }
-                },
-                dismissButton = {
-                    TextButton(
-                        onClick = {
-                            openDialog.value = false
-                        }
-                    ) {
-                        Text("Cancel")
-                    }
-                },
-                title = {
-                    Text("Delete Reservation")
-                },
-                text = {
-                    Text(
-                        text = "Are you sure you want to delete your reservation?",
-                    )
-                },
-                properties = DialogProperties(
-                    dismissOnBackPress = true,
-                    dismissOnClickOutside = true
+                    navController.navigate("Reservations")
+                }) {
+                    Text("Delete")
+                }
+            }, dismissButton = {
+                TextButton(onClick = {
+                    openDialog.value = false
+                }) {
+                    Text("Cancel")
+                }
+            }, title = {
+                Text("Delete Reservation")
+            }, text = {
+                Text(
+                    text = "Are you sure you want to delete your reservation?",
                 )
+            }, properties = DialogProperties(
+                dismissOnBackPress = true, dismissOnClickOutside = true
+            )
             )
         }
 
@@ -90,11 +76,9 @@ fun ShowReservation(
         Button(
             onClick = {
                 openDialog.value = !openDialog.value
-            },
-            colors = ButtonDefaults.buttonColors(
+            }, colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.error
-            ),
-            modifier = Modifier.fillMaxWidth()
+            ), modifier = Modifier.fillMaxWidth()
         ) {
             Text(text = "Delete")
         }
