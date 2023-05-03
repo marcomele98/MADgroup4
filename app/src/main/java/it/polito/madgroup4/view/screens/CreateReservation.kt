@@ -1,4 +1,4 @@
-package it.polito.madgroup4.view
+package it.polito.madgroup4.view.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,11 +18,15 @@ import androidx.navigation.NavController
 import io.github.boguszpawlowski.composecalendar.SelectableWeekCalendar
 import io.github.boguszpawlowski.composecalendar.rememberSelectableWeekCalendarState
 import it.polito.madgroup4.utility.CourtWithSlots
+import it.polito.madgroup4.view.components.DaysOfWeekHeader
+import it.polito.madgroup4.view.components.MyDay
 import it.polito.madgroup4.view.components.PlayingCourtCard
 import it.polito.madgroup4.view.components.SlotSelector
 import it.polito.madgroup4.view.components.SportCard
+import it.polito.madgroup4.view.components.WeekHeader
 import it.polito.madgroup4.viewmodel.ReservationViewModel
 import java.text.SimpleDateFormat
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.ZoneId
 
@@ -111,7 +115,7 @@ fun PlayingCourtList(
         LazyColumn(Modifier.fillMaxSize()) {
             items(playingCourts.value.size) { index ->
                 PlayingCourtCard(playingCourts.value[index], onClick = {
-                    setSelectedCourt(it);
+                    setSelectedCourt(it)
                     navController.navigate("Select A Time SLot")
                 })
             }
@@ -128,7 +132,6 @@ fun SlotSelectionReservation(
     setSelectedSlot: (Int) -> Unit,
 ) {
 
-    println(selectedCourt)
     SlotSelector(
         slots = selectedCourt.slots!!,
         onClick = {

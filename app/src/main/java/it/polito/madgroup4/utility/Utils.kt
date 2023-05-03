@@ -1,18 +1,11 @@
 package it.polito.madgroup4.utility
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.SportsFootball
 import androidx.compose.material.icons.filled.SportsSoccer
 import androidx.compose.material.icons.filled.SportsTennis
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
-import it.polito.madgroup4.R
-import it.polito.madgroup4.model.PlayingCourt
 import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.viewmodel.ReservationViewModel
-import java.util.Date
 
 fun calculateStartEndTime(startTime: String, slotId: Int): String {
     val startTime = calculateTimeAsNum(startTime)

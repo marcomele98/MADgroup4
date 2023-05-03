@@ -1,4 +1,4 @@
-package it.polito.madgroup4.view
+package it.polito.madgroup4.view.components
 
 import android.content.Intent
 import androidx.compose.runtime.Composable

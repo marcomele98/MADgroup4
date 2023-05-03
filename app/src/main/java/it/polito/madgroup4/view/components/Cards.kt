@@ -41,7 +41,7 @@ fun ReservationCard(
             .padding(bottom = 10.dp)
             .fillMaxWidth()
             .clickable {
-                setReservation(reservation);
+                setReservation(reservation)
                 navController.navigate("ReservationDetails")
             }
     ) {
@@ -53,7 +53,7 @@ fun ReservationCard(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Icon(
-                    imageSelector(reservation.playingCourt!!.sport),
+                    imageSelector(reservation.playingCourt.sport),
                     contentDescription = "Reservations"
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -71,7 +71,7 @@ fun ReservationCard(
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(
-                text = "${reservation.playingCourt?.name}",
+                text = reservation.playingCourt.name,
                 fontSize = 18.sp
             )
 
@@ -99,7 +99,7 @@ fun PlayingCourtCard(
             .padding(bottom = 10.dp)
             .fillMaxWidth()
             .clickable(enabled) {
-                onClick(playingCourt);
+                onClick(playingCourt)
             }
     ) {
         Column(

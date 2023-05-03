@@ -109,7 +109,7 @@ fun MainScreen(vm: ReservationViewModel) {
         mutableStateOf(ReservationWithCourt(null, null))
     }
 
-    val sports = listOf<String>("Tennis", "Football")
+    val sports = listOf("Tennis", "Football")
     val (selectedSport, setSelectedSport) = remember { mutableStateOf(sports[0]) }
     val (creationDate, setCreationDate) = remember { mutableStateOf(LocalDate.now()) }
     val (selectedCourt, setSelectedCourt) = remember { mutableStateOf(CourtWithSlots(null, null)) }

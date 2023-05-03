@@ -1,4 +1,4 @@
-package it.polito.madgroup4.view
+package it.polito.madgroup4.view.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -11,12 +11,13 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.github.boguszpawlowski.composecalendar.rememberSelectableCalendarState
 import it.polito.madgroup4.model.ReservationWithCourt
+import it.polito.madgroup4.view.components.Calendar
 import it.polito.madgroup4.view.components.ReservationList
 import it.polito.madgroup4.viewmodel.ReservationViewModel
 import java.time.LocalDate
 
 @Composable
-public fun Reservations(
+fun Reservations(
     vm: ReservationViewModel,
     navController: NavController,
     setReservation: (ReservationWithCourt) -> Unit
@@ -33,7 +34,7 @@ public fun Reservations(
         } else {
             calendarState.selectionState.selection[0]
         }
-        Calendar(vm = vm, calendarState, allReservations)
+        Calendar(calendarState, allReservations)
         Spacer(modifier = Modifier.size(10.dp))
         ReservationList(date = date.toString(), vm = vm, navController, setReservation)
     }

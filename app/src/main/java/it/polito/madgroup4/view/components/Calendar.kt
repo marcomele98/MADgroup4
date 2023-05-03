@@ -1,4 +1,4 @@
-package it.polito.madgroup4.view
+package it.polito.madgroup4.view.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -37,7 +37,6 @@ import io.github.boguszpawlowski.composecalendar.header.MonthState
 import io.github.boguszpawlowski.composecalendar.header.WeekState
 import io.github.boguszpawlowski.composecalendar.selection.DynamicSelectionState
 import it.polito.madgroup4.model.Reservation
-import it.polito.madgroup4.viewmodel.ReservationViewModel
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.ZoneId
@@ -45,8 +44,7 @@ import java.time.format.TextStyle
 import java.util.Locale
 
 @Composable
-public fun Calendar(
-    vm: ReservationViewModel,
+fun Calendar(
     calendarState: CalendarState<DynamicSelectionState>,
     allReservations: List<Reservation>?,
 ) {
@@ -70,12 +68,6 @@ public fun Calendar(
         calendarState = calendarState,
         showAdjacentMonths = false
     )
-    val date = if (calendarState.selectionState.selection.isEmpty()) {
-        LocalDate.now()
-    } else {
-        calendarState.selectionState.selection[0]
-    }
-
 }
 
 @Composable

@@ -21,7 +21,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import it.polito.madgroup4.model.PlayingCourt
-import it.polito.madgroup4.utility.CourtWithSlots
 import it.polito.madgroup4.utility.calculateStartEndTime
 import it.polito.madgroup4.utility.imageSelector
 import java.text.SimpleDateFormat
@@ -33,8 +32,6 @@ fun ReservationDetails(
     reservationDate: Date,
     reservationTimeSlot: Int,
 ) {
-
-    println("aaa" + playingCourt)
 
     val startEndTime = calculateStartEndTime(
         playingCourt.openingTime,
@@ -49,13 +46,13 @@ fun ReservationDetails(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = playingCourt!!.name,
+                text = playingCourt.name,
                 fontWeight = FontWeight.Bold,
                 fontSize = 30.sp
             )
             Spacer(modifier = Modifier.weight(1f))
             Icon(
-                imageSelector(playingCourt!!.sport),
+                imageSelector(playingCourt.sport),
                 contentDescription = "Reservations",
                 modifier = Modifier
                     .size(35.dp)
