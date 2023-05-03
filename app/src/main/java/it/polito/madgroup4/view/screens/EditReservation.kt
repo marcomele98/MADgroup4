@@ -16,12 +16,9 @@ fun EditReservation(
 ) {
     val list =
         calculateAvailableSlot(vm, reservation)
-    val initialSlot = reservation.reservation!!.slotNumber
 
     SlotSelector(slots = list, onClick = {
         reservation.reservation!!.slotNumber = it
-        if(reservation.reservation.slotNumber != initialSlot)
-            reservation.reservation.particularRequests = ""
         navController.navigate("Confirm Changes")
     })
 
