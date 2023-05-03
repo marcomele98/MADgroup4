@@ -37,10 +37,10 @@
             -->
         </activity>
         <activity
-            android:name=".EditProfileActivity"
+            android:name=".view.EditProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".ShowProfileActivity"
+            android:name=".view.ShowProfileActivity"
             android:exported="false">
             <!--
             <intent-filter>

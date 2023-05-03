@@ -17,7 +17,7 @@ class DatabaseModule {
     fun provideLocalDatabase(@ApplicationContext context: Context): LocalDatabase {
         return Room.databaseBuilder(
             context.applicationContext, LocalDatabaseImpl::class.java, "local_database"
-        ).allowMainThreadQueries().build()
+        ).build()
     }
 
     @Singleton

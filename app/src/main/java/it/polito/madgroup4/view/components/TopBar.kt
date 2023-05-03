@@ -33,8 +33,8 @@ fun TopBar(title: String, navController: NavController) {
             }
         },
         actions = {
-            if (title == "ReservationDetails") {
-                IconButton(onClick = { navController.navigate("EditReservation") }) {
+            if (title == "Reservation Details") {
+                IconButton(onClick = { navController.navigate("Edit Reservation") }) {
                     Icon(
                         Icons.Outlined.Edit,
                         contentDescription = "Edit"

@@ -20,20 +20,25 @@ import java.time.LocalDate
 fun Reservations(
     vm: ReservationViewModel,
     navController: NavController,
-    setReservation: (ReservationWithCourt) -> Unit
+    setReservation: (ReservationWithCourt) -> Unit,
+    date: LocalDate,
+    setDate: (LocalDate) -> Unit
 ) {
 
     val calendarState = rememberSelectableCalendarState()
     val allReservations = vm.allRes.observeAsState().value
 
-    Column(
-        Modifier.padding(start = 16.dp, end = 16.dp)
-    ) {
-        val date = if (calendarState.selectionState.selection.isEmpty()) {
+    setDate(
+        if (calendarState.selectionState.selection.isEmpty()) {
             LocalDate.now()
         } else {
             calendarState.selectionState.selection[0]
         }
+    )
+
+    Column(
+        Modifier.padding(start = 16.dp, end = 16.dp)
+    ) {
         Calendar(calendarState, allReservations)
         Spacer(modifier = Modifier.size(10.dp))
         ReservationList(date = date.toString(), vm = vm, navController, setReservation)

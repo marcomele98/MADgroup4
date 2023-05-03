@@ -77,23 +77,22 @@ fun Navigation(
                         selectedSport,
                         creationDate,
                         setCreationDate,
-                        selectedCourt,
                         setSelectedCourt
                     )
                 }
 
                 composable("Reservations") {
-                    Reservations(vm, navController, setReservationWithCourt)
+                    Reservations(vm, navController, setReservationWithCourt, creationDate, setCreationDate)
                 }
 
-                composable("EditReservation") {
+                composable("Edit Reservation") {
                     EditReservation(reservation, vm, navController)
                 }
-                composable("ReservationDetails") {
+                composable("Reservation Details") {
                     ShowReservation(
                         reservation,
                         vm,
-                        navController
+                        navController,
                     )
                 }
                 composable("Select Sport") {
@@ -112,24 +111,24 @@ fun Navigation(
                     )
                 }
 
-                composable("Confirm Your Reservation") {
+                composable("Confirm Reservation") {
                     ReservationConfirmation(
-                        playingCourt = selectedCourt,
+                        playingCourt = selectedCourt.playingCourt!!,
                         reservationDate = creationDate,
                         reservationTimeSlot = selectedSlot,
                         vm = vm,
-                        navController = navController
+                        navController = navController,
                     )
                 }
 
                 composable("Confirm Changes"){
                     ReservationConfirmation(
-                        playingCourt = selectedCourt,
+                        playingCourt = reservation.playingCourt!!,
                         reservationDate = creationDate,
-                        reservationTimeSlot = selectedSlot,
+                        reservationTimeSlot = reservation.reservation!!.slotNumber,
                         vm = vm,
                         navController = navController,
-                        reservation = reservation.reservation!!
+                        reservation = reservation.reservation!!,
                     )
                 }
             }

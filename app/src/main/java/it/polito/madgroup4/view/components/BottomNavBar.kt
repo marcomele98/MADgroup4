@@ -12,9 +12,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import java.time.LocalDate
 
 @Composable
-fun BottomNavBar(navController: NavHostController){
+fun BottomNavBar(
+    navController: NavHostController
+){
     NavigationBar(
         modifier = Modifier.height(75.dp),
     ) {
@@ -37,6 +40,9 @@ fun BottomNavBar(navController: NavHostController){
                 )
             },
             label = { Text("Reservations") },
-            onClick = { navController.navigate("Reservations") })
+            onClick = {
+                navController.navigate("Reservations")
+            }
+        )
     }
 }

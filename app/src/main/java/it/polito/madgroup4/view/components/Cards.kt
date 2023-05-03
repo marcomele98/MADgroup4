@@ -42,7 +42,7 @@ fun ReservationCard(
             .fillMaxWidth()
             .clickable {
                 setReservation(reservation)
-                navController.navigate("ReservationDetails")
+                navController.navigate("Reservation Details")
             }
     ) {
         Column(

@@ -23,9 +23,9 @@ interface ReservationDAO {
     fun getAllByCourtIdAndDate(courtId: Long, date: Date) : LiveData<List<Int>>
 
     @Insert(onConflict = REPLACE)
-    fun save(reservation: Reservation)
+    suspend fun save(reservation: Reservation)
 
     @Delete
-    fun delete(reservation: Reservation)
+    suspend fun delete(reservation: Reservation)
 
 }

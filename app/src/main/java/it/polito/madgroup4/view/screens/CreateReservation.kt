@@ -17,7 +17,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.github.boguszpawlowski.composecalendar.SelectableWeekCalendar
 import io.github.boguszpawlowski.composecalendar.rememberSelectableWeekCalendarState
+import io.github.boguszpawlowski.composecalendar.week.Week
 import it.polito.madgroup4.utility.CourtWithSlots
+import it.polito.madgroup4.utility.getWeekdaysStartingOnSunday
 import it.polito.madgroup4.view.components.DaysOfWeekHeader
 import it.polito.madgroup4.view.components.MyDay
 import it.polito.madgroup4.view.components.PlayingCourtCard
@@ -37,19 +39,16 @@ fun CreateReservation(
     selectedSport: String,
     date: LocalDate,
     setDate: (LocalDate) -> Unit,
-    selectedCourt: CourtWithSlots,
     setSelectedCourt: (CourtWithSlots) -> Unit,
 ) {
-    val calendarState = rememberSelectableWeekCalendarState()
+    val calendarState = rememberSelectableWeekCalendarState(
+        initialSelection = listOf(date),
+        initialWeek = Week(getWeekdaysStartingOnSunday(date, DayOfWeek.SUNDAY))
+    )
     val allReservations = vm.allRes.observeAsState().value
 
-    setDate(
-        if (calendarState.selectionState.selection.isEmpty()) {
-            LocalDate.now()
-        } else {
-            calendarState.selectionState.selection[0]
-        }
-    )
+    if(calendarState.selectionState.selection[0] != date)
+        setDate(calendarState.selectionState.selection[0])
 
     Column(
         Modifier
@@ -137,7 +136,7 @@ fun SlotSelectionReservation(
         onClick = {
             if (!selectedCourt.slots!![it].isBooked) {
                 setSelectedSlot(selectedCourt.slots!![it].slotNumber)
-                navController.navigate("Confirm Your Reservation")
+                navController.navigate("Confirm Reservation")
             }
         }
     )

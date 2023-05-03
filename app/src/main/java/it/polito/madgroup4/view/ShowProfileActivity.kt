@@ -1,20 +1,17 @@
-package it.polito.madgroup4
+package it.polito.madgroup4.view
 
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.ContactsContract.CommonDataKinds.Nickname
-import android.provider.ContactsContract.CommonDataKinds.Phone
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.res.ResourcesCompat
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.HiltAndroidApp
+import it.polito.madgroup4.R
+import it.polito.madgroup4.model.Profile
 
 @AndroidEntryPoint
 class ShowProfileActivity : AppCompatActivity() {

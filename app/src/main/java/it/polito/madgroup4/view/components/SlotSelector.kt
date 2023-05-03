@@ -8,7 +8,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,7 +26,8 @@ import it.polito.madgroup4.utility.Slot
 @Composable
 fun SlotSelector(
     slots: List<Slot>,
-    onClick: (Int) -> Unit
+    onClick: (Int) -> Unit,
+    selectedSlot: Int? = null
 ) {
 
     Box(
@@ -46,19 +50,20 @@ fun SlotSelector(
                         modifier = Modifier
                             .padding(4.dp)
                             .clickable(
-                                enabled = !slots[index].isBooked
+                                enabled = !(slots[index].isBooked && index != selectedSlot),
                             ) {
                                 onClick(index)
-                                /*if (!slots[index].isBooked) {
-                                    setSelectedSlot(slots[index].slotNumber)
-                                    navController.navigate("Confirm Your Reservation")
-                                }*/
                             }
                             .fillMaxWidth()
-                            .alpha(if (slots[index].isBooked) 0.5f else 1f),
-                            //TODO: se sono nell'edit faccio vedere lo slot prenotato di colore surfaceVariant
+                            .alpha(if (slots[index].isBooked && index != selectedSlot) 0.5f else 1f),
+                            colors = if(index == selectedSlot) {
+                                CardDefaults.cardColors()
+                            }else{
+                                CardDefaults.outlinedCardColors()
+                            },
+                        //TODO: se sono nell'edit faccio vedere lo slot prenotato di colore surfaceVariant
 
-                        ) {
+                    ) {
                         Text(
                             text = slots[index].time,
                             fontWeight = FontWeight.Bold,

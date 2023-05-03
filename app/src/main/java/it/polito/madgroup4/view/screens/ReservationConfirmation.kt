@@ -22,6 +22,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import it.polito.madgroup4.model.PlayingCourt
 import it.polito.madgroup4.model.Reservation
 import it.polito.madgroup4.utility.CourtWithSlots
 import it.polito.madgroup4.view.components.ReservationDetails
@@ -32,13 +33,13 @@ import java.time.LocalDate
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReservationConfirmation(
-    playingCourt: CourtWithSlots,
+    playingCourt: PlayingCourt,
     reservationDate: LocalDate,
     reservationTimeSlot: Int,
     vm: ReservationViewModel,
     navController: NavController,
     reservation: Reservation = Reservation(
-        courtId = playingCourt.playingCourt!!.id,
+        courtId = playingCourt.id,
         slotNumber = reservationTimeSlot,
         date = SimpleDateFormat("dd/MM/yyyy").parse(
             SimpleDateFormat("dd/MM/yyyy").format(
@@ -57,9 +58,10 @@ fun ReservationConfirmation(
         modifier = Modifier.padding(16.dp)
     ) {
         ReservationDetails(
-            playingCourt = playingCourt.playingCourt!!,
+            playingCourt = playingCourt,
             reservationDate = reservation.date!!,
-            reservationTimeSlot = reservationTimeSlot
+            reservationTimeSlot = reservationTimeSlot,
+            particularRequests = reservation.particularRequests
         )
         Spacer(modifier = Modifier.height(30.dp))
         Text(

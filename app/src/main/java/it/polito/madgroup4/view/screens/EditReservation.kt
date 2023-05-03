@@ -17,10 +17,14 @@ fun EditReservation(
     val list =
         calculateAvailableSlot(vm, reservation)
 
-    SlotSelector(slots = list, onClick = {
-        reservation.reservation!!.slotNumber = it
-        navController.navigate("Confirm Changes")
-    })
+    SlotSelector(
+        slots = list,
+        onClick = {
+            reservation.reservation!!.slotNumber = it
+            navController.navigate("Confirm Changes")
+        },
+        selectedSlot = reservation.reservation!!.slotNumber
+    )
 
 }
 

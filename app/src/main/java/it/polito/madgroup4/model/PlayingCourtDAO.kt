@@ -2,10 +2,15 @@ package it.polito.madgroup4.model
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.liveData
 import androidx.room.*
 import it.polito.madgroup4.utility.CourtWithSlots
 import it.polito.madgroup4.utility.Slot
 import it.polito.madgroup4.utility.getAllSlots
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.withContext
 import java.util.*
 
 @Dao
@@ -36,25 +41,27 @@ interface PlayingCourtDAO {
     )
     fun getCourtsWithReservations(sport: String, date: Date): List<CourtWithReservations>
 
-    fun getCourtsWithSlotsForSportAndDate(sport: String, date: Date): LiveData<List<CourtWithSlots>> {
-        val courtsWithSlotsLiveData = MutableLiveData<List<CourtWithSlots>>()
-        var courtsWithReservations : List<CourtWithReservations> = getCourtsWithReservations(sport, date);
-        var courtWithSlots = mutableListOf<CourtWithSlots>();
-        for (courtWithReservations in courtsWithReservations) {
-            val court = courtWithReservations.court
-            val reservations = courtWithReservations.reservations
-            var slotsNotAvailable: List<Int> = reservations.filter { it.date == date }.map { it.slotNumber }
-            val totSlot : List<Slot> = getAllSlots(slotsNotAvailable, court.openingTime, court.closingTime);
-            courtWithSlots.add(CourtWithSlots(court, totSlot))
-        }
 
-        courtsWithSlotsLiveData.value = courtWithSlots
-        return courtsWithSlotsLiveData
+    fun getCourtsWithSlotsForSportAndDate(sport: String, date: Date): LiveData<List<CourtWithSlots>> {
+        return liveData {
+            val courtsWithSlots = mutableListOf<CourtWithSlots>()
+            val courtsWithReservations =
+                withContext(Dispatchers.IO) { getCourtsWithReservations(sport, date) }
+            for (courtWithReservations in courtsWithReservations) {
+                val court = courtWithReservations.court
+                val reservations = courtWithReservations.reservations
+                val slotsNotAvailable =
+                    reservations.filter { it.date == date }.map { it.slotNumber }
+                val totSlot = getAllSlots(slotsNotAvailable, court.openingTime, court.closingTime)
+                courtsWithSlots.add(CourtWithSlots(court, totSlot))
+            }
+            emit(courtsWithSlots)
+        }
     }
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun save(playingCourt: PlayingCourt)
+    suspend fun save(playingCourt: PlayingCourt)
 
     @Delete
     fun delete(playingCourt: PlayingCourt)

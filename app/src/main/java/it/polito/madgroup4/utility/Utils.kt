@@ -6,6 +6,9 @@ import androidx.compose.material.icons.filled.SportsTennis
 import androidx.compose.ui.graphics.vector.ImageVector
 import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.viewmodel.ReservationViewModel
+import kotlinx.datetime.DatePeriod
+import java.time.DayOfWeek
+import java.time.LocalDate
 
 fun calculateStartEndTime(startTime: String, slotId: Int): String {
     val startTime = calculateTimeAsNum(startTime)
@@ -28,6 +31,19 @@ fun calculateStartEndTime(startTime: String, slotId: Int): String {
 private fun calculateTimeAsNum(time: String): Int {
     val timeArray = time.split(":")
     return timeArray[0].toInt() * 60 + timeArray[1].toInt()
+}
+
+fun getWeekdaysStartingOnSunday(localDate: LocalDate, firstDayOfWeek: DayOfWeek): List<LocalDate> {
+    var currentDay: LocalDate = localDate
+    val weekdays = mutableListOf<LocalDate>()
+    while(currentDay.dayOfWeek != firstDayOfWeek) {
+        currentDay = currentDay.minusDays(1)
+    }
+    repeat(7) {
+        weekdays.add(currentDay)
+        currentDay= currentDay.plusDays(1)
+    }
+    return weekdays
 }
 
 fun calculateAvailableSlot(

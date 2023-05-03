@@ -94,4 +94,5 @@ dependencies {
     implementation "androidx.compose.runtime:runtime-livedata:1.4.2"
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1"
     implementation "androidx.compose.material:material:1.4.2"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.6.1"
 }

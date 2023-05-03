@@ -1,4 +1,4 @@
-package it.polito.madgroup4
+package it.polito.madgroup4.view
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -18,14 +18,14 @@ import android.os.Bundle
 import android.os.SystemClock
 import android.provider.MediaStore
 import android.util.Log
-import android.view.View
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import dagger.hilt.android.AndroidEntryPoint
+import it.polito.madgroup4.R
+import it.polito.madgroup4.model.Profile
 import java.io.ByteArrayOutputStream
 import java.io.FileDescriptor
 import java.io.IOException

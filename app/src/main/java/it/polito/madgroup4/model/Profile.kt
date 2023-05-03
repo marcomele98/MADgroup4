@@ -1,10 +1,7 @@
-package it.polito.madgroup4
+package it.polito.madgroup4.model
 
-import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
-import android.net.Uri
-import android.provider.ContactsContract.CommonDataKinds.Nickname
 
 class Profile(
     var name: String = "Marco Mele",
