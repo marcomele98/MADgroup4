@@ -20,10 +20,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import it.polito.madgroup4.model.ReservationWithCourt
+import it.polito.madgroup4.utility.calculateStartEndTime
 import it.polito.madgroup4.utility.formatDate
 import it.polito.madgroup4.view.components.ReservationDetails
 import it.polito.madgroup4.viewmodel.ReservationViewModel
 import java.time.LocalDate
+import java.time.LocalTime
 import java.util.Date
 
 
@@ -79,10 +81,15 @@ fun ShowReservation(
             reservation.reservation.particularRequests
         )
         Spacer(modifier = Modifier.weight(1f))
-        if(
+        if (
             formatDate(Date()) < reservation.reservation.date
             || (formatDate(Date()) == reservation.reservation.date
-                    && reservation.reservation.slotNumber > Date().hours)
+                    && LocalTime.parse(calculateStartEndTime(
+                reservation.playingCourt.openingTime,
+                reservation.reservation.slotNumber
+            ).split("-")[0].trim()).isAfter(
+                LocalTime.now()
+            ))
         ) {
             Button(
                 onClick = {
