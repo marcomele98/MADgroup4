@@ -132,6 +132,7 @@ fun SlotSelectionReservation(
 ) {
 
     SlotSelector(
+        selectedSlot = selectedSlot,
         slots = selectedCourt.slots!!,
         onClick = {
             if (!selectedCourt.slots!![it].isBooked) {

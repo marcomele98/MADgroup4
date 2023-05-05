@@ -88,6 +88,7 @@ fun ReservationConfirmation(
         Spacer(modifier = Modifier.weight(1f))
         Button(
             onClick = {
+                reservation.slotNumber = reservationTimeSlot
                 if (text.trim() != "")
                     reservation.particularRequests = text
                 vm.saveReservation(reservation)

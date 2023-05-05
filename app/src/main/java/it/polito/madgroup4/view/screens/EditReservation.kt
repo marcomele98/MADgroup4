@@ -12,18 +12,26 @@ import it.polito.madgroup4.viewmodel.ReservationViewModel
 fun EditReservation(
     reservation: ReservationWithCourt,
     vm: ReservationViewModel,
-    navController: NavController
+    navController: NavController,
+    selectedSlot: Int,
+    setSelectedSlot: (Int)->Unit
 ) {
     val list =
         calculateAvailableSlot(vm, reservation)
 
+    println(selectedSlot)
+
+    if(selectedSlot == -1)
+        setSelectedSlot(reservation.reservation!!.slotNumber)
+
     SlotSelector(
         slots = list,
         onClick = {
-            reservation.reservation!!.slotNumber = it
+            setSelectedSlot(it)
             navController.navigate("Confirm Changes")
         },
-        selectedSlot = reservation.reservation!!.slotNumber
+        selectedSlot = selectedSlot,
+        reservation = reservation.reservation,
     )
 
 }

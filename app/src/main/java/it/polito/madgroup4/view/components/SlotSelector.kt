@@ -21,13 +21,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import it.polito.madgroup4.model.Reservation
 import it.polito.madgroup4.utility.Slot
 
 @Composable
 fun SlotSelector(
     slots: List<Slot>,
     onClick: (Int) -> Unit,
-    selectedSlot: Int? = null
+    selectedSlot: Int? = null,
+    reservation: Reservation? = null
 ) {
 
     Box(
@@ -50,12 +52,12 @@ fun SlotSelector(
                         modifier = Modifier
                             .padding(4.dp)
                             .clickable(
-                                enabled = !(slots[index].isBooked && index != selectedSlot),
+                                enabled = !(slots[index].isBooked && index != reservation?.slotNumber),
                             ) {
                                 onClick(index)
                             }
                             .fillMaxWidth()
-                            .alpha(if (slots[index].isBooked && index != selectedSlot) 0.5f else 1f),
+                            .alpha(if (slots[index].isBooked && index != reservation?.slotNumber) 0.5f else 1f),
                             colors = if(index == selectedSlot) {
                                 CardDefaults.cardColors()
                             }else{

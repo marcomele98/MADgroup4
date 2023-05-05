@@ -86,7 +86,7 @@ fun Navigation(
                 }
 
                 composable("Edit Reservation") {
-                    EditReservation(reservation, vm, navController)
+                    EditReservation(reservation, vm, navController, selectedSlot, setSelectedSlot)
                 }
                 composable("Reservation Details") {
                     ShowReservation(
