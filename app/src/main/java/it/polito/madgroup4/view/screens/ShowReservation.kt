@@ -20,9 +20,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import it.polito.madgroup4.model.ReservationWithCourt
+import it.polito.madgroup4.utility.formatDate
 import it.polito.madgroup4.view.components.ReservationDetails
 import it.polito.madgroup4.viewmodel.ReservationViewModel
 import java.time.LocalDate
+import java.util.Date
 
 
 @ExperimentalMaterial3Api
@@ -77,14 +79,21 @@ fun ShowReservation(
             reservation.reservation.particularRequests
         )
         Spacer(modifier = Modifier.weight(1f))
-        Button(
-            onClick = {
-                openDialog.value = !openDialog.value
-            }, colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.error
-            ), modifier = Modifier.fillMaxWidth()
+        if(
+            formatDate(Date()) < reservation.reservation.date
+            || (formatDate(Date()) == reservation.reservation.date
+                    && reservation.reservation.slotNumber > Date().hours)
         ) {
-            Text(text = "Delete")
+            Button(
+                onClick = {
+                    openDialog.value = !openDialog.value
+                }, colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.error
+                ), modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = "Delete")
+            }
         }
+
     }
 }

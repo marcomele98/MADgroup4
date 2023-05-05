@@ -107,7 +107,8 @@ fun Navigation(
                         navController = navController,
                         selectedCourt = selectedCourt,
                         setSelectedSlot = setSelectedSlot,
-                        selectedSlot = selectedSlot
+                        selectedSlot = selectedSlot,
+                        date = creationDate,
                     )
                 }
 

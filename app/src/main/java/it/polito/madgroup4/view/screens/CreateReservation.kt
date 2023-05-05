@@ -31,6 +31,7 @@ import java.text.SimpleDateFormat
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.ZoneId
+import java.util.Date
 
 @Composable
 fun CreateReservation(
@@ -46,6 +47,12 @@ fun CreateReservation(
         initialWeek = Week(getWeekdaysStartingOnSunday(date, DayOfWeek.SUNDAY))
     )
     val allReservations = vm.allRes.observeAsState().value
+
+    if(date.isBefore(LocalDate.now()))
+        setDate(LocalDate.now())
+
+    if(calendarState.selectionState.selection.isEmpty())
+        calendarState.selectionState.selection = listOf(LocalDate.now())
 
     if(calendarState.selectionState.selection[0] != date)
         setDate(calendarState.selectionState.selection[0])
@@ -68,12 +75,14 @@ fun CreateReservation(
             },
             dayContent = { dayState ->
                 MyDay(
+                    isActive = !dayState.date.isBefore(LocalDate.now()),
                     state = dayState,
                     reservations = allReservations?.firstOrNull() {
                         it.date.toInstant()
                             .atZone(ZoneId.systemDefault())
                             .toLocalDate() == dayState.date
                     },
+
                 )
             },
         )
@@ -129,11 +138,13 @@ fun SlotSelectionReservation(
     selectedCourt: CourtWithSlots,
     selectedSlot: Int,
     setSelectedSlot: (Int) -> Unit,
+    date: LocalDate
 ) {
 
     SlotSelector(
         selectedSlot = selectedSlot,
         slots = selectedCourt.slots!!,
+        date = Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant()),
         onClick = {
             if (!selectedCourt.slots!![it].isBooked) {
                 setSelectedSlot(selectedCourt.slots!![it].slotNumber)

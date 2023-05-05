@@ -25,6 +25,7 @@ import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
@@ -131,6 +132,7 @@ fun MyDay(
     state: DayState<DynamicSelectionState>,
     reservations: Reservation?,
     modifier: Modifier = Modifier,
+    isActive: Boolean = true,
 ) {
     val date = state.date
     val selectionState = state.selectionState
@@ -149,8 +151,10 @@ fun MyDay(
         Column(
             modifier = Modifier
                 .align(Alignment.Center)
+                .alpha(if(isActive) 1f else 0.5f)
                 .clickable {
-                    selectionState.onDateSelected(date)
+                    if(isActive)
+                        selectionState.onDateSelected(date)
                 },
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {

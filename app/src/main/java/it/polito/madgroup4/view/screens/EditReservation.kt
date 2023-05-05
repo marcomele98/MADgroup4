@@ -32,6 +32,7 @@ fun EditReservation(
         },
         selectedSlot = selectedSlot,
         reservation = reservation.reservation,
+        date = reservation.reservation!!.date,
     )
 
 }

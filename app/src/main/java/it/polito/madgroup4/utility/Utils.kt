@@ -7,8 +7,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.viewmodel.ReservationViewModel
 import kotlinx.datetime.DatePeriod
+import java.text.SimpleDateFormat
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.util.Date
 
 fun calculateStartEndTime(startTime: String, slotId: Int): String {
     val startTime = calculateTimeAsNum(startTime)
@@ -16,16 +18,21 @@ fun calculateStartEndTime(startTime: String, slotId: Int): String {
     val slotStart = startTime + slotId * 60
     val slotEnd = startTime + (slotId + 1) * 60
 
-    val slotStartHour = slotStart / 60
-    val slotStartMinute = slotStart % 60
+    val slotStartHour = add0IfLengthIs1(slotStart / 60)
+    val slotStartMinute = add0IfLengthIs1(slotStart % 60)
 
-    val slotEndHour = slotEnd / 60
-    val slotEndMinute = slotEnd % 60
+    val slotEndHour = add0IfLengthIs1(slotEnd / 60)
+    val slotEndMinute = add0IfLengthIs1(slotEnd % 60)
 
     val slotStartTime = "$slotStartHour:$slotStartMinute"
     val slotEndTime = "$slotEndHour:$slotEndMinute"
 
     return "$slotStartTime - $slotEndTime"
+}
+
+fun add0IfLengthIs1(n: Int): String {
+    val time = n.toString()
+    return if(time.length == 1) "0$time" else time
 }
 
 private fun calculateTimeAsNum(time: String): Int {
@@ -44,6 +51,11 @@ fun getWeekdaysStartingOnSunday(localDate: LocalDate, firstDayOfWeek: DayOfWeek)
         currentDay= currentDay.plusDays(1)
     }
     return weekdays
+}
+
+fun formatDate(date: Date): Date{
+    val formatter = SimpleDateFormat("dd/MM/yyyy")
+    return formatter.parse(formatter.format(date))
 }
 
 fun calculateAvailableSlot(

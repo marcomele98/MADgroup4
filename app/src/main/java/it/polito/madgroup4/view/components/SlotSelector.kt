@@ -23,9 +23,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import it.polito.madgroup4.model.Reservation
 import it.polito.madgroup4.utility.Slot
+import it.polito.madgroup4.utility.formatDate
+import java.time.LocalTime
+import java.util.Date
 
 @Composable
 fun SlotSelector(
+    date: Date,
     slots: List<Slot>,
     onClick: (Int) -> Unit,
     selectedSlot: Int? = null,
@@ -48,21 +52,29 @@ fun SlotSelector(
             ),
             content = {
                 items(slots.size) { index ->
+                    val isInThePast =
+                        date == formatDate(Date())
+                                && LocalTime.parse(slots[index].time.split("-")[0].trim()).isBefore(
+                            LocalTime.now()
+                        )
                     ElevatedCard(
                         modifier = Modifier
                             .padding(4.dp)
                             .clickable(
-                                enabled = !(slots[index].isBooked && index != reservation?.slotNumber),
+                                enabled = !((slots[index].isBooked && index != reservation?.slotNumber) || isInThePast),
                             ) {
                                 onClick(index)
                             }
                             .fillMaxWidth()
-                            .alpha(if (slots[index].isBooked && index != reservation?.slotNumber) 0.5f else 1f),
-                            colors = if(index == selectedSlot) {
-                                CardDefaults.cardColors()
-                            }else{
-                                CardDefaults.outlinedCardColors()
-                            },
+                            .alpha(
+                                if ((slots[index].isBooked && index != reservation?.slotNumber) || isInThePast
+                                ) 0.5f else 1f
+                            ),
+                        colors = if (index == selectedSlot) {
+                            CardDefaults.cardColors()
+                        } else {
+                            CardDefaults.outlinedCardColors()
+                        },
                         //TODO: se sono nell'edit faccio vedere lo slot prenotato di colore surfaceVariant
 
                     ) {
