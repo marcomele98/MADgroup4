@@ -68,7 +68,7 @@ fun ReservationConfirmation(
             playingCourt = playingCourt,
             reservationDate = reservation.date!!,
             reservationTimeSlot = reservationTimeSlot,
-            particularRequests = reservation.particularRequests
+            particularRequests = null
         )
         Spacer(modifier = Modifier.height(30.dp))
         Text(
