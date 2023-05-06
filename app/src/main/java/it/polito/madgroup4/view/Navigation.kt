@@ -56,7 +56,11 @@ fun Navigation(
             BottomNavBar(navController = navController)
         },
         topBar = {
-            TopBar(navBackStackEntry?.destination?.route ?: "", navController = navController)
+            TopBar(
+                navBackStackEntry?.destination?.route ?: "",
+                navController = navController,
+                reservation = reservation
+            )
         },
 
         floatingActionButton = {
@@ -82,7 +86,13 @@ fun Navigation(
                 }
 
                 composable("Reservations") {
-                    Reservations(vm, navController, setReservationWithCourt, creationDate, setCreationDate)
+                    Reservations(
+                        vm,
+                        navController,
+                        setReservationWithCourt,
+                        creationDate,
+                        setCreationDate
+                    )
                 }
 
                 composable("Edit Reservation") {
@@ -122,7 +132,7 @@ fun Navigation(
                     )
                 }
 
-                composable("Confirm Changes"){
+                composable("Confirm Changes") {
                     ReservationConfirmation(
                         playingCourt = reservation.playingCourt!!,
                         reservationDate = creationDate,

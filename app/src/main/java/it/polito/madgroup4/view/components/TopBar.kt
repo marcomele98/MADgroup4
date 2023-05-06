@@ -13,10 +13,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import it.polito.madgroup4.model.Reservation
+import it.polito.madgroup4.model.ReservationWithCourt
+import it.polito.madgroup4.utility.calculateStartEndTime
+import it.polito.madgroup4.utility.formatDate
+import java.time.LocalTime
+import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar(title: String, navController: NavController) {
+fun TopBar(title: String, navController: NavController, reservation: ReservationWithCourt? = null) {
+
+    var isInThePast = false
+    if (reservation!!.reservation != null) {
+        isInThePast = reservation.reservation!!.date < formatDate(Date())
+                || (formatDate(Date()) == reservation.reservation.date
+                && LocalTime.parse(
+            calculateStartEndTime(
+                reservation.playingCourt!!.openingTime,
+                reservation.reservation.slotNumber
+            ).split("-")[0].trim()
+        ).isBefore(
+            LocalTime.now()
+        ))
+    }
     CenterAlignedTopAppBar(
         title = {
             Text(text = title)
@@ -33,7 +53,7 @@ fun TopBar(title: String, navController: NavController) {
             }
         },
         actions = {
-            if (title == "Reservation Details") {
+            if (title == "Reservation Details" && !isInThePast) {
                 IconButton(onClick = { navController.navigate("Edit Reservation") }) {
                     Icon(
                         Icons.Outlined.Edit,

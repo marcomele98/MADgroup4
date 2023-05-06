@@ -40,6 +40,18 @@ fun ShowReservation(
     vm.getSlotsByCourtIdAndDate(
         reservation.playingCourt!!.id, reservation.reservation!!.date
     )
+
+    val isInThePast = reservation.reservation.date < formatDate(Date())
+            || (formatDate(Date()) == reservation.reservation.date
+            && LocalTime.parse(
+        calculateStartEndTime(
+            reservation.playingCourt.openingTime,
+            reservation.reservation.slotNumber
+        ).split("-")[0].trim()
+    ).isBefore(
+        LocalTime.now()
+    ))
+
     Column(
         Modifier
             .fillMaxSize()
@@ -81,16 +93,7 @@ fun ShowReservation(
             reservation.reservation.particularRequests
         )
         Spacer(modifier = Modifier.weight(1f))
-        if (
-            formatDate(Date()) < reservation.reservation.date
-            || (formatDate(Date()) == reservation.reservation.date
-                    && LocalTime.parse(calculateStartEndTime(
-                reservation.playingCourt.openingTime,
-                reservation.reservation.slotNumber
-            ).split("-")[0].trim()).isAfter(
-                LocalTime.now()
-            ))
-        ) {
+        if (!isInThePast) {
             Button(
                 onClick = {
                     openDialog.value = !openDialog.value

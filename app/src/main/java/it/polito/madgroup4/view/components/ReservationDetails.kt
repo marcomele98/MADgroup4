@@ -100,7 +100,7 @@ fun ReservationDetails(
                 fontSize = 22.sp
             )
         }
-        if(particularRequests != null && particularRequests.trim() != "") {
+        if (particularRequests != null && particularRequests.trim() != "") {
             Spacer(modifier = Modifier.height(30.dp))
             Text(text = "Particular requests", fontSize = 20.sp)
             Spacer(modifier = Modifier.height(10.dp))
@@ -108,7 +108,10 @@ fun ReservationDetails(
                 Text(
                     text = particularRequests!!,
                     fontSize = 18.sp,
-                    modifier = Modifier.fillMaxWidth().height(150.dp).padding(10.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp)
+                        .padding(10.dp)
                 )
             }
         }
