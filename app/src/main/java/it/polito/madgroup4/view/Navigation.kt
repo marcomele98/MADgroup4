@@ -81,7 +81,8 @@ fun Navigation(
                         selectedSport,
                         creationDate,
                         setCreationDate,
-                        setSelectedCourt
+                        setSelectedCourt,
+                        setSelectedSlot
                     )
                 }
 
@@ -127,6 +128,7 @@ fun Navigation(
                         playingCourt = selectedCourt.playingCourt!!,
                         reservationDate = creationDate,
                         reservationTimeSlot = selectedSlot,
+                        setSelectedSlot = setSelectedSlot,
                         vm = vm,
                         navController = navController,
                     )
@@ -136,7 +138,8 @@ fun Navigation(
                     ReservationConfirmation(
                         playingCourt = reservation.playingCourt!!,
                         reservationDate = creationDate,
-                        reservationTimeSlot = reservation.reservation!!.slotNumber,
+                        reservationTimeSlot = selectedSlot,
+                        setSelectedSlot = setSelectedSlot,
                         vm = vm,
                         navController = navController,
                         reservation = reservation.reservation!!,

@@ -110,7 +110,7 @@ fun ReservationDetails(
                     fontSize = 18.sp,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(150.dp)
+                        .height(100.dp)
                         .padding(10.dp)
                 )
             }

@@ -28,13 +28,15 @@ fun Reservations(
     val calendarState = rememberSelectableCalendarState()
     val allReservations = vm.allRes.observeAsState().value
 
-    setDate(
-        if (calendarState.selectionState.selection.isEmpty()) {
-            LocalDate.now()
-        } else {
-            calendarState.selectionState.selection[0]
-        }
-    )
+
+    if (calendarState.selectionState.selection.isEmpty()) {
+        calendarState.selectionState.selection = listOf(date)
+        setDate(date)
+    } else {
+        setDate(calendarState.selectionState.selection[0])
+    }
+
+
 
     Column(
         Modifier.padding(start = 16.dp, end = 16.dp)

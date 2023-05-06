@@ -1,10 +1,15 @@
 package it.polito.madgroup4.view.screens
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -16,6 +21,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -24,7 +30,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import it.polito.madgroup4.model.PlayingCourt
 import it.polito.madgroup4.model.Reservation
-import it.polito.madgroup4.utility.CourtWithSlots
 import it.polito.madgroup4.view.components.ReservationDetails
 import it.polito.madgroup4.viewmodel.ReservationViewModel
 import java.text.SimpleDateFormat
@@ -36,6 +41,7 @@ fun ReservationConfirmation(
     playingCourt: PlayingCourt,
     reservationDate: LocalDate,
     reservationTimeSlot: Int,
+    setSelectedSlot: (Int) -> Unit,
     vm: ReservationViewModel,
     navController: NavController,
     reservation: Reservation = Reservation(
@@ -51,7 +57,8 @@ fun ReservationConfirmation(
     )
 ) {
 
-    var text by remember { mutableStateOf(reservation.particularRequests?:"") }
+    var text by remember { mutableStateOf(reservation.particularRequests ?: "") }
+
 
 
     Column(
@@ -75,7 +82,7 @@ fun ReservationConfirmation(
             onValueChange = { text = it },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(150.dp),
+                .height(100.dp),
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Done,
                 keyboardType = KeyboardType.Text,
@@ -84,7 +91,7 @@ fun ReservationConfirmation(
             singleLine = false,
             maxLines = 5,
 
-        )
+            )
         Spacer(modifier = Modifier.weight(1f))
         Button(
             onClick = {
@@ -93,6 +100,7 @@ fun ReservationConfirmation(
                     reservation.particularRequests = text
                 vm.saveReservation(reservation)
                 navController.navigate("Reservations")
+                setSelectedSlot(-1)
             },
             modifier = Modifier
                 .padding(start = 8.dp)
@@ -100,8 +108,5 @@ fun ReservationConfirmation(
         ) {
             Text(text = "Confirm")
         }
-
     }
-
-
 }
