@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
@@ -24,7 +25,6 @@ import it.polito.madgroup4.utility.calculateStartEndTime
 import it.polito.madgroup4.utility.formatDate
 import it.polito.madgroup4.view.components.ReservationDetails
 import it.polito.madgroup4.viewmodel.ReservationViewModel
-import java.time.LocalDate
 import java.time.LocalTime
 import java.util.Date
 
@@ -103,6 +103,11 @@ fun ShowReservation(
             ) {
                 Text(text = "Delete")
             }
+        } else {
+            Text(
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.error,
+                text = "You can't edit or delete this reservation because it's in the past.")
         }
 
     }
