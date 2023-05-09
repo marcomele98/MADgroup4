@@ -16,9 +16,13 @@ import it.polito.madgroup4.view.ui.theme.MADgroup4Theme
 import it.polito.madgroup4.model.PlayingCourt
 import it.polito.madgroup4.model.Reservation
 import it.polito.madgroup4.model.ReservationWithCourt
+import it.polito.madgroup4.model.User
 import it.polito.madgroup4.utility.CourtWithSlots
+import it.polito.madgroup4.utility.formatDate
 import it.polito.madgroup4.viewmodel.ReservationViewModel
+import it.polito.madgroup4.viewmodel.UserViewModel
 import java.text.SimpleDateFormat
+import java.time.Instant
 import java.time.LocalDate
 import java.util.Date
 
@@ -27,6 +31,8 @@ import java.util.Date
 class ReservationActivityCompose : ComponentActivity() {
 
     val vm by viewModels<ReservationViewModel>()
+
+    val userVm by viewModels<UserViewModel>()
 
 
     val playingCourt = PlayingCourt(
@@ -68,14 +74,18 @@ class ReservationActivityCompose : ComponentActivity() {
         "3333333335",
         "campo3@gmail.com"
     )
+    val u1 = User(1, "Mario", "Rossi", "mario@gmail.com", "3333333333", "M", formatDate("03/04/1998"))
+    val u2 = User(2, "Luca", "Bianchi", "bianchi@gmail.com", "3333333334", "M", formatDate("03/04/1997"))
+    val u3 = User(3, "Giuseppe", "Verdi", "verdi@gmail.com", "3333333335", "M", formatDate("03/04/1996"))
+
 
 
     val formatter = SimpleDateFormat("dd/MM/yyyy")
-    val reservation = Reservation(1, 1, 1, formatter.parse(formatter.format(Date())))
-    val reservation2 = Reservation(2, 2, 2, formatter.parse(formatter.format(Date())))
-    val reservation3 = Reservation(3, 1, 2, formatter.parse(formatter.format(Date())))
-    val reservation4 = Reservation(4, 1, 3, formatter.parse("11/05/2023"))
-    val reservation5 = Reservation(5, 2, 3, formatter.parse("14/05/2023"))
+    val reservation = Reservation(1, 1, 1,1, formatter.parse(formatter.format(Date())))
+    val reservation2 = Reservation(2, 2, 1, 2, formatter.parse(formatter.format(Date())))
+    val reservation3 = Reservation(3, 1, 2, 2, formatter.parse(formatter.format(Date())))
+    val reservation4 = Reservation(4, 1, 1, 3, formatter.parse("11/05/2023"))
+    val reservation5 = Reservation(5, 2, 2, 3, formatter.parse("14/05/2023"))
 /*    val reservation6 = Reservation(6, 1, 2, formatter.parse(formatter.format(Date())))
     val reservation7 = Reservation(7, 1, 0, formatter.parse(formatter.format(Date())))
     val reservation8 = Reservation(8, 1, 5, formatter.parse(formatter.format(Date())))
@@ -97,6 +107,9 @@ class ReservationActivityCompose : ComponentActivity() {
         vm.savePlayingCourt(playingCourt)
         vm.savePlayingCourt(playingCourt2)
         vm.savePlayingCourt(playingCourt3)
+        userVm.saveUser(u1)
+        userVm.saveUser(u2)
+        userVm.saveUser(u3)
         vm.saveReservation(reservation)
         vm.saveReservation(reservation2)
         vm.saveReservation(reservation3)
@@ -120,7 +133,7 @@ class ReservationActivityCompose : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.surface
                 ) {
-                    MainScreen(vm)
+                    MainScreen(vm, userVm)
                 }
             }
         }
@@ -128,7 +141,7 @@ class ReservationActivityCompose : ComponentActivity() {
 }
 
 @Composable
-fun MainScreen(vm: ReservationViewModel) {
+fun MainScreen(vm: ReservationViewModel, userVm: UserViewModel) {
 
     val (reservation, setReservation) = remember {
         mutableStateOf(ReservationWithCourt(null, null))
@@ -144,8 +157,12 @@ fun MainScreen(vm: ReservationViewModel) {
     val (showedCourt, setShowedCourt) = remember { mutableStateOf(PlayingCourt()) }
 
 
+    //TODO: prendo l'id dalle preferences
+    val userId: Long = 1
 
-    vm.getAllReservations()
+    userVm.getUser(userId)
+
+    vm.getAllReservations(userId)
 
     Navigation(
         vm,
@@ -161,7 +178,9 @@ fun MainScreen(vm: ReservationViewModel) {
         selectedSlot,
         setSelectedSlot,
         showedCourt,
-        setShowedCourt
+        setShowedCourt,
+        userVm,
+        userId
     )
 
 }

@@ -32,6 +32,11 @@ fun calculateStartEndTime(startTime: String, slotId: Int): String {
     return "$slotStartTime - $slotEndTime"
 }
 
+fun formatDate(date: String): Date{
+    val formatter = SimpleDateFormat("dd/MM/yyyy")
+    return formatter.parse(date)
+}
+
 fun formatDate(date: LocalDate): Date{
     return formatDate(Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant()))
 }

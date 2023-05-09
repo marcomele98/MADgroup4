@@ -26,6 +26,7 @@ interface PlayingCourtDAO {
 
 
     //TODO questi slot number etc non vengono davvero restituiti. Si può cambiare un attimo la query poi
+    //TODO ritorno la valutazione media'
     @Transaction
     @Query(
         """

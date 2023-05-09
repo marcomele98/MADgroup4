@@ -25,6 +25,7 @@ import it.polito.madgroup4.utility.calculateStartEndTime
 import it.polito.madgroup4.utility.formatDate
 import it.polito.madgroup4.view.components.ReservationDetails
 import it.polito.madgroup4.viewmodel.ReservationViewModel
+import it.polito.madgroup4.viewmodel.UserViewModel
 import java.time.LocalTime
 import java.util.Date
 
@@ -34,11 +35,12 @@ import java.util.Date
 fun ShowReservation(
     reservation: ReservationWithCourt,
     vm: ReservationViewModel,
-    navController: NavController
+    navController: NavController,
+    userVm: UserViewModel,
 ) {
     val openDialog = remember { mutableStateOf(false) }
     vm.getSlotsByCourtIdAndDate(
-        reservation.playingCourt!!.id, reservation.reservation!!.date
+        reservation.playingCourt!!.id, reservation.reservation!!.date, userVm.user.value!!.id
     )
 
     val isInThePast = reservation.reservation.date < formatDate(Date())

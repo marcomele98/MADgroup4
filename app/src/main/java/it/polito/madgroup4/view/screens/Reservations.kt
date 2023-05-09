@@ -14,6 +14,7 @@ import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.view.components.Calendar
 import it.polito.madgroup4.view.components.ReservationList
 import it.polito.madgroup4.viewmodel.ReservationViewModel
+import it.polito.madgroup4.viewmodel.UserViewModel
 import java.time.LocalDate
 
 @Composable
@@ -22,7 +23,9 @@ fun Reservations(
     navController: NavController,
     setReservation: (ReservationWithCourt) -> Unit,
     date: LocalDate,
-    setDate: (LocalDate) -> Unit
+    setDate: (LocalDate) -> Unit,
+    userVm: UserViewModel,
+    userId: Long
 ) {
 
     val calendarState = rememberSelectableCalendarState()
@@ -43,7 +46,7 @@ fun Reservations(
     ) {
         Calendar(calendarState, allReservations)
         Spacer(modifier = Modifier.size(10.dp))
-        ReservationList(date = date.toString(), vm = vm, navController, setReservation)
+        ReservationList(date = date.toString(), vm = vm, navController, setReservation, userId)
     }
 }
 

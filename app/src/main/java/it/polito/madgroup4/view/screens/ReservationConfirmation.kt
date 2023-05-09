@@ -26,6 +26,7 @@ import it.polito.madgroup4.model.PlayingCourt
 import it.polito.madgroup4.model.Reservation
 import it.polito.madgroup4.view.components.ReservationDetails
 import it.polito.madgroup4.viewmodel.ReservationViewModel
+import it.polito.madgroup4.viewmodel.UserViewModel
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 
@@ -37,10 +38,12 @@ fun ReservationConfirmation(
     reservationTimeSlot: Int,
     setSelectedSlot: (Int) -> Unit,
     vm: ReservationViewModel,
+    userVm: UserViewModel,
     navController: NavController,
     reservation: Reservation = Reservation(
         courtId = playingCourt.id,
         slotNumber = reservationTimeSlot,
+        userId = userVm.user.value!!.id!!,
         date = SimpleDateFormat("dd/MM/yyyy").parse(
             SimpleDateFormat("dd/MM/yyyy").format(
                 java.sql.Date.valueOf(

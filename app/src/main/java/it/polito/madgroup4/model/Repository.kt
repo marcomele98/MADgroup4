@@ -11,9 +11,9 @@ class Repository @Inject constructor(
     private val userDAO: UserDAO,
     private val reviewDAO: ReviewDAO,
 ) {
-    fun getAllReservations() = reservationDAO.getAll()
-    fun getAllSlotsByCourtIdAndDate(courtId: Long, date: Date) =
-        reservationDAO.getAllByCourtIdAndDate(courtId, date)
+    fun getAllReservationsByUserId(userId: Long) = reservationDAO.getAllByUserId(userId)
+    fun getAllSlotsByCourtIdAndDate(courtId: Long, date: Date, userId: Long) =
+        reservationDAO.getAllByCourtIdAndDateAndUserId(courtId, date, userId)
 
     /*fun getAllBySport(sport: String) =
         playingCourtDAO.getAllBySport(sport)*/
@@ -21,7 +21,7 @@ class Repository @Inject constructor(
     fun getCourtsWithSlotsForSportAndDate(sport: String, date: Date) =
         playingCourtDAO.getCourtsWithSlotsForSportAndDate(sport, date)
 
-    fun getAllReservationsByDate(date: Date) = reservationDAO.getAllByDate(date)
+    fun getAllReservationsByDate(date: Date, userId: Long) = reservationDAO.getAllByDateAndUserId(date, userId)
     suspend fun saveReservation(reservation: Reservation) = reservationDAO.save(reservation)
     suspend fun deleteReservation(reservation: Reservation) = reservationDAO.delete(reservation)
     /*fun getAllPlayingCourts() = playingCourtDAO.getAll()
@@ -33,7 +33,8 @@ class Repository @Inject constructor(
     fun getById(id: Long) = userDAO.getById(id)
     suspend fun saveUser(user: User) = userDAO.save(user)
     suspend fun deleteUser(user: User) = userDAO.delete(user)
-
+    fun getAllReservationsByCourtIdAndDateAndUserId(courtId: Long, date: Date, userId: Long) =
+        reservationDAO.getAllByCourtIdAndDateAndUserId(courtId, date, userId)
     fun getAllReviewsByCourtId(courtId: Long) = reviewDAO.getAllReviewsByCourtId(courtId)
     suspend fun saveReview(review: Review) = reviewDAO.save(review)
     suspend fun deleteReview(review: Review) = reviewDAO.delete(review)

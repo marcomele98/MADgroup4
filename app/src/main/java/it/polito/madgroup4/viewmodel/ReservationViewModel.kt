@@ -21,29 +21,29 @@ class ReservationViewModel @Inject constructor(private val repository: Repositor
     private val viewModelScope = CoroutineScope(Dispatchers.Main)
     private var _reservations =
         MutableLiveData<List<ReservationWithCourt>>().apply { value = emptyList() }
-    var reservations: LiveData<List<ReservationWithCourt>> = _reservations
+    val reservations: LiveData<List<ReservationWithCourt>> = _reservations
 
     private var _slots = MutableLiveData<List<Int>>().apply { value = emptyList() }
-    var slots: LiveData<List<Int>> = _slots
+    val slots: LiveData<List<Int>> = _slots
 
     private var _playingCourts =
         MutableLiveData<List<CourtWithSlots>>().apply { value = emptyList() }
-    var playingCourts: LiveData<List<CourtWithSlots>> = _playingCourts
+    val playingCourts: LiveData<List<CourtWithSlots>> = _playingCourts
 
     private var _allRes = MutableLiveData<List<Reservation>>().apply { value = emptyList() }
-    var allRes: LiveData<List<Reservation>> = _allRes
+    val allRes: LiveData<List<Reservation>> = _allRes
 
     private var _allCourtsBySport = MutableLiveData<List<PlayingCourt>>().apply { value = emptyList() }
-    var allCourtsBySport: LiveData<List<PlayingCourt>> = _allCourtsBySport
+    val allCourtsBySport: LiveData<List<PlayingCourt>> = _allCourtsBySport
 
-    fun getReservationsByDate(date: Date) {
-        repository.getAllReservationsByDate(date).observeForever { reservations ->
+    fun getReservationsByDate(date: Date, userId: Long) {
+        repository.getAllReservationsByDate(date, userId).observeForever { reservations ->
             _reservations.value = reservations
         }
     }
 
-    fun getSlotsByCourtIdAndDate(courtId: Long, date: Date) {
-        repository.getAllSlotsByCourtIdAndDate(courtId, date).observeForever { slots ->
+    fun getSlotsByCourtIdAndDate(courtId: Long, date: Date, userId: Long) {
+        repository.getAllSlotsByCourtIdAndDate(courtId, date, userId).observeForever { slots ->
             _slots.value = slots
         }
     }
@@ -63,11 +63,14 @@ class ReservationViewModel @Inject constructor(private val repository: Repositor
     }
 
 
-    fun getAllReservations() {
-        repository.getAllReservations().observeForever { allRes ->
+    //TODO: metto l'id dell'utente loggato in preferences o lo hardcodato
+    fun getAllReservations(userId: Long) {
+        repository.getAllReservationsByUserId(userId).observeForever { allRes ->
             _allRes.value = allRes
         }
     }
+
+
 
     fun saveReservation(reservation: Reservation) = viewModelScope.launch {
         repository.saveReservation(reservation)

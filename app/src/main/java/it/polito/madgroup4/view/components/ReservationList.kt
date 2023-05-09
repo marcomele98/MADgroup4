@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.viewmodel.ReservationViewModel
+import it.polito.madgroup4.viewmodel.UserViewModel
 import java.sql.Date
 import java.text.SimpleDateFormat
 
@@ -22,12 +23,14 @@ fun ReservationList(
     date: String,
     vm: ReservationViewModel,
     navController: NavController,
-    setReservation: (ReservationWithCourt) -> Unit
+    setReservation: (ReservationWithCourt) -> Unit,
+    userId: Long
 ) {
 
     val formatter = SimpleDateFormat("dd/MM/yyyy")
 
-    vm.getReservationsByDate(formatter.parse(formatter.format(Date.valueOf(date))))
+    //TODO: change 1 to userVm.user.value!!.id
+    vm.getReservationsByDate(formatter.parse(formatter.format(Date.valueOf(date))), userId)
     val reservations = vm.reservations.observeAsState(initial = emptyList())
 
     println(reservations.value)

@@ -29,6 +29,7 @@ import it.polito.madgroup4.view.screens.ShowReservation
 import it.polito.madgroup4.view.screens.SlotSelectionReservation
 import it.polito.madgroup4.view.screens.SportSelector
 import it.polito.madgroup4.viewmodel.ReservationViewModel
+import it.polito.madgroup4.viewmodel.UserViewModel
 import java.time.LocalDate
 
 
@@ -49,6 +50,8 @@ fun Navigation(
     setSelectedSlot: (Int) -> Unit,
     showedCourt: PlayingCourt,
     setShowedCourt: (PlayingCourt) -> Unit,
+    userVm: UserViewModel,
+    userId: Long
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -97,7 +100,9 @@ fun Navigation(
                         navController,
                         setReservationWithCourt,
                         creationDate,
-                        setCreationDate
+                        setCreationDate,
+                        userVm,
+                        userId
                     )
                 }
 
@@ -109,6 +114,7 @@ fun Navigation(
                         reservation,
                         vm,
                         navController,
+                        userVm
                     )
                 }
                 composable("Select Sport") {
@@ -135,6 +141,7 @@ fun Navigation(
                         reservationTimeSlot = selectedSlot,
                         setSelectedSlot = setSelectedSlot,
                         vm = vm,
+                        userVm = userVm,
                         navController = navController,
                     )
                 }
@@ -146,6 +153,7 @@ fun Navigation(
                         reservationTimeSlot = selectedSlot,
                         setSelectedSlot = setSelectedSlot,
                         vm = vm,
+                        userVm = userVm,
                         navController = navController,
                         reservation = reservation.reservation!!,
                     )

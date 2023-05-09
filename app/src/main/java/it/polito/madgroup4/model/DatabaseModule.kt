@@ -31,4 +31,16 @@ class DatabaseModule {
     fun provideReservationDAO(localDatabase: LocalDatabase): ReservationDAO {
         return localDatabase.reservationDAO()
     }
+
+    @Singleton
+    @Provides
+    fun provideProfileDAO(localDatabase: LocalDatabase): UserDAO {
+        return localDatabase.userDAO()
+    }
+
+    @Singleton
+    @Provides
+    fun provideReviewDAO(localDatabase: LocalDatabase): ReviewDAO {
+        return localDatabase.reviewDAO()
+    }
 }
