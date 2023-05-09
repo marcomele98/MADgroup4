@@ -6,12 +6,10 @@ import androidx.compose.material.icons.filled.SportsTennis
 import androidx.compose.ui.graphics.vector.ImageVector
 import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.viewmodel.ReservationViewModel
-import kotlinx.datetime.DatePeriod
 import java.text.SimpleDateFormat
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.ZoneId
-import java.time.ZoneOffset
 import java.util.Date
 
 fun calculateStartEndTime(startTime: String, slotId: Int): String {

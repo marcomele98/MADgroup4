@@ -30,9 +30,9 @@ fun BottomNavBar(
                     contentDescription = "Courts"
                 )
             },
-            label = { Text("Courts") },
+            label = { Text("Playing Courts") },
             onClick = {
-                navController.navigate("Courts")
+                navController.navigate("Playing Courts")
             }
         )
 

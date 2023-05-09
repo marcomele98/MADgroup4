@@ -5,36 +5,24 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import it.polito.madgroup4.model.PlayingCourt
-import it.polito.madgroup4.model.ReservationWithCourt
-import it.polito.madgroup4.utility.calculateStartEndTime
-import it.polito.madgroup4.utility.formatDate
 import it.polito.madgroup4.view.components.CourtDetails
-import it.polito.madgroup4.view.components.ReservationDetails
-import it.polito.madgroup4.viewmodel.ReservationViewModel
-import java.time.LocalTime
-import java.util.Date
 
 
 @ExperimentalMaterial3Api
 @Composable
 fun ShowCourt(
     playingCourt: PlayingCourt,
+    navController: NavController
 ) {
     Column(
         Modifier
@@ -45,5 +33,15 @@ fun ShowCourt(
             playingCourt,
         )
         Spacer(modifier = Modifier.weight(1f))
+        Button(
+            onClick = { navController.navigate("Rate This Court") },
+            modifier = Modifier
+                .fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            )
+        ) {
+            Text(text = "Rate This Court")
+        }
     }
 }

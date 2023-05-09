@@ -34,7 +34,7 @@ fun Courts(
         }
         PlayingCourtList(
             playingCourts = playingCourts.value,
-            onClick = { setShowedCourt(playingCourts.value[it]); navController.navigate("Court Details") })
+            onClick = { setShowedCourt(playingCourts.value[it]); navController.navigate("Playing Court Details") })
     }
 
 }

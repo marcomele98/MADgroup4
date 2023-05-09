@@ -35,13 +35,13 @@ data class Review(
     val userId: Long,
 
     @ColumnInfo(name = "service_rating")
-    val serviceRating: Int,
+    var serviceRating: Float,
 
     @ColumnInfo(name = "structure_rating")
-    val structureRating: Int,
+    var structureRating: Float,
 
     @ColumnInfo(name = "cleaning_rating")
-    val cleaningRating: Int,
+    var cleaningRating: Float,
 
     val date: Date,
 

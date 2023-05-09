@@ -24,11 +24,13 @@ import it.polito.madgroup4.view.screens.CreateReservation
 import it.polito.madgroup4.view.screens.EditReservation
 import it.polito.madgroup4.view.screens.ReservationConfirmation
 import it.polito.madgroup4.view.screens.Reservations
+import it.polito.madgroup4.view.screens.ReviewForm
 import it.polito.madgroup4.view.screens.ShowCourt
 import it.polito.madgroup4.view.screens.ShowReservation
 import it.polito.madgroup4.view.screens.SlotSelectionReservation
 import it.polito.madgroup4.view.screens.SportSelector
 import it.polito.madgroup4.viewmodel.ReservationViewModel
+import it.polito.madgroup4.viewmodel.ReviewViewModel
 import it.polito.madgroup4.viewmodel.UserViewModel
 import java.time.LocalDate
 
@@ -51,7 +53,8 @@ fun Navigation(
     showedCourt: PlayingCourt,
     setShowedCourt: (PlayingCourt) -> Unit,
     userVm: UserViewModel,
-    userId: Long
+    userId: Long,
+    reviewVm: ReviewViewModel,
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -159,7 +162,7 @@ fun Navigation(
                     )
                 }
 
-                composable("Courts") {
+                composable("Playing Courts") {
                     Courts(
                         navController = navController,
                         vm = vm,
@@ -168,8 +171,12 @@ fun Navigation(
                     )
                 }
 
-                composable("Court Details") {
-                    ShowCourt(playingCourt = showedCourt)
+                composable("Playing Court Details") {
+                    ShowCourt(playingCourt = showedCourt, navController = navController)
+                }
+
+                composable("Rate This Court") {
+                    ReviewForm(showedCourt = showedCourt,  userId = userId, reviewVm = reviewVm, navController = navController )
                 }
             }
         }
