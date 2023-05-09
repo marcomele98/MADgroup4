@@ -17,5 +17,5 @@ data class User(
     val phone: String,
     val gender: String,
     val birthday: Date,
-    val photo: String,
+    val photo: String? = null,
 )

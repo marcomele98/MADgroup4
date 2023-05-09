@@ -18,7 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ReservationViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
 
-    val viewModelScope = CoroutineScope(Dispatchers.Main)
+    private val viewModelScope = CoroutineScope(Dispatchers.Main)
     private var _reservations =
         MutableLiveData<List<ReservationWithCourt>>().apply { value = emptyList() }
     var reservations: LiveData<List<ReservationWithCourt>> = _reservations
