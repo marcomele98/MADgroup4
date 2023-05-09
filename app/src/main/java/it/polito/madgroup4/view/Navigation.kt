@@ -175,7 +175,7 @@ fun Navigation(
                     ShowCourt(playingCourt = showedCourt, navController = navController)
                 }
 
-                composable("Rate This Court") {
+                composable("Rate This Playing Court") {
                     ReviewForm(showedCourt = showedCourt,  userId = userId, reviewVm = reviewVm, navController = navController )
                 }
             }

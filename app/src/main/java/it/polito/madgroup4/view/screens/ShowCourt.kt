@@ -34,14 +34,14 @@ fun ShowCourt(
         )
         Spacer(modifier = Modifier.weight(1f))
         Button(
-            onClick = { navController.navigate("Rate This Court") },
+            onClick = { navController.navigate("Rate This Playing Court") },
             modifier = Modifier
                 .fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
                 contentColor = MaterialTheme.colorScheme.onPrimary
             )
         ) {
-            Text(text = "Rate This Court")
+            Text(text = "Rate This Playing Court")
         }
     }
 }
