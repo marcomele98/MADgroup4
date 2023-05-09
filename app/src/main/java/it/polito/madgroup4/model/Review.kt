@@ -6,9 +6,8 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import java.util.Date
 
-
 @Entity(
-    tableName = "reservations",
+    tableName = "reviews",
     foreignKeys = [
         ForeignKey(
             entity = PlayingCourt::class,
@@ -25,7 +24,7 @@ import java.util.Date
     ]
 )
 
-data class Reservation(
+data class Review(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
 
@@ -35,11 +34,16 @@ data class Reservation(
     @ColumnInfo(name = "user_id")
     val userId: Long,
 
-    @ColumnInfo(name = "slot_number")
-    var slotNumber: Int,
+    @ColumnInfo(name = "service_rating")
+    val serviceRating: Int,
+
+    @ColumnInfo(name = "structure_rating")
+    val structureRating: Int,
+
+    @ColumnInfo(name = "cleaning_rating")
+    val cleaningRating: Int,
 
     val date: Date,
 
-    var particularRequests: String? = null,
-
+    var text: String? = null,
 )
