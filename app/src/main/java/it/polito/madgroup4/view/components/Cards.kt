@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import it.polito.madgroup4.model.PlayingCourt
 import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.utility.CourtWithSlots
 import it.polito.madgroup4.utility.calculateStartEndTime
@@ -89,8 +90,8 @@ fun ReservationCard(
 
 @Composable
 fun PlayingCourtCard(
-    playingCourt: CourtWithSlots,
-    onClick: (CourtWithSlots) -> Unit,
+    playingCourt: PlayingCourt,
+    onClick: () -> Unit,
     enabled: Boolean = true
 ) {
 
@@ -99,7 +100,7 @@ fun PlayingCourtCard(
             .padding(bottom = 10.dp)
             .fillMaxWidth()
             .clickable(enabled) {
-                onClick(playingCourt)
+                onClick()
             }
     ) {
         Column(
@@ -110,12 +111,12 @@ fun PlayingCourtCard(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Icon(
-                    imageSelector(playingCourt.playingCourt!!.sport),
+                    imageSelector(playingCourt.sport),
                     contentDescription = "Reservations"
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = playingCourt.playingCourt!!.name,
+                    text = playingCourt.name,
                     fontWeight = FontWeight.Bold,
                     fontSize = 22.sp
                 )
@@ -128,13 +129,13 @@ fun PlayingCourtCard(
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(
-                text = playingCourt.playingCourt!!.address + ", " + playingCourt.playingCourt!!.city + " (" + playingCourt.playingCourt!!.province + ")",
+                text = playingCourt.address + ", " + playingCourt.city + " (" + playingCourt.province + ")",
                 fontSize = 18.sp
             )
 
             Spacer(modifier = Modifier.height(10.dp))
             Text(
-                text = playingCourt.playingCourt!!.price.toString() + " €/h",
+                text = playingCourt.price.toString() + " €/h",
                 fontSize = 18.sp
             )
         }

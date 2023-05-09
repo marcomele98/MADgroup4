@@ -10,6 +10,8 @@ import kotlinx.datetime.DatePeriod
 import java.text.SimpleDateFormat
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.ZoneId
+import java.time.ZoneOffset
 import java.util.Date
 
 fun calculateStartEndTime(startTime: String, slotId: Int): String {
@@ -28,6 +30,10 @@ fun calculateStartEndTime(startTime: String, slotId: Int): String {
     val slotEndTime = "$slotEndHour:$slotEndMinute"
 
     return "$slotStartTime - $slotEndTime"
+}
+
+fun formatDate(date: LocalDate): Date{
+    return formatDate(Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant()))
 }
 
 fun add0IfLengthIs1(n: Int): String {

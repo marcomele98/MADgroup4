@@ -76,6 +76,20 @@ class ReservationActivityCompose : ComponentActivity() {
     val reservation3 = Reservation(3, 1, 2, formatter.parse(formatter.format(Date())))
     val reservation4 = Reservation(4, 1, 3, formatter.parse("11/05/2023"))
     val reservation5 = Reservation(5, 2, 3, formatter.parse("14/05/2023"))
+/*    val reservation6 = Reservation(6, 1, 2, formatter.parse(formatter.format(Date())))
+    val reservation7 = Reservation(7, 1, 0, formatter.parse(formatter.format(Date())))
+    val reservation8 = Reservation(8, 1, 5, formatter.parse(formatter.format(Date())))
+    val reservation9 = Reservation(9, 1, 6, formatter.parse(formatter.format(Date())))
+    val reservation10 = Reservation(10, 1, 7, formatter.parse(formatter.format(Date())))
+    val reservation11 = Reservation(11, 1, 8, formatter.parse(formatter.format(Date())))
+    val reservation12 = Reservation(12, 1, 9, formatter.parse(formatter.format(Date())))
+    val reservation13 = Reservation(13, 1, 10, formatter.parse(formatter.format(Date())))
+    val reservation14 = Reservation(14, 1, 11, formatter.parse(formatter.format(Date())))
+    val reservation15 = Reservation(15, 1, 3, formatter.parse(formatter.format(Date())))
+    val reservation16 = Reservation(16, 1, 4, formatter.parse(formatter.format(Date())))*/
+
+
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,6 +102,17 @@ class ReservationActivityCompose : ComponentActivity() {
         vm.saveReservation(reservation3)
         vm.saveReservation(reservation4)
         vm.saveReservation(reservation5)
+/*        vm.saveReservation(reservation6)
+        vm.saveReservation(reservation7)
+        vm.saveReservation(reservation8)
+        vm.saveReservation(reservation9)
+        vm.saveReservation(reservation10)
+        vm.saveReservation(reservation11)
+        vm.saveReservation(reservation12)
+        vm.saveReservation(reservation13)
+        vm.saveReservation(reservation14)
+        vm.saveReservation(reservation15)
+        vm.saveReservation(reservation16)*/
 
         setContent {
             MADgroup4Theme {

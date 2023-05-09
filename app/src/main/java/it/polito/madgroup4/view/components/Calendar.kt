@@ -64,10 +64,11 @@ fun Calendar(
                         .atZone(ZoneId.systemDefault())
                         .toLocalDate() == dayState.date
                 },
+                showReservations = true
             )
         },
         calendarState = calendarState,
-        showAdjacentMonths = false
+        showAdjacentMonths = false,
     )
 }
 
@@ -133,6 +134,7 @@ fun MyDay(
     reservations: Reservation?,
     modifier: Modifier = Modifier,
     isActive: Boolean = true,
+    showReservations: Boolean = false
 ) {
     val date = state.date
     val selectionState = state.selectionState
@@ -190,7 +192,7 @@ fun MyDay(
                     .size(5.dp)
                     .clip(CircleShape)
                     .background(
-                        if (reservations != null)
+                        if (reservations != null && showReservations)
                             MaterialTheme.colorScheme.primary
                         else
                             Color.Transparent

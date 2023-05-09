@@ -9,16 +9,25 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.github.boguszpawlowski.composecalendar.SelectableWeekCalendar
 import io.github.boguszpawlowski.composecalendar.rememberSelectableWeekCalendarState
 import io.github.boguszpawlowski.composecalendar.week.Week
+import it.polito.madgroup4.model.PlayingCourt
 import it.polito.madgroup4.utility.CourtWithSlots
+import it.polito.madgroup4.utility.formatDate
 import it.polito.madgroup4.utility.getWeekdaysStartingOnSunday
 import it.polito.madgroup4.view.components.DaysOfWeekHeader
 import it.polito.madgroup4.view.components.MyDay
@@ -30,6 +39,7 @@ import it.polito.madgroup4.viewmodel.ReservationViewModel
 import java.text.SimpleDateFormat
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.ZoneId
 import java.util.Date
 
@@ -49,24 +59,52 @@ fun CreateReservation(
     )
     val allReservations = vm.allRes.observeAsState().value
 
-    if (date.isBefore(LocalDate.now()))
-        setDate(LocalDate.now())
+    if (date.isBefore(LocalDate.now())) setDate(LocalDate.now())
 
-    if (calendarState.selectionState.selection.isEmpty())
-        calendarState.selectionState.selection = listOf(LocalDate.now())
+    if (calendarState.selectionState.selection.isEmpty()) calendarState.selectionState.selection =
+        listOf(LocalDate.now())
 
-    if (calendarState.selectionState.selection[0] != date)
-        setDate(calendarState.selectionState.selection[0])
+    if (calendarState.selectionState.selection[0] != date) setDate(calendarState.selectionState.selection[0])
 
     setSelectedSlot(-1)
 
+    val formatter = SimpleDateFormat("dd/MM/yyyy")
+
+    vm.getAllPlayingCourtsBySportAndDate(
+        formatter.parse(formatter.format(java.sql.Date.valueOf(date.toString()))), selectedSport
+    )
+
+    val playingCourts = vm.playingCourts.observeAsState(initial = emptyList())
+
+    var filteredCourts by remember {
+        mutableStateOf(emptyList<CourtWithSlots>())
+    }
+
+    filteredCourts = (playingCourts.value.filter {
+        it.slots?.filter { slot ->
+            !(slot.isBooked || (formatDate(date) == formatDate(Date()) && LocalTime.parse(
+                slot.time.split(
+                    "-"
+                )[0].trim()
+            ).isBefore(
+                LocalTime.now()
+            )))
+        }?.isNotEmpty() ?: false
+    })
+
+
+    val onClick = { index: Int ->
+        setSelectedCourt(filteredCourts[index])
+        navController.navigate("Select A Time SLot")
+    }
+
+
+
     Column(
-        Modifier
-            .padding(horizontal = 16.dp)
+        Modifier.padding(horizontal = 16.dp)
     ) {
         Row(
-            Modifier
-                .padding(vertical = 16.dp)
+            Modifier.padding(vertical = 16.dp)
         ) {
             SportCard(sport = selectedSport, navController = navController)
         }
@@ -81,8 +119,7 @@ fun CreateReservation(
                     isActive = !dayState.date.isBefore(LocalDate.now()),
                     state = dayState,
                     reservations = allReservations?.firstOrNull() {
-                        it.date.toInstant()
-                            .atZone(ZoneId.systemDefault())
+                        it.date.toInstant().atZone(ZoneId.systemDefault())
                             .toLocalDate() == dayState.date
                     },
 
@@ -90,33 +127,28 @@ fun CreateReservation(
             },
         )
         Spacer(modifier = Modifier.height(16.dp))
-        PlayingCourtList(
-            date = date.toString(),
-            sport = selectedSport,
-            vm = vm,
-            navController = navController,
-            setSelectedCourt = setSelectedCourt
-        )
+        if (filteredCourts.isEmpty()) {
+            Text(
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.error,
+                text = "No available courts for the selected date and sport",
+                modifier = Modifier.padding(16.dp)
+            )
+        } else {
+            PlayingCourtList(
+                playingCourts = filteredCourts.map { it.playingCourt!! },
+                onClick = onClick,
+            )
+        }
     }
 }
 
 
 @Composable
 fun PlayingCourtList(
-    date: String,
-    sport: String,
-    vm: ReservationViewModel,
-    navController: NavController,
-    setSelectedCourt: (CourtWithSlots) -> Unit
+    playingCourts: List<PlayingCourt>, onClick: (Int) -> Unit
 ) {
 
-    val formatter = SimpleDateFormat("dd/MM/yyyy")
-
-    vm.getAllPlayingCourtsBySportAndDate(
-        formatter.parse(formatter.format(java.sql.Date.valueOf(date))),
-        sport
-    )
-    val playingCourts = vm.playingCourts.observeAsState(initial = emptyList())
 
     Box(
         modifier = Modifier
@@ -124,10 +156,9 @@ fun PlayingCourtList(
             .clip(RoundedCornerShape(12.dp))
     ) {
         LazyColumn(Modifier.fillMaxSize()) {
-            items(playingCourts.value.size) { index ->
-                PlayingCourtCard(playingCourts.value[index], onClick = {
-                    setSelectedCourt(it)
-                    navController.navigate("Select A Time SLot")
+            items(playingCourts.size) { index ->
+                PlayingCourtCard(playingCourts[index], onClick = {
+                    onClick(index)
                 })
             }
         }
@@ -144,8 +175,7 @@ fun SlotSelectionReservation(
     date: LocalDate
 ) {
 
-    SlotSelector(
-        selectedSlot = selectedSlot,
+    SlotSelector(selectedSlot = selectedSlot,
         slots = selectedCourt.slots!!,
         date = Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant()),
         onClick = {
@@ -153,9 +183,7 @@ fun SlotSelectionReservation(
                 setSelectedSlot(selectedCourt.slots!![it].slotNumber)
                 navController.navigate("Confirm Reservation")
             }
-        }
-    )
-
+        })
 }
 
 
