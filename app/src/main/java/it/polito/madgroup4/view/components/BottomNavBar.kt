@@ -3,6 +3,7 @@ package it.polito.madgroup4.view.components
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -20,16 +21,21 @@ fun BottomNavBar(
     NavigationBar(
         modifier = Modifier.height(75.dp),
     ) {
+
         NavigationBarItem(
-            selected = navController.currentBackStackEntry?.destination?.route == "Profile",
+            selected = navController.currentBackStackEntry?.destination?.route == "Courts",
             icon = {
                 Icon(
-                    Icons.Default.Person,
-                    contentDescription = "Profile"
+                    Icons.Default.LocationOn,
+                    contentDescription = "Courts"
                 )
             },
-            label = { Text("Profile") },
-            onClick = { navController.navigate("Profile") })
+            label = { Text("Courts") },
+            onClick = {
+                navController.navigate("Courts")
+            }
+        )
+
         NavigationBarItem(
             selected = navController.currentBackStackEntry?.destination?.route == "Reservations",
             icon = {
@@ -43,5 +49,17 @@ fun BottomNavBar(
                 navController.navigate("Reservations")
             }
         )
+
+
+        NavigationBarItem(
+            selected = navController.currentBackStackEntry?.destination?.route == "Profile",
+            icon = {
+                Icon(
+                    Icons.Default.Person,
+                    contentDescription = "Profile"
+                )
+            },
+            label = { Text("Profile") },
+            onClick = { navController.navigate("Profile") })
     }
 }

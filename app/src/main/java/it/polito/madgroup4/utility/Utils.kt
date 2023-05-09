@@ -75,7 +75,7 @@ fun calculateAvailableSlot(
 
     var listOfReservation = vm.slots.value!!
 
-    return getAllSlots(listOfReservation, reservation.playingCourt!!.openingTime, reservation.playingCourt!!.closingTime)
+    return getAllSlots(listOfReservation, reservation.playingCourt!!.openingTime!!, reservation.playingCourt!!.closingTime!!)
 }
 
 fun getAllSlots(

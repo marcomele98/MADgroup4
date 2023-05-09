@@ -141,6 +141,9 @@ fun MainScreen(vm: ReservationViewModel) {
     val (selectedSlot, setSelectedSlot) = remember {
         mutableStateOf(-1)
     }
+    val (showedCourt, setShowedCourt) = remember { mutableStateOf(PlayingCourt()) }
+
+
 
     vm.getAllReservations()
 
@@ -156,7 +159,9 @@ fun MainScreen(vm: ReservationViewModel) {
         selectedCourt,
         setSelectedCourt,
         selectedSlot,
-        setSelectedSlot
+        setSelectedSlot,
+        showedCourt,
+        setShowedCourt
     )
 
 }

@@ -29,19 +29,10 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 @Composable
-fun ReservationDetails(
+fun CourtDetails(
     playingCourt: PlayingCourt,
-    reservationDate: Date,
-    reservationTimeSlot: Int,
-    particularRequests: String? = null
 ) {
 
-    val startEndTime = calculateStartEndTime(
-        playingCourt.openingTime!!,
-        reservationTimeSlot
-    )
-
-    val formatter = SimpleDateFormat("dd/MM/yyyy")
 
     Column {
         Row(
@@ -56,7 +47,7 @@ fun ReservationDetails(
             Spacer(modifier = Modifier.weight(1f))
             Icon(
                 imageSelector(playingCourt.sport!!),
-                contentDescription = "Reservations",
+                contentDescription = "Court",
                 modifier = Modifier
                     .size(35.dp)
             )
@@ -75,7 +66,7 @@ fun ReservationDetails(
         Spacer(modifier = Modifier.height(20.dp))
 
         Row() {
-            Icon(Icons.Default.Euro, contentDescription = "Location")
+            Icon(Icons.Default.Euro, contentDescription = "Price")
             Spacer(modifier = Modifier.width(10.dp))
             Text(
                 text = playingCourt.price.toString(),
@@ -83,39 +74,5 @@ fun ReservationDetails(
             )
         }
         Spacer(modifier = Modifier.height(20.dp))
-        Row() {
-            Icon(Icons.Default.DateRange, contentDescription = "Location")
-            Spacer(modifier = Modifier.width(10.dp))
-            Text(
-                text = formatter.format(reservationDate),
-                fontSize = 22.sp
-            )
-        }
-        Spacer(modifier = Modifier.height(20.dp))
-        Row() {
-            Icon(Icons.Default.Schedule, contentDescription = "Location")
-            Spacer(modifier = Modifier.width(10.dp))
-            Text(
-                text = startEndTime,
-                fontSize = 22.sp
-            )
-        }
-        if (particularRequests != null && particularRequests.trim() != "") {
-            Spacer(modifier = Modifier.height(30.dp))
-            Text(text = "Particular requests", fontSize = 20.sp)
-            Spacer(modifier = Modifier.height(10.dp))
-            Card {
-                Text(
-                    text = particularRequests!!,
-                    fontSize = 18.sp,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(100.dp)
-                        .padding(10.dp)
-                )
-            }
-        }
-
-
     }
 }

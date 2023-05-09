@@ -12,16 +12,19 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import it.polito.madgroup4.model.PlayingCourt
 import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.utility.CourtWithSlots
 import it.polito.madgroup4.view.components.BottomNavBar
 import it.polito.madgroup4.view.components.FloatingFab
 import it.polito.madgroup4.view.components.Profile
 import it.polito.madgroup4.view.components.TopBar
+import it.polito.madgroup4.view.screens.Courts
 import it.polito.madgroup4.view.screens.CreateReservation
 import it.polito.madgroup4.view.screens.EditReservation
 import it.polito.madgroup4.view.screens.ReservationConfirmation
 import it.polito.madgroup4.view.screens.Reservations
+import it.polito.madgroup4.view.screens.ShowCourt
 import it.polito.madgroup4.view.screens.ShowReservation
 import it.polito.madgroup4.view.screens.SlotSelectionReservation
 import it.polito.madgroup4.view.screens.SportSelector
@@ -44,6 +47,8 @@ fun Navigation(
     setSelectedCourt: (CourtWithSlots) -> Unit,
     selectedSlot: Int,
     setSelectedSlot: (Int) -> Unit,
+    showedCourt: PlayingCourt,
+    setShowedCourt: (PlayingCourt) -> Unit,
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -144,6 +149,19 @@ fun Navigation(
                         navController = navController,
                         reservation = reservation.reservation!!,
                     )
+                }
+
+                composable("Courts") {
+                    Courts(
+                        navController = navController,
+                        vm = vm,
+                        selectedSport = selectedSport,
+                        setShowedCourt = setShowedCourt,
+                    )
+                }
+
+                composable("Court Details") {
+                    ShowCourt(playingCourt = showedCourt)
                 }
             }
         }

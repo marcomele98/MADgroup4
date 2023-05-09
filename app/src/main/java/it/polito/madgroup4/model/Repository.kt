@@ -23,8 +23,8 @@ class Repository @Inject constructor(
     suspend fun saveReservation(reservation: Reservation) = reservationDAO.save(reservation)
     suspend fun deleteReservation(reservation: Reservation) = reservationDAO.delete(reservation)
     /*fun getAllPlayingCourts() = playingCourtDAO.getAll()
-    fun getPlayingCourtById(id: String) = playingCourtDAO.getById(id)
-    fun getAllPlayingCourtsBySport(sport: String) = playingCourtDAO.getAllBySport(sport)*/
+    fun getPlayingCourtById(id: String) = playingCourtDAO.getById(id)*/
+    fun getAllPlayingCourtsBySport(sport: String) = playingCourtDAO.getAllBySport(sport)
     suspend fun savePlayingCourt(playingCourt: PlayingCourt) = playingCourtDAO.save(playingCourt)
     //suspend fun deletePlayingCourt(playingCourt: PlayingCourt) = playingCourtDAO.delete(playingCourt)
 

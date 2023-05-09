@@ -34,7 +34,7 @@ fun ReservationCard(
     setReservation: (ReservationWithCourt) -> Unit
 ) {
     val startEndTime = calculateStartEndTime(
-        reservation.playingCourt!!.openingTime,
+        reservation.playingCourt!!.openingTime!!,
         reservation.reservation!!.slotNumber
     )
     ElevatedCard(
@@ -54,7 +54,7 @@ fun ReservationCard(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Icon(
-                    imageSelector(reservation.playingCourt.sport),
+                    imageSelector(reservation.playingCourt.sport!!),
                     contentDescription = "Reservations"
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -72,7 +72,7 @@ fun ReservationCard(
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(
-                text = reservation.playingCourt.name,
+                text = reservation.playingCourt.name!!,
                 fontSize = 18.sp
             )
 
@@ -111,12 +111,12 @@ fun PlayingCourtCard(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Icon(
-                    imageSelector(playingCourt.sport),
+                    imageSelector(playingCourt.sport!!),
                     contentDescription = "Reservations"
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = playingCourt.name,
+                    text = playingCourt.name!!,
                     fontWeight = FontWeight.Bold,
                     fontSize = 22.sp
                 )

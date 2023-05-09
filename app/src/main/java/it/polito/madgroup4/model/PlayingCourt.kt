@@ -9,27 +9,27 @@ data class PlayingCourt(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
 
-    val name: String,
+    val name: String? = null,
 
-    val price: Double,
+    val price: Double? = null,
 
     @ColumnInfo(name = "opening_time")
-    val openingTime: String,
+    val openingTime: String? = null,
 
     @ColumnInfo(name = "closing_time")
-    val closingTime: String,
+    val closingTime: String? = null,
 
-    val sport: String,
+    val sport: String? = null,
 
-    val address: String,
+    val address: String? = null,
 
-    val city: String,
+    val city: String? = null,
 
-    val province: String,
+    val province: String? = null,
 
-    val phone: String,
+    val phone: String? = null,
 
-    val email: String,
+    val email: String? = null,
 
 
     /*  var region: String,

@@ -33,6 +33,9 @@ class ReservationViewModel @Inject constructor(private val repository: Repositor
     private var _allRes = MutableLiveData<List<Reservation>>().apply { value = emptyList() }
     var allRes: LiveData<List<Reservation>> = _allRes
 
+    private var _allCourtsBySport = MutableLiveData<List<PlayingCourt>>().apply { value = emptyList() }
+    var allCourtsBySport: LiveData<List<PlayingCourt>> = _allCourtsBySport
+
     fun getReservationsByDate(date: Date) {
         repository.getAllReservationsByDate(date).observeForever { reservations ->
             _reservations.value = reservations
@@ -52,6 +55,13 @@ class ReservationViewModel @Inject constructor(private val repository: Repositor
             }
 
     }
+
+    fun getAllPlayingCourtBySport(sport: String) {
+        repository.getAllPlayingCourtsBySport(sport).observeForever { allCourtsBySport ->
+            _allCourtsBySport.value = allCourtsBySport
+        }
+    }
+
 
     fun getAllReservations() {
         repository.getAllReservations().observeForever { allRes ->

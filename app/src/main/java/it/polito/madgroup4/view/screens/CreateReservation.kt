@@ -122,8 +122,7 @@ fun CreateReservation(
                         it.date.toInstant().atZone(ZoneId.systemDefault())
                             .toLocalDate() == dayState.date
                     },
-
-                    )
+                )
             },
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -131,7 +130,7 @@ fun CreateReservation(
             Text(
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.error,
-                text = "No available courts for the selected date and sport",
+                text = "No available courts for the selected date and sport.",
                 modifier = Modifier.padding(16.dp)
             )
         } else {

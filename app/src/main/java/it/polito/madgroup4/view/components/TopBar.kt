@@ -29,7 +29,7 @@ fun TopBar(title: String, navController: NavController, reservation: Reservation
                 || (formatDate(Date()) == reservation.reservation.date
                 && LocalTime.parse(
             calculateStartEndTime(
-                reservation.playingCourt!!.openingTime,
+                reservation.playingCourt!!.openingTime!!,
                 reservation.reservation.slotNumber
             ).split("-")[0].trim()
         ).isBefore(
