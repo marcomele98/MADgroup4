@@ -160,9 +160,13 @@ fun ReviewForm(
         Button(modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(
             contentColor = MaterialTheme.colorScheme.onPrimary
         ), onClick = {
-            review.cleaningRating = cleaning
-            review.serviceRating = service
-            review.structureRating = structure
+            // I campi sono tutti opzionali, nel caso uno non venga inserito non deve essere conteggiato nella media della review
+            if (cleaning != 0f)
+                review.cleaningRating = cleaning
+            if (service != 0f)
+                review.serviceRating = service
+            if (structure != 0f)
+                review.structureRating = structure
             if (comment.trim() != "")
                 review.text = comment
             reviewVm.saveReview(review)
