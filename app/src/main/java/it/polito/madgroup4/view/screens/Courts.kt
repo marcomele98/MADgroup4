@@ -17,7 +17,7 @@ fun Courts(
     navController: NavController,
     vm: ReservationViewModel,
     selectedSport: String,
-    setShowedCourt: (PlayingCourt) -> Unit
+    setShowedCourt: (PlayingCourt) -> Unit,
 ) {
 
     vm.getAllPlayingCourtBySport(selectedSport)

@@ -15,6 +15,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import it.polito.madgroup4.model.PlayingCourt
 import it.polito.madgroup4.model.Reservation
 import it.polito.madgroup4.model.ReservationWithCourt
+import it.polito.madgroup4.model.Review
 import it.polito.madgroup4.model.User
 import it.polito.madgroup4.utility.CourtWithSlots
 import it.polito.madgroup4.utility.formatDate
@@ -154,6 +155,9 @@ fun MainScreen(vm: ReservationViewModel, userVm: UserViewModel, reviewVm: Review
     }
     val (showedCourt, setShowedCourt) = remember { mutableStateOf(PlayingCourt()) }
 
+    val (showedReview, setShowedReview) = remember { mutableStateOf(Review(1,1,1, "Test", date=Date())) }
+    val (reviews, setReviews) = remember { mutableStateOf(listOf<Review>()) }
+
 
     //TODO: prendo l'id dalle preferences
     val userId: Long = 1
@@ -179,7 +183,11 @@ fun MainScreen(vm: ReservationViewModel, userVm: UserViewModel, reviewVm: Review
         setShowedCourt,
         userVm,
         userId,
-        reviewVm
+        reviewVm,
+        reviews,
+        setReviews,
+        showedReview,
+        setShowedReview
     )
 
 }

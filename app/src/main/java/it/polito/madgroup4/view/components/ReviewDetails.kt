@@ -11,9 +11,12 @@ import androidx.compose.material.icons.filled.CleaningServices
 import androidx.compose.material.icons.filled.ManageAccounts
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.gowtham.ratingbar.RatingBar
 import com.gowtham.ratingbar.RatingBarConfig
 import com.gowtham.ratingbar.RatingBarStyle
@@ -22,16 +25,23 @@ import it.polito.madgroup4.model.Review
 
 @Composable
 fun ReviewDetails(
-  review: Review,
+  showedReview: Review,
 ) {
 
 
   Column {
 
+    Text(
+      text = "Title: "+showedReview.title,
+      fontWeight = FontWeight.Bold,
+      fontSize = 24.sp,
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+
     Row() {
       Icon(Icons.Default.ManageAccounts, contentDescription = "Service")
       Spacer(modifier = Modifier.width(10.dp))
-      RatingBar(value = review.serviceRating,
+      RatingBar(value = showedReview.serviceRating?:0f,
         onValueChange = {},
         config = RatingBarConfig().style(RatingBarStyle.Normal)
           .activeColor(MaterialTheme.colorScheme.primary)
@@ -45,7 +55,7 @@ fun ReviewDetails(
     Row() {
       Icon(Icons.Default.Apartment, contentDescription = "Structure")
       Spacer(modifier = Modifier.width(10.dp))
-      RatingBar(value = review.structureRating,
+      RatingBar(value = showedReview.structureRating?:0f,
         onValueChange = {},
         config = RatingBarConfig().style(RatingBarStyle.Normal)
           .activeColor(MaterialTheme.colorScheme.primary)
@@ -59,7 +69,7 @@ fun ReviewDetails(
     Row() {
       Icon(Icons.Default.CleaningServices, contentDescription = "Cleaning")
       Spacer(modifier = Modifier.width(10.dp))
-      RatingBar(value = review.cleaningRating,
+      RatingBar(value = showedReview.cleaningRating?:0f,
         onValueChange = {},
         config = RatingBarConfig().style(RatingBarStyle.Normal)
           .activeColor(MaterialTheme.colorScheme.primary)
@@ -67,6 +77,14 @@ fun ReviewDetails(
           .numStars(5).size(35.dp).padding(6.dp),
         onRatingChanged = {})
     }
+
+    Spacer(modifier = Modifier.height(8.dp))
+
+    Text(
+      text = "Notes: "+showedReview.text!!,
+      fontSize = 20.sp,
+    )
+
 
   }
 }

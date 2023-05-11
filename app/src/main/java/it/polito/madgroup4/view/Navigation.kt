@@ -14,10 +14,12 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import it.polito.madgroup4.model.PlayingCourt
 import it.polito.madgroup4.model.ReservationWithCourt
+import it.polito.madgroup4.model.Review
 import it.polito.madgroup4.utility.CourtWithSlots
 import it.polito.madgroup4.view.components.BottomNavBar
 import it.polito.madgroup4.view.components.FloatingFab
 import it.polito.madgroup4.view.components.Profile
+import it.polito.madgroup4.view.components.ReviewDetails
 import it.polito.madgroup4.view.components.TopBar
 import it.polito.madgroup4.view.screens.Courts
 import it.polito.madgroup4.view.screens.CreateReservation
@@ -25,6 +27,7 @@ import it.polito.madgroup4.view.screens.EditReservation
 import it.polito.madgroup4.view.screens.ReservationConfirmation
 import it.polito.madgroup4.view.screens.Reservations
 import it.polito.madgroup4.view.screens.ReviewForm
+import it.polito.madgroup4.view.screens.ReviewList
 import it.polito.madgroup4.view.screens.ShowCourt
 import it.polito.madgroup4.view.screens.ShowReservation
 import it.polito.madgroup4.view.screens.SlotSelectionReservation
@@ -55,6 +58,10 @@ fun Navigation(
     userVm: UserViewModel,
     userId: Long,
     reviewVm: ReviewViewModel,
+    reviews: List<Review>,
+    setReviews: (List<Review>) -> Unit,
+    showedReview: Review,
+    setShowedReview: (Review) -> Unit
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -172,11 +179,23 @@ fun Navigation(
                 }
 
                 composable("Playing Court Details") {
-                    ShowCourt(playingCourt = showedCourt, navController = navController)
+                    ShowCourt(playingCourt = showedCourt,
+                        navController = navController,
+                        reviewVm = reviewVm,
+                        setReviews = setReviews,
+                        )
                 }
 
                 composable("Rate This Playing Court") {
                     ReviewForm(showedCourt = showedCourt,  userId = userId, reviewVm = reviewVm, navController = navController )
+                }
+
+                composable("Reviews") {
+                    ReviewList(reviews= reviews, navController = navController, setShowedReview = setShowedReview)
+                }
+
+                composable("Review Details") {
+                    ReviewDetails(showedReview = showedReview)
                 }
             }
         }

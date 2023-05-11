@@ -34,14 +34,23 @@ data class Review(
     @ColumnInfo(name = "user_id")
     val userId: Long,
 
+    @ColumnInfo(name = "title")
+    var title: String,
+
     @ColumnInfo(name = "service_rating")
-    var serviceRating: Float,
+    var serviceRating: Float? = null,
 
     @ColumnInfo(name = "structure_rating")
-    var structureRating: Float,
+    var structureRating: Float? = null,
 
     @ColumnInfo(name = "cleaning_rating")
-    var cleaningRating: Float,
+    var cleaningRating: Float? = null,
+
+    @ColumnInfo(name = "average_rating")
+    var averageRating: Float? = null,
+
+    @ColumnInfo(name = "score")
+    var score: Float = 0f,
 
     val date: Date,
 

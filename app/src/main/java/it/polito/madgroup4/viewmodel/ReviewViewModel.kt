@@ -19,7 +19,7 @@ class ReviewViewModel @Inject constructor(private val repository: Repository) : 
 
   private var _reviews =
     MutableLiveData<List<Review>>().apply { value = emptyList() }
-  val review: LiveData<List<Review>> = _reviews
+  val reviews: LiveData<List<Review>> = _reviews
 
   fun saveReview(review: Review) = viewModelScope.launch {
     repository.saveReview(review)

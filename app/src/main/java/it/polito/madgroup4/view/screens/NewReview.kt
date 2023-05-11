@@ -1,13 +1,11 @@
 package it.polito.madgroup4.view.screens
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -24,7 +22,6 @@ import it.polito.madgroup4.model.Review
 import it.polito.madgroup4.utility.formatDate
 import it.polito.madgroup4.utility.imageSelector
 import it.polito.madgroup4.viewmodel.ReviewViewModel
-import it.polito.madgroup4.viewmodel.UserViewModel
 import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,6 +34,7 @@ fun ReviewForm(
     review: Review = Review(
         courtId = showedCourt.id,
         userId = userId,
+        title = "",
         serviceRating = 0f,
         structureRating = 0f,
         cleaningRating = 0f,
@@ -48,12 +46,37 @@ fun ReviewForm(
     var structure by remember { mutableStateOf(0.toFloat()) }
     var cleaning by remember { mutableStateOf(0.toFloat()) }
     var comment by remember { mutableStateOf("") }
+    var title by remember { mutableStateOf("") }
 
     Column(
         Modifier
             .padding(16.dp)
             .fillMaxWidth()
     ) {
+        Text(
+            text = "Title:",
+            fontWeight = FontWeight.Bold,
+            fontSize = 24.sp,
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+
+        TextField(
+            value = title,
+            supportingText = { Text(text = "Max 50 characters") },
+            onValueChange = { title = it },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(100.dp),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Done,
+                keyboardType = KeyboardType.Text,
+                capitalization = KeyboardCapitalization.Sentences
+            ),
+            singleLine = false,
+            maxLines = 2,
+        )
+
+
         Row(
             verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()
         ) {
@@ -131,7 +154,6 @@ fun ReviewForm(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-
         Text(
             text = "Comments:",
             fontSize = 20.sp,
@@ -160,16 +182,33 @@ fun ReviewForm(
         Button(modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(
             contentColor = MaterialTheme.colorScheme.onPrimary
         ), onClick = {
-            // I campi sono tutti opzionali, nel caso uno non venga inserito non deve essere conteggiato nella media della review
-            if (cleaning != 0f)
+            // I voti sono tutti opzionali (ma almeno uno deve esserci), nel caso uno non venga inserito non deve essere conteggiato nella media della review
+            var numFields = 0
+
+            if (cleaning != 0f) {
                 review.cleaningRating = cleaning
-            if (service != 0f)
+                review.score += cleaning
+                numFields++
+            }
+            if (service != 0f) {
                 review.serviceRating = service
-            if (structure != 0f)
+                review.score += service
+                numFields++
+            }
+            if (structure != 0f) {
                 review.structureRating = structure
+                review.score += structure
+                numFields++
+            }
             if (comment.trim() != "")
                 review.text = comment
-            reviewVm.saveReview(review)
+
+            if (numFields != 0 && title.trim() != "") {
+                review.title = title
+                review.averageRating = review.score / numFields
+                reviewVm.saveReview(review)
+            } //TODO: else mostra un toast per notificare che non è stato inserito un titolo o un voto
+
             navController.popBackStack()
         }, content = { Text("Submit Review") })
     }

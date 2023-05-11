@@ -11,19 +11,28 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import it.polito.madgroup4.model.PlayingCourt
+import it.polito.madgroup4.model.Review
 import it.polito.madgroup4.view.components.CourtDetails
+import it.polito.madgroup4.viewmodel.ReviewViewModel
 
 
 @ExperimentalMaterial3Api
 @Composable
 fun ShowCourt(
     playingCourt: PlayingCourt,
-    navController: NavController
+    navController: NavController,
+    reviewVm: ReviewViewModel,
+    setReviews: (List<Review>) -> Unit,
 ) {
+    reviewVm.getAllReviewsByCourtId(playingCourt.id!!)
+
+    val reviews = reviewVm.reviews.observeAsState(initial = emptyList())
+
     Column(
         Modifier
             .fillMaxSize()
@@ -31,6 +40,7 @@ fun ShowCourt(
     ) {
         CourtDetails(
             playingCourt,
+            onClick = { setReviews(reviews.value); navController.navigate("Reviews") }
         )
         Spacer(modifier = Modifier.weight(1f))
         Button(

@@ -9,8 +9,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Reviews
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,9 +23,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.gowtham.ratingbar.RatingBar
+import com.gowtham.ratingbar.RatingBarConfig
+import com.gowtham.ratingbar.RatingBarStyle
+import com.gowtham.ratingbar.StepSize
 import it.polito.madgroup4.model.PlayingCourt
 import it.polito.madgroup4.model.ReservationWithCourt
-import it.polito.madgroup4.utility.CourtWithSlots
+import it.polito.madgroup4.model.Review
 import it.polito.madgroup4.utility.calculateStartEndTime
 import it.polito.madgroup4.utility.imageSelector
 
@@ -175,6 +182,55 @@ fun SportCard(
                     modifier = Modifier
                         .weight(1f)
                 )
+            }
+        }
+    }
+}
+
+@Composable
+fun ReviewCard(
+    review: Review,
+    onClick: () -> Unit,
+) {
+
+    ElevatedCard(
+        modifier = Modifier
+            .padding(bottom = 10.dp)
+            .fillMaxWidth()
+            .clickable {
+                onClick()
+            }
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = review.title,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 22.sp
+                )
+                Spacer(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                )
+            }
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Row() {
+                Icon(Icons.Default.Reviews, contentDescription = "Review")
+                Spacer(modifier = Modifier.width(10.dp))
+                RatingBar(value = review.averageRating?:0f,
+                    onValueChange = {},
+                    config = RatingBarConfig().style(RatingBarStyle.Normal)
+                        .activeColor(MaterialTheme.colorScheme.primary)
+                        .inactiveColor(MaterialTheme.colorScheme.surfaceVariant).stepSize(StepSize.HALF)
+                        .numStars(5).size(35.dp).padding(6.dp),
+                    onRatingChanged = {})
             }
         }
     }
