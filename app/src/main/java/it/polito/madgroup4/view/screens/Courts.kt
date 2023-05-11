@@ -28,7 +28,7 @@ fun Courts(
         Modifier.padding(horizontal = 16.dp)
     ) {
         Row(
-            Modifier.padding(vertical = 16.dp)
+            Modifier.padding(bottom = 16.dp)
         ) {
             SportCard(sport = selectedSport, navController = navController)
         }

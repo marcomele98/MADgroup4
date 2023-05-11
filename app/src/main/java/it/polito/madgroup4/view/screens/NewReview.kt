@@ -1,7 +1,11 @@
 package it.polito.madgroup4.view.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -50,38 +54,18 @@ fun ReviewForm(
 
     Column(
         Modifier
-            .padding(16.dp)
-            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .padding(bottom = 16.dp)
     ) {
-        Text(
-            text = "Title:",
-            fontWeight = FontWeight.Bold,
-            fontSize = 24.sp,
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-        TextField(
-            value = title,
-            supportingText = { Text(text = "Max 50 characters") },
-            onValueChange = { title = it },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp),
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Done,
-                keyboardType = KeyboardType.Text,
-                capitalization = KeyboardCapitalization.Sentences
-            ),
-            singleLine = false,
-            maxLines = 2,
-        )
-
 
         Row(
-            verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = showedCourt.name!!, fontWeight = FontWeight.Bold, fontSize = 30.sp
+                text = showedCourt.name!!,
+                fontWeight = FontWeight.Bold,
+                fontSize = 30.sp
             )
             Spacer(modifier = Modifier.weight(1f))
             Icon(
@@ -89,93 +73,119 @@ fun ReviewForm(
                 contentDescription = "Court",
                 modifier = Modifier.size(35.dp)
             )
-
-        }
-        Spacer(modifier = Modifier.height(30.dp))
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                modifier = Modifier.weight(1f), text = "Service", fontSize = 22.sp
-            )
-            Spacer(modifier = Modifier.width(10.dp))
-            RatingBar(value = service,
-                config = RatingBarConfig().style(RatingBarStyle.Normal)
-                    .activeColor(MaterialTheme.colorScheme.primary)
-                    .inactiveColor(MaterialTheme.colorScheme.surfaceVariant).stepSize(StepSize.HALF)
-                    .numStars(5).size(35.dp).padding(6.dp),
-                onValueChange = {
-                    service = it
-                },
-                onRatingChanged = { service = it })
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                modifier = Modifier.weight(1f), text = "Structure", fontSize = 22.sp
-            )
-            Spacer(modifier = Modifier.width(10.dp))
-            RatingBar(value = structure,
-                config = RatingBarConfig().style(RatingBarStyle.Normal)
-                    .activeColor(MaterialTheme.colorScheme.primary)
-                    .inactiveColor(MaterialTheme.colorScheme.surfaceVariant).stepSize(StepSize.HALF)
-                    .numStars(5).size(35.dp).padding(6.dp),
-                onValueChange = {
-                    structure = it
-                },
-                onRatingChanged = { structure = it })
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                modifier = Modifier.weight(1f), text = "Cleaning", fontSize = 22.sp
-            )
-            Spacer(modifier = Modifier.width(10.dp))
-            RatingBar(value = cleaning,
-                config = RatingBarConfig().style(RatingBarStyle.Normal)
-                    .activeColor(MaterialTheme.colorScheme.primary)
-                    .inactiveColor(MaterialTheme.colorScheme.surfaceVariant).stepSize(StepSize.HALF)
-                    .numStars(5).size(35.dp).padding(6.dp),
-                onValueChange = {
-                    cleaning = it
-                },
-                onRatingChanged = { cleaning = it })
         }
 
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Text(
-            text = "Comments:",
-            fontSize = 20.sp,
-        )
-        Spacer(modifier = Modifier.height(8.dp))
 
-        TextField(
-            value = comment,
-            /*supportingText = { Text(text = "Max 200 characters") },*/
-            onValueChange = { comment = it },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp),
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Done,
-                keyboardType = KeyboardType.Text,
-                capitalization = KeyboardCapitalization.Sentences
-            ),
-            singleLine = false,
-            maxLines = 5,
-        )
+        Column(
+        ) {
 
+            TextField(
+                value = title,
+//                        supportingText = { Text(text = "Max 50 characters") },
+                onValueChange = { title = it },
+                modifier = Modifier
+                    .fillMaxWidth(),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Done,
+                    keyboardType = KeyboardType.Text,
+                    capitalization = KeyboardCapitalization.Sentences
+                ),
+                singleLine = false,
+                maxLines = 2,
+                label = { Text(text = "Title") },
+                placeholder = { Text(text = "Add a title") },
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    modifier = Modifier.weight(1f), text = "Service", fontSize = 22.sp
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                RatingBar(value = service,
+                    config = RatingBarConfig().style(RatingBarStyle.Normal)
+                        .activeColor(MaterialTheme.colorScheme.primary)
+                        .inactiveColor(MaterialTheme.colorScheme.surfaceVariant)
+                        .stepSize(StepSize.HALF)
+                        .numStars(5).size(35.dp).padding(6.dp),
+                    onValueChange = {
+                        service = it
+                    },
+                    onRatingChanged = { service = it })
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    modifier = Modifier.weight(1f), text = "Structure", fontSize = 22.sp
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                RatingBar(value = structure,
+                    config = RatingBarConfig().style(RatingBarStyle.Normal)
+                        .activeColor(MaterialTheme.colorScheme.primary)
+                        .inactiveColor(MaterialTheme.colorScheme.surfaceVariant)
+                        .stepSize(StepSize.HALF)
+                        .numStars(5).size(35.dp).padding(6.dp),
+                    onValueChange = {
+                        structure = it
+                    },
+                    onRatingChanged = { structure = it })
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    modifier = Modifier.weight(1f), text = "Cleaning", fontSize = 22.sp
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                RatingBar(value = cleaning,
+                    config = RatingBarConfig().style(RatingBarStyle.Normal)
+                        .activeColor(MaterialTheme.colorScheme.primary)
+                        .inactiveColor(MaterialTheme.colorScheme.surfaceVariant)
+                        .stepSize(StepSize.HALF)
+                        .numStars(5).size(35.dp).padding(6.dp),
+                    onValueChange = {
+                        cleaning = it
+                    },
+                    onRatingChanged = { cleaning = it })
+            }
+
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            TextField(
+                value = comment,
+                /*supportingText = { Text(text = "Max 200 characters") },*/
+                onValueChange = { comment = it },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Done,
+                    keyboardType = KeyboardType.Text,
+                    capitalization = KeyboardCapitalization.Sentences
+                ),
+                singleLine = false,
+                maxLines = 5,
+                label = { Text(text = "Comments") },
+                placeholder = { Text(text = "Add comments") },
+            )
+        }
 
         Spacer(modifier = Modifier.weight(1f))
 
@@ -213,5 +223,6 @@ fun ReviewForm(
         }, content = { Text("Submit Review") })
     }
 }
+
 
 

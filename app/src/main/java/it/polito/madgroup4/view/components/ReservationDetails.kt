@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -63,7 +64,10 @@ fun ReservationDetails(
         }
         Spacer(modifier = Modifier.height(30.dp))
 
-        Row() {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Icon(Icons.Default.LocationOn, contentDescription = "Location")
             Spacer(modifier = Modifier.width(10.dp))
             Text(
@@ -74,7 +78,10 @@ fun ReservationDetails(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Row() {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Icon(Icons.Default.Euro, contentDescription = "Location")
             Spacer(modifier = Modifier.width(10.dp))
             Text(
@@ -82,8 +89,13 @@ fun ReservationDetails(
                 fontSize = 22.sp
             )
         }
+
         Spacer(modifier = Modifier.height(20.dp))
-        Row() {
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Icon(Icons.Default.DateRange, contentDescription = "Location")
             Spacer(modifier = Modifier.width(10.dp))
             Text(
@@ -91,8 +103,13 @@ fun ReservationDetails(
                 fontSize = 22.sp
             )
         }
+
         Spacer(modifier = Modifier.height(20.dp))
-        Row() {
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Icon(Icons.Default.Schedule, contentDescription = "Location")
             Spacer(modifier = Modifier.width(10.dp))
             Text(
@@ -101,9 +118,9 @@ fun ReservationDetails(
             )
         }
         if (particularRequests != null && particularRequests.trim() != "") {
-            Spacer(modifier = Modifier.height(30.dp))
-            Text(text = "Particular requests", fontSize = 20.sp)
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(20.dp))
+            Text(text = "Particular requests:", fontSize = 20.sp)
+            Spacer(modifier = Modifier.height(8.dp))
             Card {
                 Text(
                     text = particularRequests!!,
@@ -115,7 +132,5 @@ fun ReservationDetails(
                 )
             }
         }
-
-
     }
 }

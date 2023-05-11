@@ -41,24 +41,20 @@ fun ReservationCard(
     setReservation: (ReservationWithCourt) -> Unit
 ) {
     val startEndTime = calculateStartEndTime(
-        reservation.playingCourt!!.openingTime!!,
-        reservation.reservation!!.slotNumber
+        reservation.playingCourt!!.openingTime!!, reservation.reservation!!.slotNumber
     )
-    ElevatedCard(
-        modifier = Modifier
-            .padding(bottom = 10.dp)
-            .fillMaxWidth()
-            .clickable {
-                setReservation(reservation)
-                navController.navigate("Reservation Details")
-            }
-    ) {
+    ElevatedCard(modifier = Modifier
+        .padding(bottom = 10.dp)
+        .fillMaxWidth()
+        .clickable {
+            setReservation(reservation)
+            navController.navigate("Reservation Details")
+        }) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
             Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
+                verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()
             ) {
                 Icon(
                     imageSelector(reservation.playingCourt.sport!!),
@@ -79,16 +75,14 @@ fun ReservationCard(
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(
-                text = reservation.playingCourt.name!!,
-                fontSize = 18.sp
+                text = reservation.playingCourt.name!!, fontSize = 18.sp
             )
 
             Spacer(modifier = Modifier.height(10.dp))
 
 
             Text(
-                text = startEndTime,
-                fontSize = 18.sp
+                text = startEndTime, fontSize = 18.sp
             )
         }
     }
@@ -97,35 +91,27 @@ fun ReservationCard(
 
 @Composable
 fun PlayingCourtCard(
-    playingCourt: PlayingCourt,
-    onClick: () -> Unit,
-    enabled: Boolean = true
+    playingCourt: PlayingCourt, onClick: () -> Unit, enabled: Boolean = true
 ) {
 
-    ElevatedCard(
-        modifier = Modifier
-            .padding(bottom = 10.dp)
-            .fillMaxWidth()
-            .clickable(enabled) {
-                onClick()
-            }
-    ) {
+    ElevatedCard(modifier = Modifier
+        .padding(bottom = 10.dp)
+        .fillMaxWidth()
+        .clickable(enabled) {
+            onClick()
+        }) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
             Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
+                verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()
             ) {
                 Icon(
-                    imageSelector(playingCourt.sport!!),
-                    contentDescription = "Reservations"
+                    imageSelector(playingCourt.sport!!), contentDescription = "Reservations"
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = playingCourt.name!!,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 22.sp
+                    text = playingCourt.name!!, fontWeight = FontWeight.Bold, fontSize = 22.sp
                 )
                 Spacer(
                     modifier = Modifier
@@ -142,8 +128,7 @@ fun PlayingCourtCard(
 
             Spacer(modifier = Modifier.height(10.dp))
             Text(
-                text = playingCourt.price.toString() + " €/h",
-                fontSize = 18.sp
+                text = playingCourt.price.toString() + " €/h", fontSize = 18.sp
             )
         }
     }
@@ -155,13 +140,11 @@ fun SportCard(
     sport: String,
     navController: NavController,
 ) {
-    OutlinedCard(
-        modifier = Modifier
-            .padding(bottom = 10.dp)
-            .clickable {
-                navController.navigate("Select Sport")
-            }
-    ) {
+    OutlinedCard(modifier = Modifier
+        .padding(bottom = 10.dp)
+        .clickable {
+            navController.navigate("Select Sport")
+        }) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
@@ -169,18 +152,14 @@ fun SportCard(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
-                    imageSelector(sport),
-                    contentDescription = "Reservations"
+                    imageSelector(sport), contentDescription = "Reservations"
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = sport,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 22.sp
+                    text = sport, fontWeight = FontWeight.Bold, fontSize = 22.sp
                 )
                 Spacer(
-                    modifier = Modifier
-                        .weight(1f)
+                    modifier = Modifier.weight(1f)
                 )
             }
         }
@@ -193,14 +172,12 @@ fun ReviewCard(
     onClick: () -> Unit,
 ) {
 
-    ElevatedCard(
-        modifier = Modifier
-            .padding(bottom = 10.dp)
-            .fillMaxWidth()
-            .clickable {
-                onClick()
-            }
-    ) {
+    ElevatedCard(modifier = Modifier
+        .padding(bottom = 10.dp)
+        .fillMaxWidth()
+        .clickable {
+            onClick()
+        }) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
@@ -221,15 +198,18 @@ fun ReviewCard(
             }
             Spacer(modifier = Modifier.height(10.dp))
 
-            Row() {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Icon(Icons.Default.Reviews, contentDescription = "Review")
                 Spacer(modifier = Modifier.width(10.dp))
-                RatingBar(value = review.averageRating?:0f,
+                RatingBar(value = review.averageRating ?: 0f,
                     onValueChange = {},
                     config = RatingBarConfig().style(RatingBarStyle.Normal)
                         .activeColor(MaterialTheme.colorScheme.primary)
-                        .inactiveColor(MaterialTheme.colorScheme.surfaceVariant).stepSize(StepSize.HALF)
-                        .numStars(5).size(35.dp).padding(6.dp),
+                        .inactiveColor(MaterialTheme.colorScheme.surfaceVariant)
+                        .stepSize(StepSize.HALF).numStars(5).size(35.dp).padding(6.dp),
                     onRatingChanged = {})
             }
         }

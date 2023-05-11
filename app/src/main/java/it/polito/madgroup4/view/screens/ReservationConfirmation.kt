@@ -59,7 +59,10 @@ fun ReservationConfirmation(
 
 
     Column(
-        modifier = Modifier.padding(16.dp)
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .padding(bottom = 16.dp)
+
     ) {
         ReservationDetails(
             playingCourt = playingCourt,
@@ -67,12 +70,8 @@ fun ReservationConfirmation(
             reservationTimeSlot = reservationTimeSlot,
             particularRequests = null
         )
-        Spacer(modifier = Modifier.height(30.dp))
-        Text(
-            text = "Particular requests:",
-            fontSize = 20.sp,
-        )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(20.dp))
+
         TextField(
             value = text,
             /*supportingText = { Text(text = "Max 200 characters") },*/
@@ -87,7 +86,8 @@ fun ReservationConfirmation(
             ),
             singleLine = false,
             maxLines = 5,
-
+            label = { Text(text = "Particular requests") },
+            placeholder = { Text(text = "Add particular requests") },
             )
         Spacer(modifier = Modifier.weight(1f))
         Button(

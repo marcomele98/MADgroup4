@@ -36,7 +36,8 @@ fun ShowCourt(
     Column(
         Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(horizontal = 16.dp)
+            .padding(bottom = 16.dp)
     ) {
         CourtDetails(
             playingCourt,

@@ -57,7 +57,8 @@ fun ShowReservation(
     Column(
         Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(horizontal = 16.dp)
+            .padding(bottom = 16.dp)
     ) {
         if (openDialog.value) {
             AlertDialog(onDismissRequest = {
@@ -109,7 +110,8 @@ fun ShowReservation(
             Text(
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.error,
-                text = "You can't edit or delete this reservation because it's in the past.")
+                text = "You can't edit or delete this reservation because it's in the past."
+            )
         }
 
     }

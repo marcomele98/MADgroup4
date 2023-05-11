@@ -51,7 +51,9 @@ fun CourtDetails(
         }
         Spacer(modifier = Modifier.height(30.dp))
 
-        Row() {
+        Row(verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Icon(Icons.Default.LocationOn, contentDescription = "Location")
             Spacer(modifier = Modifier.width(10.dp))
             Text(
@@ -62,7 +64,9 @@ fun CourtDetails(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Row() {
+        Row(verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Icon(Icons.Default.Euro, contentDescription = "Price")
             Spacer(modifier = Modifier.width(10.dp))
             Text(
