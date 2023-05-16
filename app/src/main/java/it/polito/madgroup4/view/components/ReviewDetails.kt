@@ -32,7 +32,6 @@ fun ReviewDetails(
     showedReview: Review,
 ) {
 
-
     Column(
         Modifier
             .fillMaxSize()
@@ -93,10 +92,13 @@ fun ReviewDetails(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        Text(
-            text = "Notes: " + showedReview.text!!,
-            fontSize = 20.sp,
-        )
+        if (showedReview.text != "") {
+            Text(
+                text = "Notes: " + showedReview.text,
+                fontSize = 20.sp,
+            )
+        }
+
 
 
     }

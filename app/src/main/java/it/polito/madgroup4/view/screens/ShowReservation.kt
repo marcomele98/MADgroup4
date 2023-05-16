@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import it.polito.madgroup4.model.ReservationWithCourt
+import it.polito.madgroup4.model.Review
 import it.polito.madgroup4.utility.calculateStartEndTime
 import it.polito.madgroup4.utility.formatDate
 import it.polito.madgroup4.view.components.ReservationDetails
@@ -40,6 +41,7 @@ fun ShowReservation(
     reviewVm: ReviewViewModel,
     navController: NavController,
     userVm: UserViewModel,
+    setShowedReview: (Review) -> Unit,
 ) {
 
     val openDialog = remember { mutableStateOf(false) }
@@ -51,8 +53,6 @@ fun ShowReservation(
     reviewVm.getReviewByReservationId(reservation.reservation.id)
 
     val review = reviewVm.review.observeAsState(initial = null)
-
-    println("review: $review")
 
     val isInThePast = reservation.reservation.date < formatDate(Date())
             || (formatDate(Date()) == reservation.reservation.date
@@ -108,7 +108,10 @@ fun ShowReservation(
         )
         if(review.value != null){
             ReviewCard(review = review.value!!, onClick = {
-                navController.navigate("Show Review")
+                // without this following line, the review is set in ReviewCard but not in ReviewDetails.
+                // If we want to directly see all details in ReviewCard I think we can remove that
+                setShowedReview(review.value!!)
+                navController.navigate("Review Details")
             })
         }
         Spacer(modifier = Modifier.weight(1f))

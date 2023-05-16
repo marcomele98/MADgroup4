@@ -125,7 +125,8 @@ fun Navigation(
                         vm,
                         reviewVm,
                         navController,
-                        userVm
+                        userVm,
+                        setShowedReview
                     )
                 }
                 composable("Select Sport") {
