@@ -29,6 +29,10 @@ class ReviewViewModel @Inject constructor(private val repository: Repository) : 
     repository.saveReview(review)
   }
 
+  fun deleteReview(review: Review) = viewModelScope.launch {
+    repository.deleteReview(review)
+  }
+
   fun getReviewByReservationId(id: Long) =
     repository.getReviewByReservationId(id).observeForever{ review ->
       _review.value = review

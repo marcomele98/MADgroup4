@@ -197,7 +197,7 @@ fun Navigation(
                 }
 
                 composable("Review Details") {
-                    ReviewDetails(showedReview = showedReview)
+                    ReviewDetails(showedReview = showedReview, reviewVm = reviewVm, navController = navController)
                 }
             }
         }
