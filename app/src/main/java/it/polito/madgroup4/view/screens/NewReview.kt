@@ -21,22 +21,23 @@ import com.gowtham.ratingbar.RatingBar
 import com.gowtham.ratingbar.RatingBarConfig
 import com.gowtham.ratingbar.RatingBarStyle
 import com.gowtham.ratingbar.StepSize
-import it.polito.madgroup4.model.PlayingCourt
+import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.model.Review
 import it.polito.madgroup4.utility.formatDate
 import it.polito.madgroup4.utility.imageSelector
+import it.polito.madgroup4.viewmodel.ReservationViewModel
 import it.polito.madgroup4.viewmodel.ReviewViewModel
 import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReviewForm(
-    showedCourt: PlayingCourt,
+    reservation: ReservationWithCourt,
     userId: Long,
     reviewVm: ReviewViewModel,
     navController: NavController,
     review: Review = Review(
-        courtId = showedCourt.id,
+        courtId = reservation.playingCourt!!.id,
         userId = userId,
         title = "",
         serviceRating = 0f,
@@ -44,6 +45,7 @@ fun ReviewForm(
         cleaningRating = 0f,
         text = "",
         date = formatDate(Date()),
+        reservationId = reservation.reservation!!.id
     )
 ) {
     var service by remember { mutableStateOf(0.toFloat()) }
@@ -63,13 +65,13 @@ fun ReviewForm(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = showedCourt.name!!,
+                text = reservation.playingCourt!!.name!!,
                 fontWeight = FontWeight.Bold,
                 fontSize = 30.sp
             )
             Spacer(modifier = Modifier.weight(1f))
             Icon(
-                imageSelector(showedCourt.sport!!),
+                imageSelector(reservation.playingCourt!!.sport!!),
                 contentDescription = "Court",
                 modifier = Modifier.size(35.dp)
             )
@@ -113,7 +115,6 @@ fun ReviewForm(
                     config = RatingBarConfig().style(RatingBarStyle.Normal)
                         .activeColor(MaterialTheme.colorScheme.primary)
                         .inactiveColor(MaterialTheme.colorScheme.surfaceVariant)
-                        .stepSize(StepSize.HALF)
                         .numStars(5).size(35.dp).padding(6.dp),
                     onValueChange = {
                         service = it
@@ -135,7 +136,6 @@ fun ReviewForm(
                     config = RatingBarConfig().style(RatingBarStyle.Normal)
                         .activeColor(MaterialTheme.colorScheme.primary)
                         .inactiveColor(MaterialTheme.colorScheme.surfaceVariant)
-                        .stepSize(StepSize.HALF)
                         .numStars(5).size(35.dp).padding(6.dp),
                     onValueChange = {
                         structure = it
@@ -157,7 +157,6 @@ fun ReviewForm(
                     config = RatingBarConfig().style(RatingBarStyle.Normal)
                         .activeColor(MaterialTheme.colorScheme.primary)
                         .inactiveColor(MaterialTheme.colorScheme.surfaceVariant)
-                        .stepSize(StepSize.HALF)
                         .numStars(5).size(35.dp).padding(6.dp),
                     onValueChange = {
                         cleaning = it
@@ -218,7 +217,6 @@ fun ReviewForm(
                 review.averageRating = review.score / numFields
                 reviewVm.saveReview(review)
             } //TODO: else mostra un toast per notificare che non è stato inserito un titolo o un voto
-
             navController.popBackStack()
         }, content = { Text("Submit Review") })
     }

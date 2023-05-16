@@ -123,6 +123,7 @@ fun Navigation(
                     ShowReservation(
                         reservation,
                         vm,
+                        reviewVm,
                         navController,
                         userVm
                     )
@@ -187,7 +188,7 @@ fun Navigation(
                 }
 
                 composable("Rate This Playing Court") {
-                    ReviewForm(showedCourt = showedCourt,  userId = userId, reviewVm = reviewVm, navController = navController )
+                    ReviewForm(reservation = reservation,  userId = userId, reviewVm = reviewVm, navController = navController )
                 }
 
                 composable("Reviews") {

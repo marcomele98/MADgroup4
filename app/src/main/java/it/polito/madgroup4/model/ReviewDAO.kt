@@ -15,4 +15,10 @@ interface ReviewDAO {
     suspend fun save(review: Review)
     @Delete
     suspend fun delete(review: Review)
+
+    @Query("SELECT * FROM reviews WHERE id = :id")
+    fun getById(id: Long) : LiveData<Review>
+
+    @Query("SELECT * FROM reviews WHERE reservation_id = :reservationId")
+    fun getReviewByReservationId(reservationId: Long) : LiveData<Review>
 }

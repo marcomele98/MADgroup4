@@ -39,6 +39,9 @@ class Repository @Inject constructor(
     suspend fun saveReview(review: Review) = reviewDAO.save(review)
     suspend fun deleteReview(review: Review) = reviewDAO.delete(review)
 
+    fun getReviewById(id: Long) = reviewDAO.getById(id)
+
+    fun getReviewByReservationId(reservationId: Long) = reviewDAO.getReviewByReservationId(reservationId)
 
     //suspend fun deletePlayingCourt(playingCourt: PlayingCourt) = playingCourtDAO.delete(playingCourt)
 

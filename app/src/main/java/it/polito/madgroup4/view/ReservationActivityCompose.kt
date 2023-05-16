@@ -86,7 +86,7 @@ class ReservationActivityCompose : ComponentActivity() {
 
 
     val formatter = SimpleDateFormat("dd/MM/yyyy")
-    val reservation = Reservation(1, 1, 1, 1, formatter.parse(formatter.format(Date())))
+    val reservation = Reservation(1, 1, 1, 1,  formatter.parse(formatter.format(Date())))
     val reservation2 = Reservation(2, 2, 1, 2, formatter.parse(formatter.format(Date())))
     val reservation3 = Reservation(3, 1, 2, 2, formatter.parse(formatter.format(Date())))
     val reservation4 = Reservation(4, 1, 1, 3, formatter.parse("11/05/2023"))
