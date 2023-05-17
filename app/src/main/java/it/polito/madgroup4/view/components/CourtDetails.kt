@@ -1,5 +1,8 @@
 package it.polito.madgroup4.view.components
 
+import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,7 +25,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gowtham.ratingbar.RatingBar
@@ -53,6 +59,8 @@ fun CourtDetails(
 
 
     val numReview = reviews.size
+
+    val ctx = LocalContext.current
 
 
     Column {
@@ -97,13 +105,47 @@ fun CourtDetails(
                 icon = Icons.Default.Call,
                 text = playingCourt.phone,
                 description = "phone"
-            )
+            ) {
+                // on below line we are opening the dialer of our
+                // phone and passing phone number.
+                // Use format with "tel:" and phoneNumber created is
+                // stored in u.
+                val u = Uri.parse("tel:" + playingCourt.phone)
+
+                // Create the intent and set the data for the
+                // intent as the phone number.
+                val i = Intent(Intent.ACTION_DIAL, u)
+                try {
+
+                    // Launch the Phone app's dialer with a phone
+                    // number to dial a call.
+                    ctx.startActivity(i)
+                } catch (e: Exception) {
+
+                    // show() method display the toast with
+                    // exception message.
+                    /*Toast.makeText(ctx, "An error occurred", Toast.LENGTH_LONG)
+                        .show()*/
+                }
+            }
 
         if (playingCourt.email != null)
             CourtElement(
                 icon = Icons.Default.Mail,
                 text = playingCourt.email,
-                description = "email"
+                description = "email",
+                onClick = {
+                    try {
+                        val intent = Intent(Intent.ACTION_SEND)
+                        intent.type = "vnd.android.cursor.item/email" // or "message/rfc822"
+                        intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(playingCourt.email))
+                        intent.putExtra(Intent.EXTRA_SUBJECT, "FieldFairy info request")
+                        ctx.startActivity(intent)
+                    } catch (e: Exception) {
+                        /*Toast.makeText(ctx, "An error occurred", Toast.LENGTH_LONG)
+                            .show()*/
+                    }
+                }
             )
 
     }
@@ -112,7 +154,12 @@ fun CourtDetails(
 
 
 @Composable
-fun CourtElement(icon: ImageVector, text: String, description: String) {
+fun CourtElement(
+    icon: ImageVector,
+    text: String,
+    description: String,
+    onClick: (() -> Unit)? = null
+) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth()
@@ -120,7 +167,12 @@ fun CourtElement(icon: ImageVector, text: String, description: String) {
         Icon(icon, description)
         Spacer(modifier = Modifier.width(10.dp))
         Text(
-            text = text, fontSize = 22.sp
+            text = text, fontSize = 22.sp,
+            modifier = if (onClick == null) Modifier else Modifier.clickable(onClick = onClick),
+            fontStyle = if (onClick == null) FontStyle.Normal else FontStyle.Italic,
+            fontWeight = if (onClick == null) FontWeight.Normal else FontWeight.Light,
+            textDecoration = if (onClick == null) TextDecoration.None else TextDecoration.Underline,
+            //color = if (onClick == null) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.primary
         )
     }
     Spacer(modifier = Modifier.height(20.dp))
