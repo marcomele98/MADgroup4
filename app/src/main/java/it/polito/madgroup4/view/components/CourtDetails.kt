@@ -45,10 +45,10 @@ fun CourtDetails(
     //onClick2: (Int) -> Unit,
 ) {
     val avgVal: Float = reviews.flatMap {
-            listOf(
-                it.cleaningRating, it.serviceRating, it.structureRating
-            )
-        }.filter { kotlin.math.abs(it ?: 0f - 0f) > 0.0001f }
+        listOf(
+            it.cleaningRating, it.serviceRating, it.structureRating
+        )
+    }.filter { kotlin.math.abs(it ?: 0f - 0f) > 0.0001f }
         .fold(mutableListOf(0f, 0f)) { sum, value ->
             sum[0] += 1f
             sum[1] += value!!
@@ -134,27 +134,27 @@ fun Element(icon: ImageVector, text: String, description: String) {
 fun AvgReviews(
     numberOfStars: Float, numberOfReviews: Int, onClick: () -> Unit
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        RatingBar(value = numberOfStars,
-            onValueChange = {},
-            config = RatingBarConfig().style(RatingBarStyle.Normal)
-                .activeColor(MaterialTheme.colorScheme.primary)
-                .inactiveColor(MaterialTheme.colorScheme.surfaceVariant).stepSize(StepSize.HALF)
-                .numStars(5).size(30.dp).padding(0.dp),
-            onRatingChanged = {})
 
-        Text(
-            text = "($numberOfReviews reviews)",
-            modifier = Modifier.padding(start = 4.dp),
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Light,
-        )
+    if (numberOfReviews != 0) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            RatingBar(value = numberOfStars,
+                onValueChange = {},
+                config = RatingBarConfig().style(RatingBarStyle.Normal)
+                    .activeColor(MaterialTheme.colorScheme.primary)
+                    .inactiveColor(MaterialTheme.colorScheme.surfaceVariant).stepSize(StepSize.HALF)
+                    .numStars(5).size(30.dp).padding(0.dp),
+                onRatingChanged = {})
 
-        Spacer(modifier = Modifier.weight(1f))
+            Text(
+                text = "($numberOfReviews reviews)",
+                modifier = Modifier.padding(start = 4.dp),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Light,
+            )
 
-        if (numberOfReviews != 0) {
+            Spacer(modifier = Modifier.weight(1f))
             Text(
                 text = "See All",
                 modifier = Modifier
@@ -165,5 +165,13 @@ fun AvgReviews(
                 color = MaterialTheme.colorScheme.primary
             )
         }
+    } else {
+        Text(
+            text = "Still no reviews for this court yet",
+            modifier = Modifier.padding(start = 4.dp),
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Light,
+            color = MaterialTheme.colorScheme.primary
+        )
     }
 }
