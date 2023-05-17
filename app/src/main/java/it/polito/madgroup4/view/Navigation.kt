@@ -19,7 +19,6 @@ import it.polito.madgroup4.utility.CourtWithSlots
 import it.polito.madgroup4.view.components.BottomNavBar
 import it.polito.madgroup4.view.components.FloatingFab
 import it.polito.madgroup4.view.components.Profile
-import it.polito.madgroup4.view.components.ReviewDetails
 import it.polito.madgroup4.view.components.TopBar
 import it.polito.madgroup4.view.screens.Courts
 import it.polito.madgroup4.view.screens.CreateReservation
@@ -125,8 +124,7 @@ fun Navigation(
                         vm,
                         reviewVm,
                         navController,
-                        userVm,
-                        setShowedReview
+                        userVm
                     )
                 }
                 composable("Select Sport") {
@@ -189,15 +187,11 @@ fun Navigation(
                 }
 
                 composable("Rate This Playing Court") {
-                    ReviewForm(reservation = reservation,  userId = userId, reviewVm = reviewVm, navController = navController )
+                    ReviewForm(reservation = reservation,  userId = userId, reviewVm = reviewVm, navController = navController)
                 }
 
                 composable("Reviews") {
-                    ReviewList(reviews= reviews, navController = navController, setShowedReview = setShowedReview)
-                }
-
-                composable("Review Details") {
-                    ReviewDetails(showedReview = showedReview, reviewVm = reviewVm, navController = navController)
+                    ReviewList(reviews= reviews)
                 }
             }
         }

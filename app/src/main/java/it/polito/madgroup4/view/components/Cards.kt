@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -169,15 +170,12 @@ fun SportCard(
 @Composable
 fun ReviewCard(
     review: Review,
-    onClick: () -> Unit,
 ) {
-
+    println(review)
     ElevatedCard(modifier = Modifier
         .padding(bottom = 10.dp)
         .fillMaxWidth()
-        .clickable {
-            onClick()
-        }) {
+        ) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
@@ -198,20 +196,52 @@ fun ReviewCard(
             }
             Spacer(modifier = Modifier.height(10.dp))
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(Icons.Default.Reviews, contentDescription = "Review")
-                Spacer(modifier = Modifier.width(10.dp))
-                RatingBar(value = review.averageRating ?: 0f,
-                    onValueChange = {},
-                    config = RatingBarConfig().style(RatingBarStyle.Normal)
-                        .activeColor(MaterialTheme.colorScheme.primary)
-                        .inactiveColor(MaterialTheme.colorScheme.surfaceVariant)
-                        .stepSize(StepSize.HALF).numStars(5).size(35.dp).padding(6.dp),
-                    onRatingChanged = {})
+            //TODO: aggiungi l'autore della recensione
+
+            if(review.structureRating ?: 0f > 0f){
+                Evaluation(stars = review.structureRating ?: 0f, label = "structure ")
             }
+            if (review.cleaningRating ?: 0f > 0f){
+                Evaluation(stars = review.cleaningRating ?: 0f, label = "cleaning ")
+            }
+            if(review.serviceRating ?: 0f > 0f){
+                Evaluation(stars = review.serviceRating ?: 0f, label = "service ")
+            }
+            Spacer(modifier = Modifier.height(5.dp))
+            if(review.text?.trim() ?: "" != ""){
+                Text(
+                    text = "\"${review.text!!}\"",
+                    fontSize = 18.sp,
+                    fontStyle = FontStyle.Italic
+                )
+            }
+
         }
     }
+}
+
+@Composable
+fun Evaluation(
+    stars: Float,
+    label: String
+){
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = label,
+            modifier = Modifier.width(80.dp),
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+
+        RatingBar(value = stars,
+            onValueChange = {},
+            config = RatingBarConfig().style(RatingBarStyle.Normal)
+                .activeColor(MaterialTheme.colorScheme.primary)
+                .inactiveColor(MaterialTheme.colorScheme.surfaceVariant)
+                .stepSize(StepSize.HALF).numStars(5).size(20.dp).padding(0.dp),
+            onRatingChanged = {})
+    }
+    Spacer(modifier = Modifier.height(8.dp))
 }

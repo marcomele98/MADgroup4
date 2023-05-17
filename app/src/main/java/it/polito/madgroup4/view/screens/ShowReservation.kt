@@ -1,9 +1,11 @@
 package it.polito.madgroup4.view.screens
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -21,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import it.polito.madgroup4.model.ReservationWithCourt
-import it.polito.madgroup4.model.Review
 import it.polito.madgroup4.utility.calculateStartEndTime
 import it.polito.madgroup4.utility.formatDate
 import it.polito.madgroup4.view.components.ReservationDetails
@@ -41,7 +42,6 @@ fun ShowReservation(
     reviewVm: ReviewViewModel,
     navController: NavController,
     userVm: UserViewModel,
-    setShowedReview: (Review) -> Unit,
 ) {
 
     val openDialog = remember { mutableStateOf(false) }
@@ -107,12 +107,8 @@ fun ShowReservation(
             reservation.reservation.particularRequests
         )
         if(review.value != null){
-            ReviewCard(review = review.value!!, onClick = {
-                // without this following line, the review is set in ReviewCard but not in ReviewDetails.
-                // If we want to directly see all details in ReviewCard I think we can remove that
-                setShowedReview(review.value!!)
-                navController.navigate("Review Details")
-            })
+            Spacer(modifier = Modifier.height(30.dp))
+            ReviewList(reviews = listOf(review.value!!))
         }
         Spacer(modifier = Modifier.weight(1f))
         if (!isInThePast) {

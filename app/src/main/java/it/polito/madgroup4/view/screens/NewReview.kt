@@ -46,7 +46,8 @@ fun ReviewForm(
         text = "",
         date = formatDate(Date()),
         reservationId = reservation.reservation!!.id
-    )
+    ),
+    //sssetReview: (Review) -> Unit
 ) {
     var service by remember { mutableStateOf(0.toFloat()) }
     var structure by remember { mutableStateOf(0.toFloat()) }
@@ -217,6 +218,7 @@ fun ReviewForm(
                 review.averageRating = review.score / numFields
                 reviewVm.saveReview(review)
             } //TODO: else mostra un toast per notificare che non è stato inserito un titolo o un voto
+            //setReview(review)
             navController.popBackStack()
         }, content = { Text("Submit Review") })
     }

@@ -15,9 +15,7 @@ import it.polito.madgroup4.view.components.ReviewCard
 
 @Composable
 fun ReviewList(
-    reviews: List<Review>,
-    navController: NavController,
-    setShowedReview: (Review) -> Unit,
+    reviews: List<Review>
 ) {
 
     Box(
@@ -29,8 +27,7 @@ fun ReviewList(
         LazyColumn(Modifier.fillMaxSize()) {
             items(reviews.size) { index ->
                 ReviewCard(
-                    reviews[index],
-                    onClick = { setShowedReview(reviews[index]); navController.navigate("Review Details") }
+                    reviews[index]
                 )
             }
         }
