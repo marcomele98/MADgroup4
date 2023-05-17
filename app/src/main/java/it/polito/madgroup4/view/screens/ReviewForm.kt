@@ -94,19 +94,19 @@ fun ReviewForm(
                 placeholder = { Text(text = "Add a title") },
             )
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(25.dp))
 
             CostumeRatingBar(text = "Structure", rating = structure, setRating = setStructure)
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(15.dp))
 
             CostumeRatingBar(text = "Cleaning", rating = cleaning, setRating = setCleaning)
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(15.dp))
 
             CostumeRatingBar(text = "Service", service, setService)
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(25.dp))
 
             TextField(
                 value = comment,
@@ -133,29 +133,16 @@ fun ReviewForm(
             contentColor = MaterialTheme.colorScheme.onPrimary
         ), onClick = {
             // I voti sono tutti opzionali (ma almeno uno deve esserci), nel caso uno non venga inserito non deve essere conteggiato nella media della review
-            var numFields = 0
-
-            if (cleaning != 0f) {
-                review.cleaningRating = cleaning
-                review.score += cleaning
-                numFields++
-            }
-            if (service != 0f) {
-                review.serviceRating = service
-                review.score += service
-                numFields++
-            }
-            if (structure != 0f) {
-                review.structureRating = structure
-                review.score += structure
-                numFields++
-            }
+            val atLeastOnRating = structure != 0f || cleaning != 0f || service != 0f
             if (comment.trim() != "")
                 review.text = comment
 
-            if (numFields != 0 && title.trim() != "") {
+            review.serviceRating = service
+            review.structureRating = structure
+            review.cleaningRating = cleaning
+
+            if (atLeastOnRating && title.trim() != "") {
                 review.title = title
-                review.averageRating = review.score / numFields
                 reviewVm.saveReview(review)
             } //TODO: else mostra un toast per notificare che non è stato inserito un titolo o un voto
             //setReview(review)
@@ -175,14 +162,17 @@ fun CostumeRatingBar(
         modifier = Modifier.fillMaxWidth()
     ) {
         Text(
-            modifier = Modifier.weight(1f), text = text, fontSize = 22.sp
+            modifier = Modifier.weight(1f),
+            text = text,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = if(rating == 0f) 0.5f else 1f),
+            fontSize = 24.sp
         )
         Spacer(modifier = Modifier.width(10.dp))
         RatingBar(value = rating,
             config = RatingBarConfig().style(RatingBarStyle.Normal)
                 .activeColor(MaterialTheme.colorScheme.primary)
                 .inactiveColor(MaterialTheme.colorScheme.surfaceVariant)
-                .numStars(5).size(35.dp).padding(6.dp),
+                .numStars(5).size(35.dp).padding(0.dp),
             onValueChange = {
                 setRating(it)
             },

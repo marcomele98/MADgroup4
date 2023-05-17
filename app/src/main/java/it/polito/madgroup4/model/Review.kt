@@ -52,9 +52,6 @@ data class Review(
     @ColumnInfo(name = "cleaning_rating")
     var cleaningRating: Float? = null,
 
-    @ColumnInfo(name = "average_rating")
-    var averageRating: Float? = null,
-
     @ColumnInfo(name = "score")
     var score: Float = 0f,
 
