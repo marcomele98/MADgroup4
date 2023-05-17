@@ -41,6 +41,7 @@ fun ShowCourt(
     ) {
         CourtDetails(
             playingCourt,
+            reviews = reviews.value,
             onClick = { setReviews(reviews.value); navController.navigate("Reviews") }
         )
     }

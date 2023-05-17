@@ -143,6 +143,7 @@ fun ReviewDetails(
 
         Spacer(modifier = Modifier.weight(1f))
 
+        //TODO: o la levo o controllo che l'utente sia l'host
         Button(
             onClick = {
                 openDialog.value = !openDialog.value

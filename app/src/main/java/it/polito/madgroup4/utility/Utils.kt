@@ -117,3 +117,9 @@ fun imageSelector(sport: String): ImageVector {
     }
 }
 
+fun floatEquals(a: Float, b: Float): Boolean {
+    return Math.abs(a - b) <= 0.00001
+}
+
+
+
