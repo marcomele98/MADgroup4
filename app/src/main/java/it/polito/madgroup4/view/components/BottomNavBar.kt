@@ -24,7 +24,7 @@ fun BottomNavBar(
     ) {
 
         NavigationBarItem(
-            selected = navController.currentBackStackEntry?.destination?.route == "Courts",
+            selected = navController.currentBackStackEntry?.destination?.route == "Playing Courts",
             icon = {
                 Icon(
                     Icons.Default.LocationOn,
