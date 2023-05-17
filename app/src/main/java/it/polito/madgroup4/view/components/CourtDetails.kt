@@ -106,19 +106,11 @@ fun CourtDetails(
                 text = playingCourt.phone,
                 description = "phone"
             ) {
-                // on below line we are opening the dialer of our
-                // phone and passing phone number.
-                // Use format with "tel:" and phoneNumber created is
-                // stored in u.
+
                 val u = Uri.parse("tel:" + playingCourt.phone)
 
-                // Create the intent and set the data for the
-                // intent as the phone number.
                 val i = Intent(Intent.ACTION_DIAL, u)
                 try {
-
-                    // Launch the Phone app's dialer with a phone
-                    // number to dial a call.
                     ctx.startActivity(i)
                 } catch (e: Exception) {
 
@@ -135,13 +127,15 @@ fun CourtDetails(
                 text = playingCourt.email,
                 description = "email",
                 onClick = {
+                    val u = Uri.parse("mailto:" + playingCourt.email)
+
+                    val i = Intent(Intent.ACTION_SENDTO, u)
                     try {
-                        val intent = Intent(Intent.ACTION_SEND)
-                        intent.type = "vnd.android.cursor.item/email" // or "message/rfc822"
-                        intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(playingCourt.email))
-                        intent.putExtra(Intent.EXTRA_SUBJECT, "FieldFairy info request")
-                        ctx.startActivity(intent)
+                        ctx.startActivity(i)
                     } catch (e: Exception) {
+
+                        // show() method display the toast with
+                        // exception message.
                         /*Toast.makeText(ctx, "An error occurred", Toast.LENGTH_LONG)
                             .show()*/
                     }
