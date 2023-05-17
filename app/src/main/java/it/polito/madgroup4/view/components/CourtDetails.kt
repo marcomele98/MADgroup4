@@ -15,8 +15,6 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Euro
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Mail
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -35,14 +33,12 @@ import it.polito.madgroup4.model.PlayingCourt
 import it.polito.madgroup4.model.Review
 import it.polito.madgroup4.utility.floatEquals
 import it.polito.madgroup4.utility.imageSelector
-import java.lang.Math.abs
 
 @Composable
 fun CourtDetails(
     playingCourt: PlayingCourt,
     reviews: List<Review>,
     onClick: () -> Unit,
-    //onClick2: (Int) -> Unit,
 ) {
     val avgVal: Float = reviews.flatMap {
         listOf(
@@ -80,31 +76,31 @@ fun CourtDetails(
         Spacer(modifier = Modifier.height(30.dp))
 
         //TODO: lascio tutto sulla stessa riga? potrebbe essere troppo lunga
-        Element(
+        CourtElement(
             icon = Icons.Default.LocationOn,
             description = "Location",
             text = playingCourt.address + ", " + playingCourt.city + " (" + playingCourt.province + ")"
         )
 
-        Element(
+        CourtElement(
             icon = Icons.Default.Euro, description = "Price", text = playingCourt.price.toString()
         )
 
-        Element(
+        CourtElement(
             icon = Icons.Default.DateRange,
             text = "${playingCourt.openingTime} - ${playingCourt.closingTime}",
             description = "times"
         )
 
         if (playingCourt.phone != null)
-            Element(
+            CourtElement(
                 icon = Icons.Default.Call,
                 text = playingCourt.phone,
                 description = "phone"
             )
 
         if (playingCourt.email != null)
-            Element(
+            CourtElement(
                 icon = Icons.Default.Mail,
                 text = playingCourt.email,
                 description = "email"
@@ -116,9 +112,10 @@ fun CourtDetails(
 
 
 @Composable
-fun Element(icon: ImageVector, text: String, description: String) {
+fun CourtElement(icon: ImageVector, text: String, description: String) {
     Row(
-        verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
     ) {
         Icon(icon, description)
         Spacer(modifier = Modifier.width(10.dp))

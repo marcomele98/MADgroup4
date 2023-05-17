@@ -14,23 +14,20 @@ import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.view.components.Calendar
 import it.polito.madgroup4.view.components.ReservationList
 import it.polito.madgroup4.viewmodel.ReservationViewModel
-import it.polito.madgroup4.viewmodel.UserViewModel
 import java.time.LocalDate
 
 @Composable
 fun Reservations(
-    vm: ReservationViewModel,
-    navController: NavController,
-    setReservation: (ReservationWithCourt) -> Unit,
+    reservationVm: ReservationViewModel,
+    userId: Long,
     date: LocalDate,
     setDate: (LocalDate) -> Unit,
-    userVm: UserViewModel,
-    userId: Long
+    setReservation: (ReservationWithCourt) -> Unit,
+    navController: NavController
 ) {
 
     val calendarState = rememberSelectableCalendarState()
-    val allReservations = vm.allRes.observeAsState().value
-
+    val allReservations = reservationVm.allRes.observeAsState().value
 
     if (calendarState.selectionState.selection.isEmpty()) {
         calendarState.selectionState.selection = listOf(date)
@@ -39,14 +36,19 @@ fun Reservations(
         setDate(calendarState.selectionState.selection[0])
     }
 
-
-
     Column(
         Modifier.padding(start = 16.dp, end = 16.dp)
     ) {
         Calendar(calendarState, allReservations)
         Spacer(modifier = Modifier.size(10.dp))
-        ReservationList(date = date.toString(), vm = vm, navController, setReservation, userId)
+        ReservationList(
+            reservationVm = reservationVm,
+            date = date.toString(),
+            userId = userId,
+            setReservation = setReservation,
+            navController = navController
+        )
     }
+
 }
 

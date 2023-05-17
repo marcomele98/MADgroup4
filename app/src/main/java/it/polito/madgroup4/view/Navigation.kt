@@ -40,27 +40,34 @@ import java.time.LocalDate
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Navigation(
-    vm: ReservationViewModel,
+    reservationVm: ReservationViewModel,
+    reviewVm: ReviewViewModel,
+    userVm: UserViewModel,
+
+    userId: Long,
+
     reservation: ReservationWithCourt,
     setReservationWithCourt: (ReservationWithCourt) -> Unit,
+
     sports: List<String>,
+
     selectedSport: String,
     setSelectedSport: (String) -> Unit,
+
     creationDate: LocalDate,
     setCreationDate: (LocalDate) -> Unit,
+
     selectedCourt: CourtWithSlots,
     setSelectedCourt: (CourtWithSlots) -> Unit,
+
     selectedSlot: Int,
     setSelectedSlot: (Int) -> Unit,
+
     showedCourt: PlayingCourt,
     setShowedCourt: (PlayingCourt) -> Unit,
-    userVm: UserViewModel,
-    userId: Long,
-    reviewVm: ReviewViewModel,
+
     reviews: List<Review>,
     setReviews: (List<Review>) -> Unit,
-    showedReview: Review,
-    setShowedReview: (Review) -> Unit
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -68,15 +75,16 @@ fun Navigation(
     if (navBackStackEntry?.destination?.route == "Profile") {
         navController.popBackStack()
     }
+
     Scaffold(
         bottomBar = {
             BottomNavBar(navController = navController)
         },
         topBar = {
             TopBar(
-                navBackStackEntry?.destination?.route ?: "",
+                title = navBackStackEntry?.destination?.route ?: "",
+                reservation = reservation,
                 navController = navController,
-                reservation = reservation
             )
         },
 
@@ -85,73 +93,66 @@ fun Navigation(
                 FloatingFab(navController)
         },
         floatingActionButtonPosition = FabPosition.End
+
     ) {
         Box(Modifier.padding(it)) {
             NavHost(navController = navController, startDestination = "Reservations") {
+
                 composable("Profile") {
                     Profile()
                 }
+
                 composable("Create Reservation") {
                     CreateReservation(
-                        vm,
-                        navController,
-                        selectedSport,
+                        reservationVm,
                         creationDate,
+                        selectedSport,
                         setCreationDate,
+                        setSelectedSlot,
                         setSelectedCourt,
-                        setSelectedSlot
+                        navController
                     )
                 }
 
                 composable("Reservations") {
                     Reservations(
-                        vm,
-                        navController,
-                        setReservationWithCourt,
+                        reservationVm,
+                        userId,
                         creationDate,
                         setCreationDate,
-                        userVm,
-                        userId
+                        setReservationWithCourt,
+                        navController
                     )
                 }
 
                 composable("Edit Reservation") {
-                    EditReservation(reservation, vm, navController, selectedSlot, setSelectedSlot)
+                    EditReservation(
+                        reservationVm,
+                        reservation,
+                        selectedSlot,
+                        setSelectedSlot,
+                        navController
+                    )
                 }
+
                 composable("Reservation Details") {
                     ShowReservation(
-                        reservation,
-                        vm,
+                        reservationVm,
                         reviewVm,
+                        userVm,
+                        reservation,
                         navController,
-                        userVm
-                    )
-                }
-                composable("Select Sport") {
-                    SportSelector(
-                        sports = sports,
-                        navController = navController,
-                        setSelectedSport = setSelectedSport
-                    )
-                }
-                composable("Select A Time Slot") {
-                    SlotSelectionReservation(
-                        navController = navController,
-                        selectedCourt = selectedCourt,
-                        setSelectedSlot = setSelectedSlot,
-                        selectedSlot = selectedSlot,
-                        date = creationDate,
                     )
                 }
 
                 composable("Confirm Reservation") {
                     ReservationConfirmation(
+                        reservationVm = reservationVm,
+                        userVm = userVm,
                         playingCourt = selectedCourt.playingCourt!!,
                         reservationDate = creationDate,
                         reservationTimeSlot = selectedSlot,
                         setSelectedSlot = setSelectedSlot,
-                        vm = vm,
-                        userVm = userVm,
                         navController = navController,
                     )
                 }
@@ -162,37 +163,61 @@ fun Navigation(
                         reservationDate = creationDate,
                         reservationTimeSlot = selectedSlot,
                         setSelectedSlot = setSelectedSlot,
-                        vm = vm,
+                        reservationVm = reservationVm,
                         userVm = userVm,
                         navController = navController,
                         reservation = reservation.reservation!!,
                     )
                 }
 
+                composable("Select Sport") {
+                    SportSelector(
+                        sports = sports,
+                        setSelectedSport = setSelectedSport,
+                        navController = navController
+                    )
+                }
+                composable("Select A Time Slot") {
+                    SlotSelectionReservation(
+                        date = creationDate,
+                        selectedCourt = selectedCourt,
+                        selectedSlot = selectedSlot,
+                        setSelectedSlot = setSelectedSlot,
+                        navController = navController
+                    )
+                }
+
                 composable("Playing Courts") {
                     Courts(
-                        navController = navController,
-                        vm = vm,
+                        reservationVm = reservationVm,
                         selectedSport = selectedSport,
                         setShowedCourt = setShowedCourt,
+                        navController = navController
                     )
                 }
 
                 composable("Playing Court Details") {
-                    ShowCourt(playingCourt = showedCourt,
-                        navController = navController,
+                    ShowCourt(
                         reviewVm = reviewVm,
+                        playingCourt = showedCourt,
                         setReviews = setReviews,
-                        )
+                        navController = navController
+                    )
                 }
 
                 composable("Rate This Playing Court") {
-                    ReviewForm(reservation = reservation,  userId = userId, reviewVm = reviewVm, navController = navController)
+                    ReviewForm(
+                        reviewVm = reviewVm,
+                        userId = userId,
+                        reservation = reservation,
+                        navController = navController
+                    )
                 }
 
                 composable("Reviews") {
-                    ReviewList(reviews= reviews)
+                    ReviewList(reviews = reviews)
                 }
+
             }
         }
     }

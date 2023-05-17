@@ -15,33 +15,33 @@ import javax.inject.Inject
 //TODO: valutiamo... forse dal momento in cui nella preview faremo vedere la media delle reviews possiamo togliere questa classe e recuperarle direttamente da court
 @HiltViewModel
 class ReviewViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
-  private val viewModelScope = CoroutineScope(Dispatchers.Main)
+    private val viewModelScope = CoroutineScope(Dispatchers.Main)
 
-  private var _reviews =
-    MutableLiveData<List<Review>>().apply { value = emptyList() }
-  val reviews: LiveData<List<Review>> = _reviews
+    private var _reviews =
+        MutableLiveData<List<Review>>().apply { value = emptyList() }
+    val reviews: LiveData<List<Review>> = _reviews
 
-  private var _review =
-    MutableLiveData<Review>().apply { value = null }
-  val review: LiveData<Review> = _review
+    private var _review =
+        MutableLiveData<Review>().apply { value = null }
+    val review: LiveData<Review> = _review
 
-  fun saveReview(review: Review) = viewModelScope.launch {
-    repository.saveReview(review)
-  }
-
-  fun deleteReview(review: Review) = viewModelScope.launch {
-    repository.deleteReview(review)
-  }
-
-  fun getReviewByReservationId(id: Long) =
-    repository.getReviewByReservationId(id).observeForever{ review ->
-      _review.value = review
+    fun saveReview(review: Review) = viewModelScope.launch {
+        repository.saveReview(review)
     }
 
-  fun getAllReviewsByCourtId(courtId: Long) {
-    repository.getAllReviewsByCourtId(courtId).observeForever { review ->
-      _reviews.value = review
+    /*fun deleteReview(review: Review) = viewModelScope.launch {
+      repository.deleteReview(review)
+    }*/
+
+    fun getReviewByReservationId(id: Long) =
+        repository.getReviewByReservationId(id).observeForever { review ->
+            _review.value = review
+        }
+
+    fun getAllReviewsByCourtId(courtId: Long) {
+        repository.getAllReviewsByCourtId(courtId).observeForever { review ->
+            _reviews.value = review
+        }
     }
-  }
 
 }

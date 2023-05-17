@@ -14,26 +14,26 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.viewmodel.ReservationViewModel
-import it.polito.madgroup4.viewmodel.UserViewModel
 import java.sql.Date
 import java.text.SimpleDateFormat
 
 @Composable
 fun ReservationList(
+    reservationVm: ReservationViewModel,
+    userId: Long,
     date: String,
-    vm: ReservationViewModel,
-    navController: NavController,
     setReservation: (ReservationWithCourt) -> Unit,
-    userId: Long
+    navController: NavController
 ) {
 
     val formatter = SimpleDateFormat("dd/MM/yyyy")
 
     //TODO: change 1 to userVm.user.value!!.id
-    vm.getReservationsByDate(formatter.parse(formatter.format(Date.valueOf(date))), userId)
-    val reservations = vm.reservations.observeAsState(initial = emptyList())
-
-    println(reservations.value)
+    reservationVm.getReservationsByDate(
+        formatter.parse(formatter.format(Date.valueOf(date))),
+        userId
+    )
+    val reservations = reservationVm.reservations.observeAsState(initial = emptyList())
 
     Box(
         modifier = Modifier
@@ -46,12 +46,12 @@ fun ReservationList(
                 .fillMaxSize()
         ) {
             items(reservations.value.size) { index ->
-                //ReservationCard(reservations.value[index], navController, setReservation)
-                ReservationCard(reservations.value[index], navController, setReservation)
+                ReservationCard(reservations.value[index], setReservation, navController)
                 if (index == reservations.value.size - 1) {
                     Spacer(modifier = Modifier.height(70.dp))
                 }
             }
         }
     }
+
 }

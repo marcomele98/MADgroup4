@@ -16,10 +16,10 @@ import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,6 +45,7 @@ fun ReservationDetails(
     val formatter = SimpleDateFormat("dd/MM/yyyy")
 
     Column {
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
@@ -62,68 +63,46 @@ fun ReservationDetails(
                     .size(35.dp)
             )
         }
+
         Spacer(modifier = Modifier.height(30.dp))
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Icon(Icons.Default.LocationOn, contentDescription = "Location")
-            Spacer(modifier = Modifier.width(10.dp))
-            Text(
-                text = playingCourt.address + ", " + playingCourt.city + " (" + playingCourt.province + ")",
-                fontSize = 22.sp
-            )
-        }
+        ReservationElement(
+            icon = Icons.Default.LocationOn,
+            text = playingCourt.address + ", " + playingCourt.city + " (" + playingCourt.province + ")",
+            description = "Location"
+        )
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Icon(Icons.Default.Euro, contentDescription = "Location")
-            Spacer(modifier = Modifier.width(10.dp))
-            Text(
-                text = playingCourt.price.toString(),
-                fontSize = 22.sp
-            )
-        }
+        ReservationElement(
+            icon = Icons.Default.Euro,
+            text = playingCourt.price.toString(),
+            description = "Price"
+        )
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Icon(Icons.Default.DateRange, contentDescription = "Location")
-            Spacer(modifier = Modifier.width(10.dp))
-            Text(
-                text = formatter.format(reservationDate),
-                fontSize = 22.sp
-            )
-        }
+        ReservationElement(
+            icon = Icons.Default.DateRange,
+            text = formatter.format(reservationDate),
+            description = "DateRange"
+        )
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Icon(Icons.Default.Schedule, contentDescription = "Location")
-            Spacer(modifier = Modifier.width(10.dp))
-            Text(
-                text = startEndTime,
-                fontSize = 22.sp
-            )
-        }
+        ReservationElement(
+            icon = Icons.Default.Schedule,
+            text = startEndTime
+            , description = "Schedule"
+        )
+
         if (particularRequests != null && particularRequests.trim() != "") {
             Spacer(modifier = Modifier.height(20.dp))
             Text(text = "Particular requests:", fontSize = 20.sp)
             Spacer(modifier = Modifier.height(8.dp))
             Card {
                 Text(
-                    text = particularRequests!!,
+                    text = particularRequests,
                     fontSize = 18.sp,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -132,5 +111,23 @@ fun ReservationDetails(
                 )
             }
         }
+    }
+
+}
+
+@Composable
+fun ReservationElement(
+    icon: ImageVector, text: String, description: String
+){
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Icon(icon, contentDescription = description)
+        Spacer(modifier = Modifier.width(10.dp))
+        Text(
+            text = text,
+            fontSize = 22.sp
+        )
     }
 }

@@ -1,15 +1,9 @@
 package it.polito.madgroup4.view.screens
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
@@ -24,12 +18,13 @@ import it.polito.madgroup4.viewmodel.ReviewViewModel
 @ExperimentalMaterial3Api
 @Composable
 fun ShowCourt(
-    playingCourt: PlayingCourt,
-    navController: NavController,
     reviewVm: ReviewViewModel,
+    playingCourt: PlayingCourt,
     setReviews: (List<Review>) -> Unit,
+    navController: NavController,
 ) {
-    reviewVm.getAllReviewsByCourtId(playingCourt.id!!)
+
+    reviewVm.getAllReviewsByCourtId(playingCourt.id)
 
     val reviews = reviewVm.reviews.observeAsState(initial = emptyList())
 

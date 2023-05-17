@@ -153,9 +153,9 @@ fun MyDay(
         Column(
             modifier = Modifier
                 .align(Alignment.Center)
-                .alpha(if(isActive) 1f else 0.5f)
+                .alpha(if (isActive) 1f else 0.5f)
                 .clickable {
-                    if(isActive)
+                    if (isActive)
                         selectionState.onDateSelected(date)
                 },
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -201,7 +201,6 @@ fun MyDay(
         }
     }
 }
-
 
 
 @Composable

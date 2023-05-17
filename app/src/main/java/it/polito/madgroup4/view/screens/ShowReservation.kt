@@ -1,6 +1,5 @@
 package it.polito.madgroup4.view.screens
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,7 +25,6 @@ import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.utility.calculateStartEndTime
 import it.polito.madgroup4.utility.formatDate
 import it.polito.madgroup4.view.components.ReservationDetails
-import it.polito.madgroup4.view.components.ReviewCard
 import it.polito.madgroup4.viewmodel.ReservationViewModel
 import it.polito.madgroup4.viewmodel.ReviewViewModel
 import it.polito.madgroup4.viewmodel.UserViewModel
@@ -37,16 +35,16 @@ import java.util.Date
 @ExperimentalMaterial3Api
 @Composable
 fun ShowReservation(
-    reservation: ReservationWithCourt,
-    vm: ReservationViewModel,
+    reservationVm: ReservationViewModel,
     reviewVm: ReviewViewModel,
-    navController: NavController,
     userVm: UserViewModel,
+    reservation: ReservationWithCourt,
+    navController: NavController,
 ) {
 
     val openDialog = remember { mutableStateOf(false) }
 
-    vm.getSlotsByCourtIdAndDate(
+    reservationVm.getSlotsByCourtIdAndDate(
         reservation.playingCourt!!.id, reservation.reservation!!.date, userVm.user.value!!.id
     )
 
@@ -71,12 +69,13 @@ fun ShowReservation(
             .padding(horizontal = 16.dp)
             .padding(bottom = 16.dp)
     ) {
+
         if (openDialog.value) {
             AlertDialog(onDismissRequest = {
                 openDialog.value = false
             }, confirmButton = {
                 TextButton(onClick = {
-                    vm.deleteReservation(reservation.reservation)
+                    reservationVm.deleteReservation(reservation.reservation)
                     openDialog.value = false
                     navController.navigate("Reservations")
                 }) {
@@ -106,11 +105,14 @@ fun ShowReservation(
             reservation.reservation.slotNumber,
             reservation.reservation.particularRequests
         )
-        if(review.value != null){
+
+        if (review.value != null) {
             Spacer(modifier = Modifier.height(30.dp))
             ReviewList(reviews = listOf(review.value!!))
         }
+
         Spacer(modifier = Modifier.weight(1f))
+
         if (!isInThePast) {
             Button(
                 onClick = {
@@ -121,9 +123,9 @@ fun ShowReservation(
             ) {
                 Text(text = "Delete")
             }
-        } else if (review.value == null){
+        } else if (review.value == null) {
             Button(
-                onClick = { navController.navigate("Rate This Playing Court") },
+                onClick = { navController.navigate("Rate This Playing Court") }, //modificichiamo? in questo momento valutiamo il playing court ma associato alla prenotazione
                 modifier = Modifier
                     .fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(

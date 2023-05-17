@@ -13,6 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class UserViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
+
     private val viewModelScope = CoroutineScope(Dispatchers.Main)
     private var _user = MutableLiveData<User>().apply { value = null }
     val user: LiveData<User> = _user

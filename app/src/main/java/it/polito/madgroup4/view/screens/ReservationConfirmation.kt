@@ -20,7 +20,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import it.polito.madgroup4.model.PlayingCourt
 import it.polito.madgroup4.model.Reservation
@@ -33,17 +32,17 @@ import java.time.LocalDate
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReservationConfirmation(
+    reservationVm: ReservationViewModel,
+    userVm: UserViewModel,
     playingCourt: PlayingCourt,
     reservationDate: LocalDate,
     reservationTimeSlot: Int,
     setSelectedSlot: (Int) -> Unit,
-    vm: ReservationViewModel,
-    userVm: UserViewModel,
     navController: NavController,
     reservation: Reservation = Reservation(
         courtId = playingCourt.id,
         slotNumber = reservationTimeSlot,
-        userId = userVm.user.value!!.id!!,
+        userId = userVm.user.value!!.id,
         date = SimpleDateFormat("dd/MM/yyyy").parse(
             SimpleDateFormat("dd/MM/yyyy").format(
                 java.sql.Date.valueOf(
@@ -56,20 +55,20 @@ fun ReservationConfirmation(
 
     var text by remember { mutableStateOf(reservation.particularRequests ?: "") }
 
-
-
     Column(
         modifier = Modifier
             .padding(horizontal = 16.dp)
             .padding(bottom = 16.dp)
 
     ) {
+
         ReservationDetails(
             playingCourt = playingCourt,
-            reservationDate = reservation.date!!,
+            reservationDate = reservation.date,
             reservationTimeSlot = reservationTimeSlot,
             particularRequests = null
         )
+
         Spacer(modifier = Modifier.height(20.dp))
 
         TextField(
@@ -89,13 +88,15 @@ fun ReservationConfirmation(
             label = { Text(text = "Particular requests") },
             placeholder = { Text(text = "Add particular requests") },
             )
+
         Spacer(modifier = Modifier.weight(1f))
+
         Button(
             onClick = {
                 reservation.slotNumber = reservationTimeSlot
                 if (text.trim() != "")
                     reservation.particularRequests = text
-                vm.saveReservation(reservation)
+                reservationVm.saveReservation(reservation)
                 navController.navigate("Reservations")
                 setSelectedSlot(-1)
             },

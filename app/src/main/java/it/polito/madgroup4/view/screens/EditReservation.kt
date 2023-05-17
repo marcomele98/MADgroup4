@@ -7,32 +7,29 @@ import it.polito.madgroup4.utility.calculateAvailableSlot
 import it.polito.madgroup4.view.components.SlotSelector
 import it.polito.madgroup4.viewmodel.ReservationViewModel
 
-
 @Composable
 fun EditReservation(
+    reservationVm: ReservationViewModel,
     reservation: ReservationWithCourt,
-    vm: ReservationViewModel,
-    navController: NavController,
     selectedSlot: Int,
-    setSelectedSlot: (Int)->Unit
+    setSelectedSlot: (Int)->Unit,
+    navController: NavController
 ) {
-    val list =
-        calculateAvailableSlot(vm, reservation)
 
-    println(selectedSlot)
+    val list = calculateAvailableSlot(reservationVm, reservation)
 
     if(selectedSlot == -1)
         setSelectedSlot(reservation.reservation!!.slotNumber)
 
     SlotSelector(
+        reservation = reservation.reservation,
+        date = reservation.reservation!!.date,
+        selectedSlot = selectedSlot,
         slots = list,
         onClick = {
             setSelectedSlot(it)
             navController.navigate("Confirm Changes")
         },
-        selectedSlot = selectedSlot,
-        reservation = reservation.reservation,
-        date = reservation.reservation!!.date,
     )
 
 }

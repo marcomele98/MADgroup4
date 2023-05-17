@@ -30,18 +30,18 @@ fun calculateStartEndTime(startTime: String, slotId: Int): String {
     return "$slotStartTime - $slotEndTime"
 }
 
-fun formatDate(date: String): Date{
+fun formatDate(date: String): Date {
     val formatter = SimpleDateFormat("dd/MM/yyyy")
     return formatter.parse(date)
 }
 
-fun formatDate(date: LocalDate): Date{
+fun formatDate(date: LocalDate): Date {
     return formatDate(Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant()))
 }
 
 fun add0IfLengthIs1(n: Int): String {
     val time = n.toString()
-    return if(time.length == 1) "0$time" else time
+    return if (time.length == 1) "0$time" else time
 }
 
 private fun calculateTimeAsNum(time: String): Int {
@@ -52,17 +52,17 @@ private fun calculateTimeAsNum(time: String): Int {
 fun getWeekdaysStartingOnSunday(localDate: LocalDate, firstDayOfWeek: DayOfWeek): List<LocalDate> {
     var currentDay: LocalDate = localDate
     val weekdays = mutableListOf<LocalDate>()
-    while(currentDay.dayOfWeek != firstDayOfWeek) {
+    while (currentDay.dayOfWeek != firstDayOfWeek) {
         currentDay = currentDay.minusDays(1)
     }
     repeat(7) {
         weekdays.add(currentDay)
-        currentDay= currentDay.plusDays(1)
+        currentDay = currentDay.plusDays(1)
     }
     return weekdays
 }
 
-fun formatDate(date: Date): Date{
+fun formatDate(date: Date): Date {
     val formatter = SimpleDateFormat("dd/MM/yyyy")
     return formatter.parse(formatter.format(date))
 }
@@ -78,13 +78,17 @@ fun calculateAvailableSlot(
 
     var listOfReservation = vm.slots.value!!
 
-    return getAllSlots(listOfReservation, reservation.playingCourt!!.openingTime!!, reservation.playingCourt!!.closingTime!!)
+    return getAllSlots(
+        listOfReservation,
+        reservation.playingCourt!!.openingTime!!,
+        reservation.playingCourt!!.closingTime!!
+    )
 }
 
 fun getAllSlots(
     listOfReservation: List<Int>,
-    openingTime : String,
-    closingTime : String
+    openingTime: String,
+    closingTime: String
 ): MutableList<Slot> {
     var listOfSlots = mutableListOf<Slot>()
 

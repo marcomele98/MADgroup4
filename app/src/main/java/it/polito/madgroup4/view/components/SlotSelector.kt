@@ -27,11 +27,11 @@ import java.util.Date
 
 @Composable
 fun SlotSelector(
+    reservation: Reservation? = null,
     date: Date,
-    slots: List<Slot>,
-    onClick: (Int) -> Unit,
     selectedSlot: Int? = null,
-    reservation: Reservation? = null
+    slots: List<Slot>,
+    onClick: (Int) -> Unit
 ) {
 
     Box(
@@ -85,8 +85,6 @@ fun SlotSelector(
                         )
                     }
                 }
-
-
             }
         )
     }

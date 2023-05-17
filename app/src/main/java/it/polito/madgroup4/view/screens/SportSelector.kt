@@ -32,7 +32,6 @@ fun SportSelector(
 
     {
         items(sports.size) { index ->
-            //ReservationCard(reservations.value[index], navController, setReservation)
             ElevatedCard(
                 modifier = Modifier
                     .padding(bottom = 10.dp)

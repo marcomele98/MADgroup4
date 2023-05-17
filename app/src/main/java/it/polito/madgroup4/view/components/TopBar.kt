@@ -21,7 +21,11 @@ import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar(title: String, navController: NavController, reservation: ReservationWithCourt? = null) {
+fun TopBar(
+    title: String,
+    reservation: ReservationWithCourt? = null,
+    navController: NavController,
+) {
 
     var isInThePast = false
     if (reservation!!.reservation != null) {
@@ -36,6 +40,7 @@ fun TopBar(title: String, navController: NavController, reservation: Reservation
             LocalTime.now()
         ))
     }
+
     CenterAlignedTopAppBar(
         title = {
             Text(text = title)
@@ -62,4 +67,5 @@ fun TopBar(title: String, navController: NavController, reservation: Reservation
             }
         },
     )
+
 }

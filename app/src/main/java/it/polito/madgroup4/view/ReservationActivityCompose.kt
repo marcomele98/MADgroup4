@@ -31,7 +31,7 @@ import java.util.Date
 @AndroidEntryPoint
 class ReservationActivityCompose : ComponentActivity() {
 
-    val vm by viewModels<ReservationViewModel>()
+    val reservationVm by viewModels<ReservationViewModel>()
 
     val userVm by viewModels<UserViewModel>()
 
@@ -86,11 +86,12 @@ class ReservationActivityCompose : ComponentActivity() {
 
 
     val formatter = SimpleDateFormat("dd/MM/yyyy")
-    val reservation = Reservation(1, 1, 1, 1,  formatter.parse(formatter.format(Date())))
+    val reservation = Reservation(1, 1, 1, 1, formatter.parse(formatter.format(Date())))
     val reservation2 = Reservation(2, 2, 1, 2, formatter.parse(formatter.format(Date())))
     val reservation3 = Reservation(3, 1, 2, 2, formatter.parse(formatter.format(Date())))
     val reservation4 = Reservation(4, 1, 1, 3, formatter.parse("11/05/2023"))
-    val reservation5 = Reservation(5, 2, 2, 3, formatter.parse("14/05/2023"))/*    val reservation6 = Reservation(6, 1, 2, formatter.parse(formatter.format(Date())))
+    val reservation5 = Reservation(5, 2, 2, 3, formatter.parse("14/05/2023"))
+    /*  val reservation6 = Reservation(6, 1, 2, formatter.parse(formatter.format(Date())))
         val reservation7 = Reservation(7, 1, 0, formatter.parse(formatter.format(Date())))
         val reservation8 = Reservation(8, 1, 5, formatter.parse(formatter.format(Date())))
         val reservation9 = Reservation(9, 1, 6, formatter.parse(formatter.format(Date())))
@@ -102,37 +103,37 @@ class ReservationActivityCompose : ComponentActivity() {
         val reservation15 = Reservation(15, 1, 3, formatter.parse(formatter.format(Date())))
         val reservation16 = Reservation(16, 1, 4, formatter.parse(formatter.format(Date())))*/
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        vm.savePlayingCourt(playingCourt)
-        vm.savePlayingCourt(playingCourt2)
-        vm.savePlayingCourt(playingCourt3)
+        reservationVm.savePlayingCourt(playingCourt)
+        reservationVm.savePlayingCourt(playingCourt2)
+        reservationVm.savePlayingCourt(playingCourt3)
         userVm.saveUser(u1)
         userVm.saveUser(u2)
         userVm.saveUser(u3)
-        vm.saveReservation(reservation)
-        vm.saveReservation(reservation2)
-        vm.saveReservation(reservation3)
-        vm.saveReservation(reservation4)
-        vm.saveReservation(reservation5)/*        vm.saveReservation(reservation6)
-                vm.saveReservation(reservation7)
-                vm.saveReservation(reservation8)
-                vm.saveReservation(reservation9)
-                vm.saveReservation(reservation10)
-                vm.saveReservation(reservation11)
-                vm.saveReservation(reservation12)
-                vm.saveReservation(reservation13)
-                vm.saveReservation(reservation14)
-                vm.saveReservation(reservation15)
-                vm.saveReservation(reservation16)*/
+        reservationVm.saveReservation(reservation)
+        reservationVm.saveReservation(reservation2)
+        reservationVm.saveReservation(reservation3)
+        reservationVm.saveReservation(reservation4)
+        reservationVm.saveReservation(reservation5)
+        /*      reservationVm.saveReservation(reservation6)
+                reservationVm.saveReservation(reservation7)
+                reservationVm.saveReservation(reservation8)
+                reservationVm.saveReservation(reservation9)
+                reservationVm.saveReservation(reservation10)
+                reservationVm.saveReservation(reservation11)
+                reservationVm.saveReservation(reservation12)
+                reservationVm.saveReservation(reservation13)
+                reservationVm.saveReservation(reservation14)
+                reservationVm.saveReservation(reservation15)
+                reservationVm.saveReservation(reservation16)*/
 
         setContent {
             MADgroup4Theme {
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface
                 ) {
-                    MainScreen(vm, userVm, reviewVm)
+                    MainScreen(reservationVm, userVm, reviewVm)
                 }
             }
         }
@@ -140,7 +141,11 @@ class ReservationActivityCompose : ComponentActivity() {
 }
 
 @Composable
-fun MainScreen(vm: ReservationViewModel, userVm: UserViewModel, reviewVm: ReviewViewModel) {
+fun MainScreen(
+    reservationVm: ReservationViewModel,
+    userVm: UserViewModel,
+    reviewVm: ReviewViewModel
+) {
 
     val (reservation, setReservation) = remember {
         mutableStateOf(ReservationWithCourt(null, null))
@@ -155,19 +160,20 @@ fun MainScreen(vm: ReservationViewModel, userVm: UserViewModel, reviewVm: Review
     }
     val (showedCourt, setShowedCourt) = remember { mutableStateOf(PlayingCourt()) }
 
-    val (showedReview, setShowedReview) = remember { mutableStateOf(Review(1,1,1, "Test", date=Date())) }
     val (reviews, setReviews) = remember { mutableStateOf(listOf<Review>()) }
-
 
     //TODO: prendo l'id dalle preferences
     val userId: Long = 1
 
     userVm.getUser(userId)
 
-    vm.getAllReservations(userId)
+    reservationVm.getAllReservations(userId)
 
     Navigation(
-        vm,
+        reservationVm,
+        reviewVm,
+        userVm,
+        userId,
         reservation,
         setReservation,
         sports,
@@ -181,22 +187,8 @@ fun MainScreen(vm: ReservationViewModel, userVm: UserViewModel, reviewVm: Review
         setSelectedSlot,
         showedCourt,
         setShowedCourt,
-        userVm,
-        userId,
-        reviewVm,
         reviews,
-        setReviews,
-        showedReview,
-        setShowedReview
+        setReviews
     )
 
 }
-
-
-/*@Preview(showBackground = true)
-@Composable
-fun MainScreenPreview() {
-  MADgroup4Theme {
-    MainScreen()
-  }
-}*/

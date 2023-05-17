@@ -1,15 +1,11 @@
 package it.polito.madgroup4.model
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.room.*
 import it.polito.madgroup4.utility.CourtWithSlots
-import it.polito.madgroup4.utility.Slot
 import it.polito.madgroup4.utility.getAllSlots
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.withContext
 import java.util.*
 

@@ -1,11 +1,7 @@
 package it.polito.madgroup4.view.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,21 +16,19 @@ import androidx.navigation.NavController
 import com.gowtham.ratingbar.RatingBar
 import com.gowtham.ratingbar.RatingBarConfig
 import com.gowtham.ratingbar.RatingBarStyle
-import com.gowtham.ratingbar.StepSize
 import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.model.Review
 import it.polito.madgroup4.utility.formatDate
 import it.polito.madgroup4.utility.imageSelector
-import it.polito.madgroup4.viewmodel.ReservationViewModel
 import it.polito.madgroup4.viewmodel.ReviewViewModel
 import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReviewForm(
-    reservation: ReservationWithCourt,
-    userId: Long,
     reviewVm: ReviewViewModel,
+    userId: Long,
+    reservation: ReservationWithCourt,
     navController: NavController,
     review: Review = Review(
         courtId = reservation.playingCourt!!.id,
@@ -46,12 +40,12 @@ fun ReviewForm(
         text = "",
         date = formatDate(Date()),
         reservationId = reservation.reservation!!.id
-    ),
-    //sssetReview: (Review) -> Unit
+    )
 ) {
-    var service by remember { mutableStateOf(0.toFloat()) }
-    var structure by remember { mutableStateOf(0.toFloat()) }
-    var cleaning by remember { mutableStateOf(0.toFloat()) }
+
+    val (service, setService) = remember { mutableStateOf(0.toFloat()) }
+    val (structure, setStructure) = remember { mutableStateOf(0.toFloat()) }
+    val (cleaning, setCleaning) = remember { mutableStateOf(0.toFloat()) }
     var comment by remember { mutableStateOf("") }
     var title by remember { mutableStateOf("") }
 
@@ -78,16 +72,14 @@ fun ReviewForm(
             )
         }
 
-
         Spacer(modifier = Modifier.height(20.dp))
-
 
         Column(
         ) {
 
             TextField(
                 value = title,
-//                        supportingText = { Text(text = "Max 50 characters") },
+                //supportingText = { Text(text = "Max 50 characters") },
                 onValueChange = { title = it },
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -104,67 +96,15 @@ fun ReviewForm(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    modifier = Modifier.weight(1f), text = "Service", fontSize = 22.sp
-                )
-                Spacer(modifier = Modifier.width(10.dp))
-                RatingBar(value = service,
-                    config = RatingBarConfig().style(RatingBarStyle.Normal)
-                        .activeColor(MaterialTheme.colorScheme.primary)
-                        .inactiveColor(MaterialTheme.colorScheme.surfaceVariant)
-                        .numStars(5).size(35.dp).padding(6.dp),
-                    onValueChange = {
-                        service = it
-                    },
-                    onRatingChanged = { service = it })
-            }
+            CostumeRatingBar(text = "Structure", rating = structure, setRating = setStructure)
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    modifier = Modifier.weight(1f), text = "Structure", fontSize = 22.sp
-                )
-                Spacer(modifier = Modifier.width(10.dp))
-                RatingBar(value = structure,
-                    config = RatingBarConfig().style(RatingBarStyle.Normal)
-                        .activeColor(MaterialTheme.colorScheme.primary)
-                        .inactiveColor(MaterialTheme.colorScheme.surfaceVariant)
-                        .numStars(5).size(35.dp).padding(6.dp),
-                    onValueChange = {
-                        structure = it
-                    },
-                    onRatingChanged = { structure = it })
-            }
+            CostumeRatingBar(text = "Cleaning", rating = cleaning, setRating = setCleaning)
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    modifier = Modifier.weight(1f), text = "Cleaning", fontSize = 22.sp
-                )
-                Spacer(modifier = Modifier.width(10.dp))
-                RatingBar(value = cleaning,
-                    config = RatingBarConfig().style(RatingBarStyle.Normal)
-                        .activeColor(MaterialTheme.colorScheme.primary)
-                        .inactiveColor(MaterialTheme.colorScheme.surfaceVariant)
-                        .numStars(5).size(35.dp).padding(6.dp),
-                    onValueChange = {
-                        cleaning = it
-                    },
-                    onRatingChanged = { cleaning = it })
-            }
-
+            CostumeRatingBar(text = "Service", service, setService)
 
             Spacer(modifier = Modifier.height(20.dp))
 
@@ -221,6 +161,32 @@ fun ReviewForm(
             //setReview(review)
             navController.popBackStack()
         }, content = { Text("Submit Review") })
+    }
+}
+
+@Composable
+fun CostumeRatingBar(
+    text: String,
+    rating: Float,
+    setRating: (Float) -> Unit,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(
+            modifier = Modifier.weight(1f), text = text, fontSize = 22.sp
+        )
+        Spacer(modifier = Modifier.width(10.dp))
+        RatingBar(value = rating,
+            config = RatingBarConfig().style(RatingBarStyle.Normal)
+                .activeColor(MaterialTheme.colorScheme.primary)
+                .inactiveColor(MaterialTheme.colorScheme.surfaceVariant)
+                .numStars(5).size(35.dp).padding(6.dp),
+            onValueChange = {
+                setRating(it)
+            },
+            onRatingChanged = { setRating(it) })
     }
 }
 

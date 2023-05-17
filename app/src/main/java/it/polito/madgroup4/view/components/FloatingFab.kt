@@ -14,6 +14,6 @@ fun FloatingFab(navController: NavHostController) {
             navController.navigate("Create Reservation")
         }
     ) {
-        Icon(Icons.Filled.Add, contentDescription = "Aggiungi")
+        Icon(Icons.Filled.Add, contentDescription = "Adding")
     }
 }

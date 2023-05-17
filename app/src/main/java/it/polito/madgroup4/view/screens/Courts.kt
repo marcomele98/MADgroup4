@@ -14,15 +14,15 @@ import it.polito.madgroup4.viewmodel.ReservationViewModel
 
 @Composable
 fun Courts(
-    navController: NavController,
-    vm: ReservationViewModel,
+    reservationVm: ReservationViewModel,
     selectedSport: String,
     setShowedCourt: (PlayingCourt) -> Unit,
+    navController: NavController
 ) {
 
-    vm.getAllPlayingCourtBySport(selectedSport)
+    reservationVm.getAllPlayingCourtBySport(selectedSport)
 
-    val playingCourts = vm.allCourtsBySport.observeAsState(initial = emptyList())
+    val playingCourts = reservationVm.allCourtsBySport.observeAsState(initial = emptyList())
 
     Column(
         Modifier.padding(horizontal = 16.dp)

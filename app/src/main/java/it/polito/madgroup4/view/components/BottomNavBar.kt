@@ -18,6 +18,7 @@ import androidx.navigation.NavHostController
 fun BottomNavBar(
     navController: NavHostController
 ){
+
     NavigationBar(
         modifier = Modifier.height(75.dp),
     ) {
@@ -50,7 +51,6 @@ fun BottomNavBar(
             }
         )
 
-
         NavigationBarItem(
             selected = navController.currentBackStackEntry?.destination?.route == "Profile",
             icon = {
@@ -60,6 +60,9 @@ fun BottomNavBar(
                 )
             },
             label = { Text("Profile") },
-            onClick = { navController.navigate("Profile") })
+            onClick = { navController.navigate("Profile") }
+        )
+
     }
+
 }

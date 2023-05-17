@@ -8,7 +8,6 @@ import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
 import androidx.room.Transaction
 import java.util.*
-
 @Dao
 interface ReservationDAO {
 

@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Reviews
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -38,12 +36,14 @@ import it.polito.madgroup4.utility.imageSelector
 @Composable
 fun ReservationCard(
     reservation: ReservationWithCourt,
-    navController: NavController,
-    setReservation: (ReservationWithCourt) -> Unit
+    setReservation: (ReservationWithCourt) -> Unit,
+    navController: NavController
 ) {
+
     val startEndTime = calculateStartEndTime(
         reservation.playingCourt!!.openingTime!!, reservation.reservation!!.slotNumber
     )
+
     ElevatedCard(modifier = Modifier
         .padding(bottom = 10.dp)
         .fillMaxWidth()
@@ -54,6 +54,7 @@ fun ReservationCard(
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
+
             Row(
                 verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()
             ) {
@@ -73,6 +74,7 @@ fun ReservationCard(
                         .fillMaxHeight()
                 )
             }
+
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(
@@ -81,10 +83,10 @@ fun ReservationCard(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-
             Text(
                 text = startEndTime, fontSize = 18.sp
             )
+
         }
     }
 }
@@ -92,7 +94,9 @@ fun ReservationCard(
 
 @Composable
 fun PlayingCourtCard(
-    playingCourt: PlayingCourt, onClick: () -> Unit, enabled: Boolean = true
+    playingCourt: PlayingCourt,
+    onClick: () -> Unit,
+    enabled: Boolean = true
 ) {
 
     ElevatedCard(modifier = Modifier
@@ -101,6 +105,7 @@ fun PlayingCourtCard(
         .clickable(enabled) {
             onClick()
         }) {
+
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
@@ -120,6 +125,7 @@ fun PlayingCourtCard(
                         .fillMaxHeight()
                 )
             }
+
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(
@@ -128,10 +134,13 @@ fun PlayingCourtCard(
             )
 
             Spacer(modifier = Modifier.height(10.dp))
+
             Text(
                 text = playingCourt.price.toString() + " €/h", fontSize = 18.sp
             )
+
         }
+
     }
 }
 
@@ -141,11 +150,13 @@ fun SportCard(
     sport: String,
     navController: NavController,
 ) {
+
     OutlinedCard(modifier = Modifier
         .padding(bottom = 10.dp)
         .clickable {
             navController.navigate("Select Sport")
-        }) {
+        }
+    ) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
@@ -165,17 +176,19 @@ fun SportCard(
             }
         }
     }
+
 }
 
 @Composable
 fun ReviewCard(
     review: Review,
 ) {
-    println(review)
-    ElevatedCard(modifier = Modifier
-        .padding(bottom = 10.dp)
-        .fillMaxWidth()
-        ) {
+
+    ElevatedCard(
+        modifier = Modifier
+            .padding(bottom = 10.dp)
+            .fillMaxWidth()
+    ) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
@@ -198,17 +211,17 @@ fun ReviewCard(
 
             //TODO: aggiungi l'autore della recensione
 
-            if(review.structureRating ?: 0f > 0f){
+            if (review.structureRating ?: 0f > 0f) {
                 Evaluation(stars = review.structureRating ?: 0f, label = "structure ")
             }
-            if (review.cleaningRating ?: 0f > 0f){
+            if (review.cleaningRating ?: 0f > 0f) {
                 Evaluation(stars = review.cleaningRating ?: 0f, label = "cleaning ")
             }
-            if(review.serviceRating ?: 0f > 0f){
+            if (review.serviceRating ?: 0f > 0f) {
                 Evaluation(stars = review.serviceRating ?: 0f, label = "service ")
             }
             Spacer(modifier = Modifier.height(5.dp))
-            if(review.text?.trim() ?: "" != ""){
+            if (review.text?.trim() ?: "" != "") {
                 Text(
                     text = "\"${review.text!!}\"",
                     fontSize = 18.sp,
@@ -224,7 +237,8 @@ fun ReviewCard(
 fun Evaluation(
     stars: Float,
     label: String
-){
+) {
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth()
@@ -243,5 +257,7 @@ fun Evaluation(
                 .stepSize(StepSize.HALF).numStars(5).size(20.dp).padding(0.dp),
             onRatingChanged = {})
     }
+
     Spacer(modifier = Modifier.height(8.dp))
+
 }

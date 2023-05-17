@@ -45,19 +45,21 @@ import java.util.Date
 
 @Composable
 fun CreateReservation(
-    vm: ReservationViewModel,
-    navController: NavController,
-    selectedSport: String,
+    reservationVm: ReservationViewModel,
     date: LocalDate,
+    selectedSport: String,
     setDate: (LocalDate) -> Unit,
+    setSelectedSlot: (Int) -> Unit,
     setSelectedCourt: (CourtWithSlots) -> Unit,
-    setSelectedSlot: (Int) -> Unit
+    navController: NavController
 ) {
+
     val calendarState = rememberSelectableWeekCalendarState(
         initialSelection = listOf(date),
         initialWeek = Week(getWeekdaysStartingOnSunday(date, DayOfWeek.SUNDAY))
     )
-    val allReservations = vm.allRes.observeAsState().value
+
+    val allReservations = reservationVm.allRes.observeAsState().value
 
     if (date.isBefore(LocalDate.now())) setDate(LocalDate.now())
 
@@ -70,18 +72,18 @@ fun CreateReservation(
 
     val formatter = SimpleDateFormat("dd/MM/yyyy")
 
-    vm.getAllPlayingCourtsBySportAndDate(
+    reservationVm.getAllPlayingCourtsBySportAndDate(
         formatter.parse(formatter.format(java.sql.Date.valueOf(date.toString()))), selectedSport
     )
 
-    val playingCourts = vm.playingCourts.observeAsState(initial = emptyList())
+    val playingCourts = reservationVm.playingCourts.observeAsState(initial = emptyList())
 
     var filteredCourts by remember {
         mutableStateOf(emptyList<CourtWithSlots>())
     }
 
     filteredCourts = (playingCourts.value.filter {
-        it.slots?.filter { slot ->
+        it.slots?.any { slot ->
             !(slot.isBooked || (formatDate(date) == formatDate(Date()) && LocalTime.parse(
                 slot.time.split(
                     "-"
@@ -89,20 +91,18 @@ fun CreateReservation(
             ).isBefore(
                 LocalTime.now()
             )))
-        }?.isNotEmpty() ?: false
+        } ?: false
     })
-
 
     val onClick = { index: Int ->
         setSelectedCourt(filteredCourts[index])
         navController.navigate("Select A Time SLot")
     }
 
-
-
     Column(
         Modifier.padding(horizontal = 16.dp)
     ) {
+
         Row() {
             SportCard(sport = selectedSport, navController = navController)
         }
@@ -123,7 +123,9 @@ fun CreateReservation(
                 )
             },
         )
+
         Spacer(modifier = Modifier.height(16.dp))
+
         if (filteredCourts.isEmpty()) {
             Text(
                 textAlign = TextAlign.Center,
@@ -137,16 +139,15 @@ fun CreateReservation(
                 onClick = onClick
             )
         }
+
     }
 }
-
 
 @Composable
 fun PlayingCourtList(
     playingCourts: List<PlayingCourt>,
     onClick: (Int) -> Unit,
 ) {
-
 
     Box(
         modifier = Modifier
@@ -159,20 +160,21 @@ fun PlayingCourtList(
                     playingCourts[index],
                     onClick = {
                         onClick(index)
-                    })
+                    }
+                )
             }
         }
     }
-}
 
+}
 
 @Composable
 fun SlotSelectionReservation(
-    navController: NavController,
+    date: LocalDate,
     selectedCourt: CourtWithSlots,
     selectedSlot: Int,
     setSelectedSlot: (Int) -> Unit,
-    date: LocalDate
+    navController: NavController
 ) {
 
     SlotSelector(selectedSlot = selectedSlot,
@@ -183,7 +185,9 @@ fun SlotSelectionReservation(
                 setSelectedSlot(selectedCourt.slots!![it].slotNumber)
                 navController.navigate("Confirm Reservation")
             }
-        })
+        }
+    )
+
 }
 
 
