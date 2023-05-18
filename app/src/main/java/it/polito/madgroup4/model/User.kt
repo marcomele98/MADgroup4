@@ -9,12 +9,9 @@ import java.util.Date
 data class User(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-    val name: String,
-    val surname: String,
-    val nickname: String,
-    val email: String,
-    val phone: String,
-    val gender: String,
-    val birthday: Date,
+    val name: String? = null,
+    val surname: String? = null,
+    val nickname: String? = null,
+    val email: String? = null,
     val photo: String? = null,
 )

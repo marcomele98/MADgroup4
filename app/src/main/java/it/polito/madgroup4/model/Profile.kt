@@ -4,12 +4,10 @@ import android.content.SharedPreferences
 import com.google.gson.Gson
 
 class Profile(
-    var name: String = "Marco Mele",
+    var name: String = "Marco",
+    var surname: String = "Mele",
     var nickname: String = "marcomele98",
-    var phone: String = "3333333333",
     var email: String = "marco@polito.it",
-    var gender: String = "Male",
-    var birthdate: String = "13-09-1998",
     var imageUri: String? = null
 ) {
     companion object {

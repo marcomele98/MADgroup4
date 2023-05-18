@@ -60,10 +60,10 @@ class EditProfileActivity : AppCompatActivity() {
         val profile: Profile = Profile.getFromPreferences(sharedPref)
         etName.setText(profile.name)
         etNickname.setText(profile.nickname)
-        etPhone.setText(profile.phone)
+//        etPhone.setText(profile.phone)
         etMail.setText(profile.email)
-        etGender.setText(profile.gender)
-        etBirthdate.setText(profile.birthdate)
+/*        etGender.setText(profile.gender)
+        etBirthdate.setText(profile.birthdate)*/
 
         fun showGenderDialog() {
             val options = arrayOf<CharSequence>("Male", "Female", "Non-binary", "Prefer not to say")
@@ -182,11 +182,11 @@ class EditProfileActivity : AppCompatActivity() {
         val profile = Profile(
             etName.text.toString(),
             etNickname.text.toString(),
-            etPhone.text.toString(),
+//            etPhone.text.toString(),
             etMail.text.toString(),
-            etGender.text.toString(),
+//            etGender.text.toString(),
             //genderSpinner.selectedItem.toString(),
-            etBirthdate.text.toString(),
+//            etBirthdate.text.toString(),
             imageUri.toString()
         )
         profile.saveToPreferences(sharedPref)

@@ -1,11 +1,27 @@
 package it.polito.madgroup4.utility
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.pm.PackageManager
+import android.database.Cursor
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import android.net.Uri
+import android.os.SystemClock
+import android.provider.MediaStore
+import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.SportsSoccer
 import androidx.compose.material.icons.filled.SportsTennis
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.core.content.ContextCompat
 import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.viewmodel.ReservationViewModel
+import java.io.ByteArrayOutputStream
+import java.io.FileDescriptor
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -125,5 +141,60 @@ fun floatEquals(a: Float, b: Float): Boolean {
     return Math.abs(a - b) <= 0.00001
 }
 
+fun uriToBitmap(selectedFileUri: Uri, context: Context): Bitmap? {
+    try {
+        val parcelFileDescriptor = context.contentResolver.openFileDescriptor(selectedFileUri, "r")
+        val fileDescriptor: FileDescriptor = parcelFileDescriptor!!.fileDescriptor
+        val image = BitmapFactory.decodeFileDescriptor(fileDescriptor)
+        parcelFileDescriptor.close()
+        return image
+    } catch (e: IOException) {
+        e.printStackTrace()
+    }
+    return null
+}
 
 
+fun saveProPicInternally(image: Bitmap, context: Context): Uri? {
+    // Check for permission
+    if (ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        ) != PackageManager.PERMISSION_GRANTED ||
+        ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ) != PackageManager.PERMISSION_GRANTED
+    ) {
+        // Request permission if not granted
+        println("Permission not granted")
+        return null
+    } else {
+        val filename = "img_${SystemClock.uptimeMillis()}" + ".jpeg"
+        val outputStream = context.openFileOutput(filename, Context.MODE_PRIVATE)
+        val byteArrayOutputStream = ByteArrayOutputStream()
+        image.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+        val byteArray = byteArrayOutputStream.toByteArray()
+        outputStream.write(byteArray)
+        outputStream.close()
+        return Uri.fromFile(context.getFileStreamPath(filename))
+
+    }
+}
+
+
+@SuppressLint("Range")
+fun rotateBitmap(input: Bitmap, context: Context, editImageUri: Uri): Bitmap? {
+    val orientationColumn =
+        arrayOf(MediaStore.Images.Media.ORIENTATION)
+    val cur: Cursor? =
+        context.contentResolver.query(editImageUri!!, orientationColumn, null, null, null)
+    var orientation = -1
+    if (cur != null && cur.moveToFirst()) {
+        orientation = cur.getInt(cur.getColumnIndex(orientationColumn[0]))
+    }
+    Log.d("tryOrientation", orientation.toString() + "")
+    val rotationMatrix = Matrix()
+    rotationMatrix.setRotate(orientation.toFloat())
+    return Bitmap.createBitmap(input, 0, 0, input.width, input.height, rotationMatrix, true)
+}

@@ -37,10 +37,10 @@ class ShowProfileActivity : AppCompatActivity() {
         val profile: Profile = Profile.getFromPreferences(sharedPref)
         tvName.text = profile.name
         tvNickname.text = "@"+profile.nickname
-        tvPhone.text = profile.phone
+//        tvPhone.text = profile.phone
         tvMail.text = profile.email
-        tvGender.text = profile.gender
-        tvBirthdate.text = profile.birthdate
+//        tvGender.text = profile.gender
+//        tvBirthdate.text = profile.birthdate
 
         profile.imageUri?.let {
             findViewById<ImageView>(R.id.profile_image).setImageURI(Uri.parse(it))
@@ -85,10 +85,10 @@ class ShowProfileActivity : AppCompatActivity() {
         val profile: Profile = Profile.getFromPreferences(sharedPref)
         tvName.text = profile.name
         tvNickname.text = "@"+profile.nickname
-        tvPhone.text = profile.phone
+//        tvPhone.text = profile.phone
         tvMail.text = profile.email
-        tvGender.text = profile.gender
-        tvBirthdate.text = profile.birthdate
+//        tvGender.text = profile.gender
+//        tvBirthdate.text = profile.birthdate
 
         profile.imageUri?.let {
             findViewById<ImageView>(R.id.profile_image).setImageURI(Uri.parse(it))

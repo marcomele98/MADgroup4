@@ -1,5 +1,9 @@
 package it.polito.madgroup4.view.screens
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
@@ -19,38 +23,53 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import it.polito.madgroup4.R
+import it.polito.madgroup4.model.Profile
 import it.polito.madgroup4.model.User
 import it.polito.madgroup4.utility.formatDate
+import it.polito.madgroup4.utility.uriToBitmap
+import java.io.FileDescriptor
+import java.io.IOException
 import java.text.SimpleDateFormat
 
 @Composable
-fun Profile(
-    user: User = User(
-        name = "Marco",
-        surname = "Mele",
-        nickname = "marcomele98",
-        email = "marcomele98@gmail.com",
-        phone = "3334545451",
-        gender = "Male",
-        birthday = formatDate("01/01/1998"),
-    )
-) {
+fun Profile(setEditedUser : (User) -> Unit) {
 
-    val formatter = SimpleDateFormat("dd/MM/yyyy")
+    val context = LocalContext.current
 
+    val sharedPref = context.getSharedPreferences("USER", Context.MODE_PRIVATE) ?: null
+    var profile = Profile()
+    if (sharedPref != null) {
+        profile = Profile.getFromPreferences(sharedPref!!)
+    }
+
+    val user = remember { mutableStateOf(
+        User(
+            name = profile.name,
+            surname = profile.surname,
+            nickname = profile.nickname,
+            email = profile.email,
+            photo = profile.imageUri
+        )) }
+
+
+    setEditedUser(user.value)
 
     val contactItems = listOf(
-        Pair(Icons.Default.Email, user.email),
+        Pair(Icons.Default.Email, user.value.email!!),
 //        Pair(Icons.Default.Transgender, user.gender)
     )
 
@@ -60,8 +79,32 @@ fun Profile(
             Modifier.fillMaxWidth()
         ) {
 
-
-            Image(
+            if (user.value.photo != null) {
+                uriToBitmap(Uri.parse(user.value.photo!!), context)?.let {
+                    Image(
+                        bitmap = it.asImageBitmap(),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(120.dp)
+                            .clip(CircleShape)
+                            .border(1.dp, MaterialTheme.colorScheme.secondary, CircleShape)
+                            .then(Modifier.align(Alignment.CenterHorizontally))
+                    )
+                }
+            } else {
+                Image(
+                    painter = painterResource(id = R.drawable.profile),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(120.dp)
+                        .clip(CircleShape)
+                        .border(1.dp, MaterialTheme.colorScheme.secondary, CircleShape)
+                        .then(Modifier.align(Alignment.CenterHorizontally))
+                )
+            }
+            /*Image(
                 painter = painterResource(R.drawable.profile),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
@@ -70,13 +113,13 @@ fun Profile(
                     .clip(CircleShape)
                     .border(1.dp, MaterialTheme.colorScheme.secondary, CircleShape)
                     .then(Modifier.align(Alignment.CenterHorizontally))
-            )
+            )*/
 
             Spacer(modifier = Modifier.height(25.dp))
 
 
             Text(
-                text = user.name + " " + user.surname,
+                text = user.value.name + " " + user.value.surname,
                 textAlign = TextAlign.Center,
                 fontSize = 30.sp,
                 modifier = Modifier.fillMaxWidth()
@@ -84,7 +127,7 @@ fun Profile(
 
 
             Text(
-                text = "@" + user.nickname,
+                text = "@" + user.value.nickname,
                 textAlign = TextAlign.Center,
                 fontSize = 16.sp,
                 modifier = Modifier.fillMaxWidth()
@@ -114,7 +157,8 @@ fun Profile(
 
 @Composable
 fun ContactItem(icon: ImageVector, text: String) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()) {
         Icon(icon, contentDescription = null)
 
         Spacer(modifier = Modifier.width(10.dp))

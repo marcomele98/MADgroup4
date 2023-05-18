@@ -1,5 +1,6 @@
 package it.polito.madgroup4.view
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -8,11 +9,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import dagger.hilt.android.AndroidEntryPoint
 import it.polito.madgroup4.model.PlayingCourt
+import it.polito.madgroup4.model.Profile
 import it.polito.madgroup4.model.Reservation
 import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.model.Review
@@ -78,12 +83,11 @@ class ReservationActivityCompose : ComponentActivity() {
         "campo3@gmail.com"
     )
     val u1 =
-        User(1, "Mario", "Rossi", "mariorossi98", "mario@gmail.com", "3333333333", "M", formatDate("03/04/1998"))
+        User(1, "Mario", "Rossi", "mariorossi98", "mario@gmail.com", )
     val u2 =
-        User(2, "Luca", "Bianchi", "lucabianchi97", "bianchi@gmail.com", "3333333334", "M", formatDate("03/04/1997"))
+        User(2, "Luca", "Bianchi", "lucabianchi97", "bianchi@gmail.com", )
     val u3 =
-        User(3, "Giuseppe", "Verdi", "giuseppeverdi96", "verdi@gmail.com", "3333333335", "M", formatDate("03/04/1996"))
-
+        User(3, "Giuseppe", "Verdi", "giuseppeverdi96", "verdi@gmail.com")
 
     val formatter = SimpleDateFormat("dd/MM/yyyy")
     val reservation = Reservation(1, 1, 1, 1, formatter.parse(formatter.format(Date())))
@@ -147,6 +151,24 @@ fun MainScreen(
     reviewVm: ReviewViewModel
 ) {
 
+    val context = LocalContext.current
+
+    val sharedPref = context.getSharedPreferences("USER", Context.MODE_PRIVATE) ?: null
+    var profile = Profile()
+    if (sharedPref != null) {
+        profile = Profile.getFromPreferences(sharedPref!!)
+    }
+
+
+    val (editedUser, setEditedUser) = remember { mutableStateOf(
+        User(
+            name = profile.name,
+            surname = profile.surname,
+            nickname = profile.nickname,
+            email = profile.email,
+            photo = profile.imageUri
+        )) }
+
     val (reservation, setReservation) = remember {
         mutableStateOf(ReservationWithCourt(null, null))
     }
@@ -161,6 +183,7 @@ fun MainScreen(
     val (showedCourt, setShowedCourt) = remember { mutableStateOf(PlayingCourt()) }
 
     val (reviews, setReviews) = remember { mutableStateOf(listOf<Review>()) }
+
 
     //TODO: prendo l'id dalle preferences
     val userId: Long = 1
@@ -188,7 +211,9 @@ fun MainScreen(
         showedCourt,
         setShowedCourt,
         reviews,
-        setReviews
+        setReviews,
+        editedUser,
+        setEditedUser,
     )
 
 }

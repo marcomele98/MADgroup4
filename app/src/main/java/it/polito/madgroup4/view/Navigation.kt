@@ -8,14 +8,17 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import it.polito.madgroup4.model.PlayingCourt
+import it.polito.madgroup4.model.Profile
 import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.model.Review
+import it.polito.madgroup4.model.User
 import it.polito.madgroup4.utility.CourtWithSlots
 import it.polito.madgroup4.view.components.BottomNavBar
 import it.polito.madgroup4.view.components.FloatingFab
@@ -25,7 +28,7 @@ import it.polito.madgroup4.view.screens.Courts
 import it.polito.madgroup4.view.screens.CreateReservation
 import it.polito.madgroup4.view.screens.EditReservation
 import it.polito.madgroup4.view.screens.Profile
-import it.polito.madgroup4.view.screens.ProfileScreen
+import it.polito.madgroup4.view.screens.EditProfile
 import it.polito.madgroup4.view.screens.ReservationConfirmation
 import it.polito.madgroup4.view.screens.Reservations
 import it.polito.madgroup4.view.screens.ReviewForm
@@ -71,10 +74,14 @@ fun Navigation(
 
     reviews: List<Review>,
     setReviews: (List<Review>) -> Unit,
-) {
+
+    editedUser: User,
+    setEditedUser: (User) -> Unit,
+    ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
 
+    val context = LocalContext.current
 
     Scaffold(
         bottomBar = {
@@ -85,6 +92,8 @@ fun Navigation(
                 title = navBackStackEntry?.destination?.route ?: "",
                 reservation = reservation,
                 navController = navController,
+                editedUser = editedUser,
+                context = context,
             )
         },
 
@@ -99,7 +108,7 @@ fun Navigation(
             NavHost(navController = navController, startDestination = "Reservations") {
 
                 composable("Profile") {
-                    Profile()
+                    Profile(setEditedUser)
                 }
 
                 composable("Create Reservation") {
@@ -222,7 +231,7 @@ fun Navigation(
                 }
 
                 composable("Edit Profile") {
-                    ProfileScreen(navController)
+                    EditProfile(navController, editedUser, setEditedUser)
                 }
 
                 composable("Camera") {

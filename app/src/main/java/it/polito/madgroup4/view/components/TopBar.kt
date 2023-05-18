@@ -1,5 +1,6 @@
 package it.polito.madgroup4.view.components
 
+import android.content.Context
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -14,7 +15,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import it.polito.madgroup4.model.Profile
 import it.polito.madgroup4.model.ReservationWithCourt
+import it.polito.madgroup4.model.User
 import it.polito.madgroup4.utility.calculateStartEndTime
 import it.polito.madgroup4.utility.formatDate
 import java.time.LocalTime
@@ -26,6 +29,8 @@ fun TopBar(
     title: String,
     reservation: ReservationWithCourt? = null,
     navController: NavController,
+    editedUser: User,
+    context: Context
 ) {
 
     var isInThePast = false
@@ -73,7 +78,21 @@ fun TopBar(
                     )
                 }
             } else if (title == "Edit Profile") {
-                IconButton(onClick = { navController.navigate("Profile") }) {
+                IconButton(onClick = {
+                    val sharedPref =
+                        context.getSharedPreferences("USER", Context.MODE_PRIVATE) ?: null
+                    val profile = Profile(
+                        editedUser.name!!,
+                        editedUser.surname!!,
+                        editedUser.nickname!!,
+                        editedUser.email!!,
+                        editedUser.photo
+                    )
+                    if (sharedPref != null)
+                        profile.saveToPreferences(sharedPref)
+
+                    navController.navigate("Profile")
+                }) {
                     Icon(
                         Icons.Default.Check,
                         contentDescription = "Done",
