@@ -1,19 +1,11 @@
 package it.polito.madgroup4.view.screens
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ContentValues
-import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.database.Cursor
-import android.graphics.Bitmap
-import android.graphics.Matrix
 import android.net.Uri
-import android.os.SystemClock
 import android.provider.MediaStore
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -43,7 +35,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
-import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -53,7 +44,6 @@ import it.polito.madgroup4.model.User
 import it.polito.madgroup4.utility.rotateBitmap
 import it.polito.madgroup4.utility.saveProPicInternally
 import it.polito.madgroup4.utility.uriToBitmap
-import java.io.ByteArrayOutputStream
 
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -80,8 +70,6 @@ fun EditProfile(navController: NavController, editedUser: User, setEditedUser : 
             Manifest.permission.READ_EXTERNAL_STORAGE
         )
     )
-
-
 
     val contactItems = listOf(
         listOf(
@@ -143,24 +131,48 @@ fun EditProfile(navController: NavController, editedUser: User, setEditedUser : 
         }
     )
 
+    fun launchCamera(){
+        val values = ContentValues()
+        values.put(MediaStore.Images.Media.TITLE, "New Picture")
+        values.put(MediaStore.Images.Media.DESCRIPTION, "From the Camera")
+        imageUri =
+            context.contentResolver.insert(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                values
+            )
+        cameraLauncher.launch(imageUri)
+    }
+
+    val precedentCameraPermission by remember {mutableStateOf(cameraPermissionState.allPermissionsGranted)}
+
+    LaunchedEffect(cameraPermissionState.allPermissionsGranted){
+        if(cameraPermissionState.allPermissionsGranted != precedentCameraPermission)
+            launchCamera()
+    }
+
+    fun launchGallery(){
+        val galleryIntent =
+            Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        galleryLauncher.launch(galleryIntent)
+    }
+
+    val precedentGalleryPermission by remember {mutableStateOf(galleryPermissionState.allPermissionsGranted)}
+    LaunchedEffect(galleryPermissionState.allPermissionsGranted){
+        if(galleryPermissionState.allPermissionsGranted != precedentGalleryPermission)
+            launchGallery()
+    }
+
     if (openDialog.value) {
         AlertDialog(onDismissRequest = {
             openDialog.value = false
         }, confirmButton = {
             TextButton(onClick = {
                 if (cameraPermissionState.allPermissionsGranted) {
-                    val values = ContentValues()
-                    values.put(MediaStore.Images.Media.TITLE, "New Picture")
-                    values.put(MediaStore.Images.Media.DESCRIPTION, "From the Camera")
-                    imageUri =
-                        context.contentResolver.insert(
-                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                            values
-                        )
-                    cameraLauncher.launch(imageUri)
+                    launchCamera()
                     openDialog.value = false
                 } else {
                     cameraPermissionState.launchMultiplePermissionRequest()
+                    openDialog.value = false
                 }
             }) {
                 Text("Take a photo")
@@ -168,12 +180,11 @@ fun EditProfile(navController: NavController, editedUser: User, setEditedUser : 
         }, dismissButton = {
             TextButton(onClick = {
                 if (galleryPermissionState.allPermissionsGranted) {
-                    val galleryIntent =
-                        Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-                    galleryLauncher.launch(galleryIntent)
+                    launchGallery()
                     openDialog.value = false
                 } else {
                     galleryPermissionState.launchMultiplePermissionRequest()
+                    openDialog.value = false
                 }
             }) {
                 Text("Chose from gallery")
