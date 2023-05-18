@@ -78,11 +78,11 @@ class ReservationActivityCompose : ComponentActivity() {
         "campo3@gmail.com"
     )
     val u1 =
-        User(1, "Mario", "Rossi", "mario@gmail.com", "3333333333", "M", formatDate("03/04/1998"))
+        User(1, "Mario", "Rossi", "mariorossi98", "mario@gmail.com", "3333333333", "M", formatDate("03/04/1998"))
     val u2 =
-        User(2, "Luca", "Bianchi", "bianchi@gmail.com", "3333333334", "M", formatDate("03/04/1997"))
+        User(2, "Luca", "Bianchi", "lucabianchi97", "bianchi@gmail.com", "3333333334", "M", formatDate("03/04/1997"))
     val u3 =
-        User(3, "Giuseppe", "Verdi", "verdi@gmail.com", "3333333335", "M", formatDate("03/04/1996"))
+        User(3, "Giuseppe", "Verdi", "giuseppeverdi96", "verdi@gmail.com", "3333333335", "M", formatDate("03/04/1996"))
 
 
     val formatter = SimpleDateFormat("dd/MM/yyyy")

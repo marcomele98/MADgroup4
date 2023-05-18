@@ -23,6 +23,7 @@ import it.polito.madgroup4.view.components.TopBar
 import it.polito.madgroup4.view.screens.Courts
 import it.polito.madgroup4.view.screens.CreateReservation
 import it.polito.madgroup4.view.screens.EditReservation
+import it.polito.madgroup4.view.screens.Profile1
 import it.polito.madgroup4.view.screens.ReservationConfirmation
 import it.polito.madgroup4.view.screens.Reservations
 import it.polito.madgroup4.view.screens.ReviewForm
@@ -99,7 +100,8 @@ fun Navigation(
             NavHost(navController = navController, startDestination = "Reservations") {
 
                 composable("Profile") {
-                    Profile()
+                    //Profile()
+                    Profile1()
                 }
 
                 composable("Create Reservation") {
