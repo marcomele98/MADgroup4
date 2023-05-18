@@ -10,25 +10,34 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import kotlinx.coroutines.selects.select
 
 @Composable
 fun BottomNavBar(
     navController: NavHostController
-){
+) {
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+
+
 
     NavigationBar(
         modifier = Modifier.height(75.dp),
     ) {
 
         NavigationBarItem(
-            selected = navController.currentBackStackEntry?.destination?.route == "Playing Courts",
+            selected = navBackStackEntry?.destination?.route == "Playing Courts",
             icon = {
                 Icon(
                     Icons.Default.LocationOn,
-                    contentDescription = "Courts"
+                    contentDescription = "Playing Courts"
                 )
             },
             label = { Text("Playing Courts") },
@@ -38,7 +47,7 @@ fun BottomNavBar(
         )
 
         NavigationBarItem(
-            selected = navController.currentBackStackEntry?.destination?.route == "Reservations",
+            selected = navBackStackEntry?.destination?.route == "Reservations",
             icon = {
                 Icon(
                     Icons.Default.DateRange,
@@ -52,7 +61,7 @@ fun BottomNavBar(
         )
 
         NavigationBarItem(
-            selected = navController.currentBackStackEntry?.destination?.route == "Profile",
+            selected = navBackStackEntry?.destination?.route == "Profile",
             icon = {
                 Icon(
                     Icons.Default.Person,
@@ -66,3 +75,4 @@ fun BottomNavBar(
     }
 
 }
+

@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Euro
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Mail
+import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -95,7 +96,7 @@ fun CourtDetails(
         )
 
         CourtElement(
-            icon = Icons.Default.DateRange,
+            icon = Icons.Default.Schedule,
             text = "${playingCourt.openingTime} - ${playingCourt.closingTime}",
             description = "times"
         )

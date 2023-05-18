@@ -2,6 +2,7 @@ package it.polito.madgroup4.view.components
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -64,8 +65,23 @@ fun TopBar(
                         contentDescription = "Edit"
                     )
                 }
+            } else if (title == "Profile") {
+                IconButton(onClick = { navController.navigate("Edit Profile") }) {
+                    Icon(
+                        Icons.Outlined.Edit,
+                        contentDescription = "Edit Profile"
+                    )
+                }
+            } else if (title == "Edit Profile") {
+                IconButton(onClick = { navController.navigate("Profile") }) {
+                    Icon(
+                        Icons.Default.Check,
+                        contentDescription = "Done",
+                        modifier = Modifier.size(30.dp)
+                    )
+                }
+
             }
         },
     )
-
 }

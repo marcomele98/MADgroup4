@@ -8,6 +8,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -18,12 +19,13 @@ import it.polito.madgroup4.model.Review
 import it.polito.madgroup4.utility.CourtWithSlots
 import it.polito.madgroup4.view.components.BottomNavBar
 import it.polito.madgroup4.view.components.FloatingFab
-import it.polito.madgroup4.view.components.Profile
 import it.polito.madgroup4.view.components.TopBar
+import it.polito.madgroup4.view.screens.CameraScreen
 import it.polito.madgroup4.view.screens.Courts
 import it.polito.madgroup4.view.screens.CreateReservation
 import it.polito.madgroup4.view.screens.EditReservation
-import it.polito.madgroup4.view.screens.Profile1
+import it.polito.madgroup4.view.screens.Profile
+import it.polito.madgroup4.view.screens.ProfileScreen
 import it.polito.madgroup4.view.screens.ReservationConfirmation
 import it.polito.madgroup4.view.screens.Reservations
 import it.polito.madgroup4.view.screens.ReviewForm
@@ -73,9 +75,6 @@ fun Navigation(
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
 
-    if (navBackStackEntry?.destination?.route == "Profile") {
-        navController.popBackStack()
-    }
 
     Scaffold(
         bottomBar = {
@@ -100,8 +99,7 @@ fun Navigation(
             NavHost(navController = navController, startDestination = "Reservations") {
 
                 composable("Profile") {
-                    //Profile()
-                    Profile1()
+                    Profile()
                 }
 
                 composable("Create Reservation") {
@@ -217,9 +215,19 @@ fun Navigation(
                 }
 
                 composable("Reviews") {
-                    ReviewList(reviews = reviews)
+                    ReviewList(
+                        reviews = reviews,
+                        modifier = Modifier.padding(16.dp)
+                    )
                 }
 
+                composable("Edit Profile") {
+                    ProfileScreen(navController)
+                }
+
+                composable("Camera") {
+                    CameraScreen()
+                }
             }
         }
     }

@@ -14,14 +14,15 @@ import it.polito.madgroup4.view.components.ReviewCard
 
 @Composable
 fun ReviewList(
-    reviews: List<Review>
+    reviews: List<Review>,
+    modifier: Modifier = Modifier
 ) {
 
     Box(
         modifier = Modifier
           .fillMaxSize()
-          .padding(horizontal = 16.dp)
           .clip(RoundedCornerShape(12.dp))
+            .then(modifier)
     ) {
         LazyColumn(Modifier.fillMaxSize()) {
             items(reviews.size) { index ->

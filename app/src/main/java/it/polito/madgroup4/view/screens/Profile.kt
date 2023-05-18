@@ -1,14 +1,28 @@
 package it.polito.madgroup4.view.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -17,9 +31,10 @@ import androidx.compose.ui.unit.sp
 import it.polito.madgroup4.R
 import it.polito.madgroup4.model.User
 import it.polito.madgroup4.utility.formatDate
+import java.text.SimpleDateFormat
 
 @Composable
-fun Profile1(
+fun Profile(
     user: User = User(
         name = "Marco",
         surname = "Mele",
@@ -31,71 +46,65 @@ fun Profile1(
     )
 ) {
 
-    print("Non vaaaaa")
+    val formatter = SimpleDateFormat("dd/MM/yyyy")
+
 
     val contactItems = listOf(
-        Pair(R.drawable.phone, user.phone),
-        Pair(R.drawable.email, user.email),
-        Pair(R.drawable.cake, user.birthday.toString()),
-        Pair(R.drawable.gender, user.gender)
+        Pair(Icons.Default.Email, user.email),
+//        Pair(Icons.Default.Transgender, user.gender)
     )
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
+    Column(Modifier.fillMaxSize()) {
+
+        Column(
+            Modifier.fillMaxWidth()
         ) {
-            Image(
-                painter = painterResource(R.drawable.top_background),
-                contentDescription = null,
-                contentScale = ContentScale.FillBounds,
-                modifier = Modifier.fillMaxSize()
-            )
+
 
             Image(
                 painter = painterResource(R.drawable.profile),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .size(125.dp)
-                    .align(Alignment.Center)
-                    .padding(16.dp)
+                    .size(120.dp)
                     .clip(CircleShape)
+                    .border(1.dp, MaterialTheme.colorScheme.secondary, CircleShape)
+                    .then(Modifier.align(Alignment.CenterHorizontally))
             )
+
+            Spacer(modifier = Modifier.height(25.dp))
+
+
+            Text(
+                text = user.name + " " + user.surname,
+                textAlign = TextAlign.Center,
+                fontSize = 30.sp,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+
+            Text(
+                text = "@" + user.nickname,
+                textAlign = TextAlign.Center,
+                fontSize = 16.sp,
+                modifier = Modifier.fillMaxWidth()
+            )
+
         }
 
         LazyColumn(
             modifier = Modifier
-                .weight(2f)
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
         ) {
-            item {
-                Text(
-                    text = user.name + " " + user.surname,
-                    fontSize = 40.sp,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
 
             item {
-                Text(
-                    text = "@" + user.nickname,
-                    fontSize = 16.sp,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(30.dp))
+                Spacer(modifier = Modifier.height(20.dp))
             }
 
             items(contactItems.size) { index ->
                 ContactItem(
-                    iconResId = contactItems[index].first,
+                    icon = contactItems[index].first,
                     text = contactItems[index].second
                 )
             }
@@ -104,20 +113,17 @@ fun Profile1(
 }
 
 @Composable
-fun ContactItem(iconResId: Int, text: String) {
+fun ContactItem(icon: ImageVector, text: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Image(
-            painter = painterResource(iconResId),
-            contentDescription = null,
-            modifier = Modifier.size(24.dp)
-        )
+        Icon(icon, contentDescription = null)
 
-        Spacer(modifier = Modifier.width(5.dp))
+        Spacer(modifier = Modifier.width(10.dp))
 
         Text(
             text = text,
-            fontSize = 20.sp,
-            modifier = Modifier.fillMaxWidth()
+            fontSize = 22.sp
         )
+
+        Spacer(modifier = Modifier.height(50.dp))
     }
 }
