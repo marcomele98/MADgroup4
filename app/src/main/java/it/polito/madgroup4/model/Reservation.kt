@@ -15,12 +15,6 @@ import java.util.Date
             childColumns = ["court_id"],
             onDelete = ForeignKey.CASCADE
         ),
-        ForeignKey(
-            entity = User::class,
-            parentColumns = ["id"],
-            childColumns = ["user_id"],
-            onDelete = ForeignKey.CASCADE
-        )
     ]
 )
 
@@ -32,7 +26,7 @@ data class Reservation(
     val courtId: Long,
 
     @ColumnInfo(name = "user_id")
-    val userId: Long,
+    val userId: String,
 
     @ColumnInfo(name = "slot_number")
     var slotNumber: Int,
@@ -41,4 +35,4 @@ data class Reservation(
 
     var particularRequests: String? = null,
 
-)
+    )

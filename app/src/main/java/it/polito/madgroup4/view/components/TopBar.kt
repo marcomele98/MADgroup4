@@ -20,6 +20,7 @@ import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.model.User
 import it.polito.madgroup4.utility.calculateStartEndTime
 import it.polito.madgroup4.utility.formatDate
+import it.polito.madgroup4.viewmodel.UserViewModel
 import java.time.LocalTime
 import java.util.Date
 
@@ -30,7 +31,8 @@ fun TopBar(
     reservation: ReservationWithCourt? = null,
     navController: NavController,
     editedUser: User,
-    context: Context
+    context: Context,
+    userVm: UserViewModel
 ) {
 
     var isInThePast = false
@@ -52,7 +54,7 @@ fun TopBar(
             Text(text = title)
         },
         navigationIcon = {
-            if (title != "Reservations") {
+            if (title != "Reservations" && title != "Profile") {
                 IconButton(onClick = { navController.popBackStack() }) {
                     Icon(
                         Icons.Default.KeyboardArrowLeft,
@@ -79,6 +81,7 @@ fun TopBar(
                 }
             } else if (title == "Edit Profile") {
                 IconButton(onClick = {
+/*
                     val sharedPref =
                         context.getSharedPreferences("USER", Context.MODE_PRIVATE) ?: null
                     val profile = Profile(
@@ -90,7 +93,9 @@ fun TopBar(
                     )
                     if (sharedPref != null)
                         profile.saveToPreferences(sharedPref)
+*/
 
+                    userVm.saveUser(editedUser)
                     navController.navigate("Profile")
                 }) {
                     Icon(

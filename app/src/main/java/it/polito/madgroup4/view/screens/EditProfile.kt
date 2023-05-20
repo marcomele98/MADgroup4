@@ -44,15 +44,14 @@ import it.polito.madgroup4.model.User
 import it.polito.madgroup4.utility.rotateBitmap
 import it.polito.madgroup4.utility.saveProPicInternally
 import it.polito.madgroup4.utility.uriToBitmap
+import it.polito.madgroup4.viewmodel.UserViewModel
 
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun EditProfile(navController: NavController, editedUser: User, setEditedUser : (User) -> Unit) {
+fun EditProfile(navController: NavController, editedUser: User, setEditedUser : (User) -> Unit, userVm: UserViewModel) {
 
     val context = LocalContext.current
-
-
 
     val openDialog = remember { mutableStateOf(false) }
 
@@ -60,7 +59,7 @@ fun EditProfile(navController: NavController, editedUser: User, setEditedUser : 
         permissions = listOf(
             Manifest.permission.CAMERA,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_EXTERNAL_STORAGE
+            Manifest.permission.READ_EXTERNAL_STORAGE,
         )
     )
 
@@ -112,10 +111,12 @@ fun EditProfile(navController: NavController, editedUser: User, setEditedUser : 
         onResult = { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 editImageUri = result.data?.data
+                var uri = userVm.uploadImage(editImageUri.toString())
                 val imageBitmap = uriToBitmap(editImageUri!!, context)
                 val rotatedBitmap = rotateBitmap(imageBitmap!!, context, editImageUri!!)
                 imageUri = saveProPicInternally(rotatedBitmap!!, context)
                 setEditedUser( editedUser.copy(photo = imageUri.toString()))
+                //setEditedUser( editedUser.copy(photo = uri.toString()))
             }
         }
     )
@@ -124,10 +125,12 @@ fun EditProfile(navController: NavController, editedUser: User, setEditedUser : 
         contract = ActivityResultContracts.TakePicture(),
         onResult = { success ->
             editImageUri = imageUri
+            var uri = userVm.uploadImage(editImageUri.toString())
             val imageBitmap = uriToBitmap(editImageUri!!, context)
             val rotatedBitmap = rotateBitmap(imageBitmap!!, context, editImageUri!!)
             imageUri = saveProPicInternally(rotatedBitmap!!, context)
             setEditedUser( editedUser.copy(photo = imageUri.toString()))
+            //setEditedUser( editedUser.copy(photo = uri.toString()))
         }
     )
 
@@ -209,7 +212,7 @@ fun EditProfile(navController: NavController, editedUser: User, setEditedUser : 
 
 
             Box(Modifier.align(Alignment.CenterHorizontally)) {
-                if (editImageUri != null) {
+                if (editImageUri != null && editedUser.photo != "") {
                     uriToBitmap(editImageUri!!, context)?.let {
                         Image(
                             bitmap = it.asImageBitmap(),

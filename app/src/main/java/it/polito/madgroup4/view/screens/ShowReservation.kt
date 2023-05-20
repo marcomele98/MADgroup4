@@ -45,7 +45,7 @@ fun ShowReservation(
     val openDialog = remember { mutableStateOf(false) }
 
     reservationVm.getSlotsByCourtIdAndDate(
-        reservation.playingCourt!!.id, reservation.reservation!!.date, userVm.user.value!!.id
+        reservation.playingCourt!!.id, reservation.reservation!!.date, userVm.user.value!!.email!!
     )
 
     reviewVm.getReviewByReservationId(reservation.reservation.id)

@@ -15,7 +15,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import it.polito.madgroup4.model.PlayingCourt
-import it.polito.madgroup4.model.Profile
 import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.model.Review
 import it.polito.madgroup4.model.User
@@ -50,7 +49,7 @@ fun Navigation(
     reviewVm: ReviewViewModel,
     userVm: UserViewModel,
 
-    userId: Long,
+    userId: String,
 
     reservation: ReservationWithCourt,
     setReservationWithCourt: (ReservationWithCourt) -> Unit,
@@ -77,7 +76,7 @@ fun Navigation(
 
     editedUser: User,
     setEditedUser: (User) -> Unit,
-    ) {
+) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
 
@@ -94,6 +93,7 @@ fun Navigation(
                 navController = navController,
                 editedUser = editedUser,
                 context = context,
+                userVm = userVm
             )
         },
 
@@ -108,7 +108,7 @@ fun Navigation(
             NavHost(navController = navController, startDestination = "Reservations") {
 
                 composable("Profile") {
-                    Profile(setEditedUser)
+                    Profile(setEditedUser, userVm)
                 }
 
                 composable("Create Reservation") {
@@ -231,7 +231,7 @@ fun Navigation(
                 }
 
                 composable("Edit Profile") {
-                    EditProfile(navController, editedUser, setEditedUser)
+                    EditProfile(navController, editedUser, setEditedUser, userVm)
                 }
 
                 composable("Camera") {
@@ -241,12 +241,6 @@ fun Navigation(
         }
     }
 }
-
-
-
-
-
-
 
 
 

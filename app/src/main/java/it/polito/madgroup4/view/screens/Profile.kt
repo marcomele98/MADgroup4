@@ -1,8 +1,6 @@
 package it.polito.madgroup4.view.screens
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -23,8 +21,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,14 +35,11 @@ import androidx.compose.ui.unit.sp
 import it.polito.madgroup4.R
 import it.polito.madgroup4.model.Profile
 import it.polito.madgroup4.model.User
-import it.polito.madgroup4.utility.formatDate
 import it.polito.madgroup4.utility.uriToBitmap
-import java.io.FileDescriptor
-import java.io.IOException
-import java.text.SimpleDateFormat
+import it.polito.madgroup4.viewmodel.UserViewModel
 
 @Composable
-fun Profile(setEditedUser : (User) -> Unit) {
+fun Profile(setEditedUser: (User) -> Unit, vm: UserViewModel) {
 
     val context = LocalContext.current
 
@@ -56,20 +49,21 @@ fun Profile(setEditedUser : (User) -> Unit) {
         profile = Profile.getFromPreferences(sharedPref!!)
     }
 
-    val user = remember { mutableStateOf(
-        User(
-            name = profile.name,
-            surname = profile.surname,
-            nickname = profile.nickname,
-            email = profile.email,
-            photo = profile.imageUri
-        )) }
+    val u = vm.user
+
+    println("prova ${u.value}")
+
+    /* val user = remember {
+         mutableStateOf(
+             u
+         )
+     }*/
 
 
-    setEditedUser(user.value)
+    setEditedUser(u.value!!)
 
     val contactItems = listOf(
-        Pair(Icons.Default.Email, user.value.email!!),
+        Pair(Icons.Default.Email, u.value?.email!!),
 //        Pair(Icons.Default.Transgender, user.gender)
     )
 
@@ -79,8 +73,8 @@ fun Profile(setEditedUser : (User) -> Unit) {
             Modifier.fillMaxWidth()
         ) {
 
-            if (user.value.photo != null) {
-                uriToBitmap(Uri.parse(user.value.photo!!), context)?.let {
+            if (u.value?.photo != null && u.value?.photo != "") {
+                uriToBitmap(Uri.parse(u.value?.photo!!), context)?.let {
                     Image(
                         bitmap = it.asImageBitmap(),
                         contentDescription = null,
@@ -119,7 +113,7 @@ fun Profile(setEditedUser : (User) -> Unit) {
 
 
             Text(
-                text = user.value.name + " " + user.value.surname,
+                text = u.value?.name + " " + u.value?.surname,
                 textAlign = TextAlign.Center,
                 fontSize = 30.sp,
                 modifier = Modifier.fillMaxWidth()
@@ -127,7 +121,7 @@ fun Profile(setEditedUser : (User) -> Unit) {
 
 
             Text(
-                text = "@" + user.value.nickname,
+                text = "@" + u.value?.nickname,
                 textAlign = TextAlign.Center,
                 fontSize = 16.sp,
                 modifier = Modifier.fillMaxWidth()
@@ -157,8 +151,10 @@ fun Profile(setEditedUser : (User) -> Unit) {
 
 @Composable
 fun ContactItem(icon: ImageVector, text: String) {
-    Row(verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
         Icon(icon, contentDescription = null)
 
         Spacer(modifier = Modifier.width(10.dp))

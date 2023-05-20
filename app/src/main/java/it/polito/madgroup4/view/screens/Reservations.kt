@@ -19,7 +19,7 @@ import java.time.LocalDate
 @Composable
 fun Reservations(
     reservationVm: ReservationViewModel,
-    userId: Long,
+    userId: String,
     date: LocalDate,
     setDate: (LocalDate) -> Unit,
     setReservation: (ReservationWithCourt) -> Unit,

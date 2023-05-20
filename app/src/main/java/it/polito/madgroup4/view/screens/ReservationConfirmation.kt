@@ -42,7 +42,7 @@ fun ReservationConfirmation(
     reservation: Reservation = Reservation(
         courtId = playingCourt.id,
         slotNumber = reservationTimeSlot,
-        userId = userVm.user.value!!.id,
+        userId = userVm.user.value!!.email!!,
         date = SimpleDateFormat("dd/MM/yyyy").parse(
             SimpleDateFormat("dd/MM/yyyy").format(
                 java.sql.Date.valueOf(
@@ -87,7 +87,7 @@ fun ReservationConfirmation(
             maxLines = 5,
             label = { Text(text = "Particular requests") },
             placeholder = { Text(text = "Add particular requests") },
-            )
+        )
 
         Spacer(modifier = Modifier.weight(1f))
 

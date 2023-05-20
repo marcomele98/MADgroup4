@@ -32,11 +32,6 @@ class DatabaseModule {
         return localDatabase.reservationDAO()
     }
 
-    @Singleton
-    @Provides
-    fun provideProfileDAO(localDatabase: LocalDatabase): UserDAO {
-        return localDatabase.userDAO()
-    }
 
     @Singleton
     @Provides

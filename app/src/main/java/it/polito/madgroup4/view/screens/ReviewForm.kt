@@ -27,7 +27,7 @@ import java.util.Date
 @Composable
 fun ReviewForm(
     reviewVm: ReviewViewModel,
-    userId: Long,
+    userId: String,
     reservation: ReservationWithCourt,
     navController: NavController,
     review: Review = Review(

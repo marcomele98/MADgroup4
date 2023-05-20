@@ -20,7 +20,7 @@ import java.text.SimpleDateFormat
 @Composable
 fun ReservationList(
     reservationVm: ReservationViewModel,
-    userId: Long,
+    userId: String,
     date: String,
     setReservation: (ReservationWithCourt) -> Unit,
     navController: NavController

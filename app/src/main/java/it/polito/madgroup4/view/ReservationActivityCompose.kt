@@ -1,6 +1,5 @@
 package it.polito.madgroup4.view
 
-import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -9,21 +8,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.AndroidEntryPoint
 import it.polito.madgroup4.model.PlayingCourt
-import it.polito.madgroup4.model.Profile
 import it.polito.madgroup4.model.Reservation
 import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.model.Review
 import it.polito.madgroup4.model.User
 import it.polito.madgroup4.utility.CourtWithSlots
-import it.polito.madgroup4.utility.formatDate
 import it.polito.madgroup4.view.ui.theme.MADgroup4Theme
 import it.polito.madgroup4.viewmodel.ReservationViewModel
 import it.polito.madgroup4.viewmodel.ReviewViewModel
@@ -42,6 +38,21 @@ class ReservationActivityCompose : ComponentActivity() {
 
     val reviewVm by viewModels<ReviewViewModel>()
 
+    private val db = FirebaseFirestore.getInstance()
+
+    /*val user1 = db
+        .collection("users")
+        .document("48JnBn7vpjvj0minb62P")
+        .get()
+        .addOnSuccessListener { res ->
+            val users =
+                res.toObject(User::class.java)
+            //use it as needed
+        }
+        .addOnFailureListener {
+            Toast.makeText(this, "Error", Toast.LENGTH_LONG).show()
+        }
+*/
 
     val playingCourt = PlayingCourt(
         1,
@@ -82,19 +93,23 @@ class ReservationActivityCompose : ComponentActivity() {
         "3333333335",
         "campo3@gmail.com"
     )
-    val u1 =
-        User(1, "Mario", "Rossi", "mariorossi98", "mario@gmail.com", )
-    val u2 =
-        User(2, "Luca", "Bianchi", "lucabianchi97", "bianchi@gmail.com", )
-    val u3 =
-        User(3, "Giuseppe", "Verdi", "giuseppeverdi96", "verdi@gmail.com")
+    /*    val u1 =
+            User(1, "Mario", "Rossi", "mariorossi98", "mario@gmail.com" )
+        val u2 =
+            User(2, "Luca", "Bianchi", "lucabianchi97", "bianchi@gmail.com", )
+        val u3 =
+            User(3, "Giuseppe", "Verdi", "giuseppeverdi96", "verdi@gmail.com")*/
 
     val formatter = SimpleDateFormat("dd/MM/yyyy")
-    val reservation = Reservation(1, 1, 1, 1, formatter.parse(formatter.format(Date())))
-    val reservation2 = Reservation(2, 2, 1, 2, formatter.parse(formatter.format(Date())))
-    val reservation3 = Reservation(3, 1, 2, 2, formatter.parse(formatter.format(Date())))
-    val reservation4 = Reservation(4, 1, 1, 3, formatter.parse("11/05/2023"))
-    val reservation5 = Reservation(5, 2, 2, 3, formatter.parse("14/05/2023"))
+    val reservation =
+        Reservation(1, 1, "francesco@gmail.com", 1, formatter.parse(formatter.format(Date())))
+    val reservation2 =
+        Reservation(2, 2, "francesco@gmail.com", 2, formatter.parse(formatter.format(Date())))
+    val reservation3 =
+        Reservation(3, 1, "marco@gmail.com", 2, formatter.parse(formatter.format(Date())))
+    val reservation4 = Reservation(4, 1, "francesco@gmail.com", 3, formatter.parse("11/05/2023"))
+    val reservation5 = Reservation(5, 2, "marco@gmail.com", 10, formatter.parse("21/05/2023"))
+
     /*  val reservation6 = Reservation(6, 1, 2, formatter.parse(formatter.format(Date())))
         val reservation7 = Reservation(7, 1, 0, formatter.parse(formatter.format(Date())))
         val reservation8 = Reservation(8, 1, 5, formatter.parse(formatter.format(Date())))
@@ -112,9 +127,9 @@ class ReservationActivityCompose : ComponentActivity() {
         reservationVm.savePlayingCourt(playingCourt)
         reservationVm.savePlayingCourt(playingCourt2)
         reservationVm.savePlayingCourt(playingCourt3)
-        userVm.saveUser(u1)
-        userVm.saveUser(u2)
-        userVm.saveUser(u3)
+        /*        userVm.saveUser(u1)
+                userVm.saveUser(u2)
+                userVm.saveUser(u3)*/
         reservationVm.saveReservation(reservation)
         reservationVm.saveReservation(reservation2)
         reservationVm.saveReservation(reservation3)
@@ -152,22 +167,23 @@ fun MainScreen(
 ) {
 
     val context = LocalContext.current
+    userVm.getUser()
 
-    val sharedPref = context.getSharedPreferences("USER", Context.MODE_PRIVATE) ?: null
-    var profile = Profile()
-    if (sharedPref != null) {
-        profile = Profile.getFromPreferences(sharedPref!!)
+    /*
+        val sharedPref = context.getSharedPreferences("USER", Context.MODE_PRIVATE) ?: null
+        var profile = Profile()
+        if (sharedPref != null) {
+            profile = Profile.getFromPreferences(sharedPref!!)
+        }
+    */
+
+
+
+    val (editedUser, setEditedUser) = remember {
+        mutableStateOf(
+            User()
+        )
     }
-
-
-    val (editedUser, setEditedUser) = remember { mutableStateOf(
-        User(
-            name = profile.name,
-            surname = profile.surname,
-            nickname = profile.nickname,
-            email = profile.email,
-            photo = profile.imageUri
-        )) }
 
     val (reservation, setReservation) = remember {
         mutableStateOf(ReservationWithCourt(null, null))
@@ -186,9 +202,9 @@ fun MainScreen(
 
 
     //TODO: prendo l'id dalle preferences
-    val userId: Long = 1
+    val userId: String = "francesco@gmail.com"
 
-    userVm.getUser(userId)
+    /*    userVm.getUser(userId)*/
 
     reservationVm.getAllReservations(userId)
 
