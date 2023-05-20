@@ -26,10 +26,13 @@ import com.gowtham.ratingbar.RatingBar
 import com.gowtham.ratingbar.RatingBarConfig
 import com.gowtham.ratingbar.RatingBarStyle
 import com.gowtham.ratingbar.StepSize
+import it.polito.madgroup4.model.Achievement
 import it.polito.madgroup4.model.PlayingCourt
 import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.model.Review
+import it.polito.madgroup4.model.Sport
 import it.polito.madgroup4.utility.calculateStartEndTime
+import it.polito.madgroup4.utility.formatTimestampToString
 import it.polito.madgroup4.utility.imageSelector
 
 
@@ -146,7 +149,7 @@ fun PlayingCourtCard(
 
 
 @Composable
-fun SportCard(
+fun SportCardSelector(
     sport: String,
     navController: NavController,
 ) {
@@ -260,4 +263,94 @@ fun Evaluation(
 
     Spacer(modifier = Modifier.height(8.dp))
 
+}
+
+@Composable
+fun SportCard(sport: Sport, onClick: () -> Unit) {
+    ElevatedCard(
+        modifier = Modifier
+            .padding(bottom = 10.dp)
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    imageSelector(sport.name!!), contentDescription = null
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = sport.name, fontWeight = FontWeight.Bold, fontSize = 22.sp
+                )
+                Spacer(
+                    modifier = Modifier.weight(1f)
+                )
+            }
+            Spacer(modifier = Modifier.height(10.dp))
+            Text(
+                text = sport.level!!,
+                fontSize = 18.sp,
+                fontStyle = FontStyle.Italic,
+                //color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+            Text(
+                text =
+                if (sport.achievements.isEmpty())
+                    "No achievements reached"
+                else
+                    "Achievements reached: ${sport.achievements.size}",
+                fontSize = 18.sp,
+            )
+        }
+    }
+}
+
+@Composable
+fun AchievementCard(
+    achievement: Achievement,
+) {
+    ElevatedCard(
+        modifier = Modifier
+            .padding(bottom = 10.dp)
+            .fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = achievement.title!!,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 22.sp
+                )
+                Spacer(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                )
+            }
+            Spacer(modifier = Modifier.height(10.dp))
+            Text(
+                text = formatTimestampToString(achievement?.date!!),
+                fontSize = 18.sp
+            )
+            Spacer(modifier = Modifier.height(5.dp))
+            if (achievement.description?.trim() ?: "" != "") {
+                Text(
+                    text = "\"${achievement.description!!}\"",
+                    fontSize = 18.sp,
+                    fontStyle = FontStyle.Italic
+                )
+            }
+
+        }
+    }
 }

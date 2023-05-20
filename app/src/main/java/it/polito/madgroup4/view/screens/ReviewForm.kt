@@ -77,7 +77,7 @@ fun ReviewForm(
         Column(
         ) {
 
-            TextField(
+            OutlinedTextField(
                 value = title,
                 //supportingText = { Text(text = "Max 50 characters") },
                 onValueChange = { title = it },
@@ -108,7 +108,7 @@ fun ReviewForm(
 
             Spacer(modifier = Modifier.height(25.dp))
 
-            TextField(
+            OutlinedTextField(
                 value = comment,
                 /*supportingText = { Text(text = "Max 200 characters") },*/
                 onValueChange = { comment = it },

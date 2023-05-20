@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import it.polito.madgroup4.model.PlayingCourt
-import it.polito.madgroup4.view.components.SportCard
+import it.polito.madgroup4.view.components.SportCardSelector
 import it.polito.madgroup4.viewmodel.ReservationViewModel
 
 @Composable
@@ -30,7 +30,7 @@ fun Courts(
         Row(
             Modifier.padding(bottom = 16.dp)
         ) {
-            SportCard(sport = selectedSport, navController = navController)
+            SportCardSelector(sport = selectedSport, navController = navController)
         }
         PlayingCourtList(
             playingCourts = playingCourts.value,

@@ -17,6 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import it.polito.madgroup4.model.PlayingCourt
 import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.model.Review
+import it.polito.madgroup4.model.Sport
 import it.polito.madgroup4.model.User
 import it.polito.madgroup4.utility.CourtWithSlots
 import it.polito.madgroup4.view.components.BottomNavBar
@@ -24,6 +25,7 @@ import it.polito.madgroup4.view.components.FloatingFab
 import it.polito.madgroup4.view.components.TopBar
 import it.polito.madgroup4.view.screens.CameraScreen
 import it.polito.madgroup4.view.screens.Courts
+import it.polito.madgroup4.view.screens.CreateAchievement
 import it.polito.madgroup4.view.screens.CreateReservation
 import it.polito.madgroup4.view.screens.EditReservation
 import it.polito.madgroup4.view.screens.Profile
@@ -33,6 +35,7 @@ import it.polito.madgroup4.view.screens.Reservations
 import it.polito.madgroup4.view.screens.ReviewForm
 import it.polito.madgroup4.view.screens.ReviewList
 import it.polito.madgroup4.view.screens.ShowCourt
+import it.polito.madgroup4.view.screens.ShowFavouriteSport
 import it.polito.madgroup4.view.screens.ShowReservation
 import it.polito.madgroup4.view.screens.SlotSelectionReservation
 import it.polito.madgroup4.view.screens.SportSelector
@@ -76,6 +79,9 @@ fun Navigation(
 
     editedUser: User,
     setEditedUser: (User) -> Unit,
+
+    favouriteSport: Sport,
+    setFavoriteSport: (Sport) -> Unit,
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -92,8 +98,8 @@ fun Navigation(
                 reservation = reservation,
                 navController = navController,
                 editedUser = editedUser,
-                context = context,
-                userVm = userVm
+                userVm = userVm,
+                favoriteSport = favouriteSport,
             )
         },
 
@@ -108,7 +114,7 @@ fun Navigation(
             NavHost(navController = navController, startDestination = "Reservations") {
 
                 composable("Profile") {
-                    Profile(setEditedUser, userVm)
+                    Profile(setEditedUser, userVm, setFavoriteSport, navController)
                 }
 
                 composable("Create Reservation") {
@@ -237,10 +243,20 @@ fun Navigation(
                 composable("Camera") {
                     CameraScreen()
                 }
+
+                composable("Your Sport") {
+                    ShowFavouriteSport(favouriteSport, navController)
+                }
+
+                composable("Create Achievement") {
+                    CreateAchievement(userVm, favouriteSport)
+                }
+
             }
         }
     }
 }
+
 
 
 

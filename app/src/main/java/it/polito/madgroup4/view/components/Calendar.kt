@@ -131,7 +131,7 @@ fun DaysOfWeekHeader(
 @Composable
 fun MyDay(
     state: DayState<DynamicSelectionState>,
-    reservations: Reservation?,
+    reservations: Reservation? = null,
     modifier: Modifier = Modifier,
     isActive: Boolean = true,
     showReservations: Boolean = false

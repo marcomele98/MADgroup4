@@ -33,7 +33,7 @@ import it.polito.madgroup4.view.components.DaysOfWeekHeader
 import it.polito.madgroup4.view.components.MyDay
 import it.polito.madgroup4.view.components.PlayingCourtCard
 import it.polito.madgroup4.view.components.SlotSelector
-import it.polito.madgroup4.view.components.SportCard
+import it.polito.madgroup4.view.components.SportCardSelector
 import it.polito.madgroup4.view.components.WeekHeader
 import it.polito.madgroup4.viewmodel.ReservationViewModel
 import java.text.SimpleDateFormat
@@ -104,7 +104,7 @@ fun CreateReservation(
     ) {
 
         Row() {
-            SportCard(sport = selectedSport, navController = navController)
+            SportCardSelector(sport = selectedSport, navController = navController)
         }
         SelectableWeekCalendar(
             calendarState = calendarState,

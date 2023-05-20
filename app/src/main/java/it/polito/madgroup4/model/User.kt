@@ -1,5 +1,6 @@
 package it.polito.madgroup4.model
 
+import com.google.firebase.Timestamp
 
 data class User(
     val id: Long = 0,
@@ -8,16 +9,17 @@ data class User(
     val nickname: String? = null,
     val email: String? = null,
     val photo: String? = null,
-    val sports: List<Sport> = listOf(),
+    var sports: List<Sport> = listOf(),
 )
 
 data class Sport(
     val name: String? = null,
     val level: String? = null,
-    val achievements: List<Achievement> = arrayListOf()
+    var achievements: List<Achievement> = arrayListOf()
 )
 
 data class Achievement(
     val description: String? = null,
+    val date: Timestamp? = null,
     val title: String? = null
 )

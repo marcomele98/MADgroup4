@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.SportsSoccer
 import androidx.compose.material.icons.filled.SportsTennis
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.core.content.ContextCompat
+import com.google.firebase.Timestamp
 import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.viewmodel.ReservationViewModel
 import java.io.ByteArrayOutputStream
@@ -27,6 +28,7 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.Date
+import java.util.Locale
 
 fun calculateStartEndTime(startTime: String, slotId: Int): String {
     val startTime = calculateTimeAsNum(startTime)
@@ -53,6 +55,17 @@ fun formatDate(date: String): Date {
 
 fun formatDate(date: LocalDate): Date {
     return formatDate(Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant()))
+}
+
+fun formatDateToTimestamp(date: LocalDate): Timestamp {
+    return Timestamp(Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant()))
+}
+
+fun formatTimestampToString(timestamp: Timestamp): String {
+    val milliseconds = timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000
+    val date = Date(milliseconds)
+    val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    return  dateFormat.format(date)
 }
 
 fun add0IfLengthIs1(n: Int): String {

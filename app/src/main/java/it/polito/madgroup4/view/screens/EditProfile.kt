@@ -13,6 +13,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
@@ -33,6 +35,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.net.toUri
@@ -49,7 +53,12 @@ import it.polito.madgroup4.viewmodel.UserViewModel
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun EditProfile(navController: NavController, editedUser: User, setEditedUser : (User) -> Unit, userVm: UserViewModel) {
+fun EditProfile(
+    navController: NavController,
+    editedUser: User,
+    setEditedUser: (User) -> Unit,
+    userVm: UserViewModel
+) {
 
     val context = LocalContext.current
 
@@ -75,23 +84,32 @@ fun EditProfile(navController: NavController, editedUser: User, setEditedUser : 
             null,
             editedUser.name,
             "Name",
-            { it: String ->  setEditedUser( editedUser.copy(name = it)) }),
+            { it: String -> setEditedUser(editedUser.copy(name = it)) },
+            KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
+        ),
         listOf(
             null,
             editedUser.surname,
             "Surname",
-            { it: String -> setEditedUser( editedUser.copy(surname = it)) }),
+            { it: String -> setEditedUser(editedUser.copy(surname = it)) },
+            KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
+        ),
         listOf(
             null,
             editedUser.nickname,
             "Nickname",
-            { it: String -> setEditedUser( editedUser.copy(nickname = it)) }),
+            { it: String -> setEditedUser(editedUser.copy(nickname = it)) },
+            KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
+        ),
 //        Pair(Icons.Default.Phone, editedUser.phone),
         listOf(
             Icons.Default.Email,
             editedUser.email,
             "Email",
-            { it: String -> setEditedUser( editedUser.copy(email = it)) }),
+            { it: String -> setEditedUser(editedUser.copy(email = it)) },
+            KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Email)
+        )
+        ,
 //        Pair(Icons.Default.Cake, formatter.format(editedUser.birthday)),
 //        Pair(Icons.Default.Transgender, editedUser.gender)
     )
@@ -115,7 +133,7 @@ fun EditProfile(navController: NavController, editedUser: User, setEditedUser : 
                 val imageBitmap = uriToBitmap(editImageUri!!, context)
                 val rotatedBitmap = rotateBitmap(imageBitmap!!, context, editImageUri!!)
                 imageUri = saveProPicInternally(rotatedBitmap!!, context)
-                setEditedUser( editedUser.copy(photo = imageUri.toString()))
+                setEditedUser(editedUser.copy(photo = imageUri.toString()))
                 //setEditedUser( editedUser.copy(photo = uri.toString()))
             }
         }
@@ -129,12 +147,12 @@ fun EditProfile(navController: NavController, editedUser: User, setEditedUser : 
             val imageBitmap = uriToBitmap(editImageUri!!, context)
             val rotatedBitmap = rotateBitmap(imageBitmap!!, context, editImageUri!!)
             imageUri = saveProPicInternally(rotatedBitmap!!, context)
-            setEditedUser( editedUser.copy(photo = imageUri.toString()))
+            setEditedUser(editedUser.copy(photo = imageUri.toString()))
             //setEditedUser( editedUser.copy(photo = uri.toString()))
         }
     )
 
-    fun launchCamera(){
+    fun launchCamera() {
         val values = ContentValues()
         values.put(MediaStore.Images.Media.TITLE, "New Picture")
         values.put(MediaStore.Images.Media.DESCRIPTION, "From the Camera")
@@ -146,22 +164,22 @@ fun EditProfile(navController: NavController, editedUser: User, setEditedUser : 
         cameraLauncher.launch(imageUri)
     }
 
-    val precedentCameraPermission by remember {mutableStateOf(cameraPermissionState.allPermissionsGranted)}
+    val precedentCameraPermission by remember { mutableStateOf(cameraPermissionState.allPermissionsGranted) }
 
-    LaunchedEffect(cameraPermissionState.allPermissionsGranted){
-        if(cameraPermissionState.allPermissionsGranted != precedentCameraPermission)
+    LaunchedEffect(cameraPermissionState.allPermissionsGranted) {
+        if (cameraPermissionState.allPermissionsGranted != precedentCameraPermission)
             launchCamera()
     }
 
-    fun launchGallery(){
+    fun launchGallery() {
         val galleryIntent =
             Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         galleryLauncher.launch(galleryIntent)
     }
 
-    val precedentGalleryPermission by remember {mutableStateOf(galleryPermissionState.allPermissionsGranted)}
-    LaunchedEffect(galleryPermissionState.allPermissionsGranted){
-        if(galleryPermissionState.allPermissionsGranted != precedentGalleryPermission)
+    val precedentGalleryPermission by remember { mutableStateOf(galleryPermissionState.allPermissionsGranted) }
+    LaunchedEffect(galleryPermissionState.allPermissionsGranted) {
+        if (galleryPermissionState.allPermissionsGranted != precedentGalleryPermission)
             launchGallery()
     }
 
@@ -260,7 +278,8 @@ fun EditProfile(navController: NavController, editedUser: User, setEditedUser : 
                         icon = contactItems[index][0] as ImageVector?,
                         text = contactItems[index][1] as String,
                         label = contactItems[index][2] as String,
-                        onClick = contactItems[index][3] as (String) -> Unit
+                        onClick = contactItems[index][3] as (String) -> Unit,
+                        keyboardOptions = contactItems[index][4] as KeyboardOptions,
                     )
                 }
             }
@@ -271,7 +290,14 @@ fun EditProfile(navController: NavController, editedUser: User, setEditedUser : 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ContactItem1(icon: ImageVector?, text: String, label: String, onClick: (String) -> Unit) {
+fun ContactItem1(
+    icon: ImageVector?,
+    text: String,
+    label: String,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+    onClick: (String) -> Unit
+) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         OutlinedTextField(
             leadingIcon = if (icon != null) {
@@ -280,6 +306,8 @@ fun ContactItem1(icon: ImageVector?, text: String, label: String, onClick: (Stri
             value = text,
             onValueChange = { onClick(it) },
             label = { Text(text = label) },
+            keyboardOptions = keyboardOptions,
+            keyboardActions = keyboardActions,
             modifier = Modifier.fillMaxWidth()
         )
     }

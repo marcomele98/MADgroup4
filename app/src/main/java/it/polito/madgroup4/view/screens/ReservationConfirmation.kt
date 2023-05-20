@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -71,7 +72,7 @@ fun ReservationConfirmation(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        TextField(
+        OutlinedTextField(
             value = text,
             /*supportingText = { Text(text = "Max 200 characters") },*/
             onValueChange = { text = it },

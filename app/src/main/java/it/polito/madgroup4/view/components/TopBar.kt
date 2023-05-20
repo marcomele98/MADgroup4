@@ -1,7 +1,10 @@
 package it.polito.madgroup4.view.components
 
 import android.content.Context
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
@@ -12,14 +15,19 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import it.polito.madgroup4.model.Profile
 import it.polito.madgroup4.model.ReservationWithCourt
+import it.polito.madgroup4.model.Sport
 import it.polito.madgroup4.model.User
 import it.polito.madgroup4.utility.calculateStartEndTime
 import it.polito.madgroup4.utility.formatDate
+import it.polito.madgroup4.utility.imageSelector
 import it.polito.madgroup4.viewmodel.UserViewModel
 import java.time.LocalTime
 import java.util.Date
@@ -31,7 +39,7 @@ fun TopBar(
     reservation: ReservationWithCourt? = null,
     navController: NavController,
     editedUser: User,
-    context: Context,
+    favoriteSport: Sport? = null,
     userVm: UserViewModel
 ) {
 
@@ -51,7 +59,22 @@ fun TopBar(
 
     CenterAlignedTopAppBar(
         title = {
-            Text(text = title)
+            if(title != "Your Sport")
+                Text(text = title)
+            else
+                Row(
+                    verticalAlignment = CenterVertically,
+                ) {
+                    //Spacer(modifier = Modifier.weight(1f))
+                    Icon(
+                        imageSelector(favoriteSport?.name!!), contentDescription = null
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = favoriteSport.name
+                    )
+                    //Spacer(modifier = Modifier.weight(1f))
+                }
         },
         navigationIcon = {
             if (title != "Reservations" && title != "Profile") {

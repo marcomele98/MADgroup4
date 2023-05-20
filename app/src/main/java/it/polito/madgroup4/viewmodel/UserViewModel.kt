@@ -10,10 +10,14 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import dagger.hilt.android.lifecycle.HiltViewModel
+import it.polito.madgroup4.model.Achievement
 import it.polito.madgroup4.model.Repository
+import it.polito.madgroup4.model.Sport
 import it.polito.madgroup4.model.User
+import it.polito.madgroup4.utility.formatDateToTimestamp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
@@ -92,6 +96,8 @@ class UserViewModel @Inject constructor(private val repository: Repository) : Vi
         Log.i("test_vm","after ref ${ref.downloadUrl.toString()}")
         return downloadUri
     }
+
+
 
     //TODO: metto l'id dell'utente loggato in preferences o lo hardcodato
     /*    fun getUser(id: String) {

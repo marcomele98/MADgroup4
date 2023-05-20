@@ -18,6 +18,7 @@ import it.polito.madgroup4.model.PlayingCourt
 import it.polito.madgroup4.model.Reservation
 import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.model.Review
+import it.polito.madgroup4.model.Sport
 import it.polito.madgroup4.model.User
 import it.polito.madgroup4.utility.CourtWithSlots
 import it.polito.madgroup4.view.ui.theme.MADgroup4Theme
@@ -197,8 +198,8 @@ fun MainScreen(
         mutableStateOf(-1)
     }
     val (showedCourt, setShowedCourt) = remember { mutableStateOf(PlayingCourt()) }
-
     val (reviews, setReviews) = remember { mutableStateOf(listOf<Review>()) }
+    val (favoriteSport, setFavoriteSport) = remember { mutableStateOf(Sport()) }
 
 
     //TODO: prendo l'id dalle preferences
@@ -230,6 +231,8 @@ fun MainScreen(
         setReviews,
         editedUser,
         setEditedUser,
+        favoriteSport,
+        setFavoriteSport
     )
 
 }
