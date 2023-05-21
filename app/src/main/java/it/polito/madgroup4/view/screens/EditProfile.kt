@@ -139,7 +139,7 @@ fun EditProfile(
                 val rotatedBitmap = rotateBitmap(imageBitmap!!, context, editImageUri!!)
 //                userVm.uploadImage(rotatedBitmap!!, setImageUri)
 //            imageUri = saveProPicInternally(rotatedBitmap!!, context)
-                setEditUser(editedUser?.copy(photo = rotatedBitmap?.let { bitmapToString(it) }))
+                setEditUser(editedUser?.copy(photo = bitmapToString(rotatedBitmap!!)))
                 //setEditedUser( editedUser.copy(photo = uri.toString()))
             }
         }
@@ -153,7 +153,7 @@ fun EditProfile(
             val rotatedBitmap = rotateBitmap(imageBitmap!!, context, editImageUri!!)
 //            userVm.uploadImage(rotatedBitmap!!, setImageUri)
 //            imageUri = saveProPicInternally(rotatedBitmap!!, context)
-            setEditUser(editedUser?.copy(photo = rotatedBitmap?.let { bitmapToString(it) }))
+            setEditUser(editedUser?.copy(photo = bitmapToString(rotatedBitmap!!)))
             //setEditedUser( editedUser.copy(photo = uri.toString()))
         }
     )
