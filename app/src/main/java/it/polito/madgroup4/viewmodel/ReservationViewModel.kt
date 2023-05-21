@@ -75,9 +75,6 @@ class ReservationViewModel @Inject constructor(private val repository: Repositor
 
 
     fun saveReservation(reservation: Reservation, stateViewModel: LoadingStateViewModel, message: String, error: String) {
-
-        stateViewModel.setStatus(Status.Loading)
-
         viewModelScope.launch {
             try {
                 repository.saveReservation(reservation)

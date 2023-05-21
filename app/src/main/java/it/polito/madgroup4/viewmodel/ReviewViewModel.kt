@@ -32,7 +32,6 @@ class ReviewViewModel @Inject constructor(private val repository: Repository) : 
         error: String
     ) {
         viewModelScope.launch {
-            stateViewModel.setStatus(Status.Loading)
             try {
                 repository.saveReview(review)
                 stateViewModel.setStatus(Status.Success(message, null))

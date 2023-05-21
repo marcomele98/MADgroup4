@@ -120,23 +120,25 @@ fun Navigation(
 
     val context = LocalContext.current
 
-    val status by loadingVm.status.observeAsState()
+    val loading by loadingVm.status.observeAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
     val coroutineScope = rememberCoroutineScope()
 
 
-    LaunchedEffect(status) {
-        when (status) {
+    LaunchedEffect(loading) {
+        when (loading) {
             is Status.Loading -> println("Loading...")
             is Status.Error -> {
                 coroutineScope.launch {
                     snackbarHostState.showSnackbar(
                         SnackbarVisualsWithError(
-                            (status as Status.Error).message,
+                            (loading as Status.Error).message,
                             isError = true
                         )
                     )
+                    loadingVm.setStatus(Status.Loading)
+
                 }
                 /*if((status as Status.Error).nextRoute != null)
                     navController.navigate((status as Status.Error).nextRoute!!)*/
@@ -146,10 +148,11 @@ fun Navigation(
                 coroutineScope.launch {
                     snackbarHostState.showSnackbar(
                         SnackbarVisualsWithError(
-                            (status as Status.Success).message,
+                            (loading as Status.Success).message,
                             isError = false
                         )
                     )
+                    loadingVm.setStatus(Status.Loading)
                 }
                 /*if((status as Status.Success).nextRoute != null)
                     navController.navigate((status as Status.Success).nextRoute!!)*/
