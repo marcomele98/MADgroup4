@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -23,7 +24,8 @@ import it.polito.madgroup4.utility.imageSelector
 fun SportSelector(
     sports: List<String>,
     navController: NavController,
-    setSelectedSport: (String) -> Unit
+    setSelectedSport: (String) -> Unit,
+    unselectable: List<String> = listOf()
 ) {
     LazyColumn(
         modifier = Modifier
@@ -43,10 +45,14 @@ fun SportSelector(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
-                            .clickable {
+                            .clickable(enabled = !unselectable.contains(sports[index])) {
                                 setSelectedSport(sports[index])
                                 navController.popBackStack()
                             }
+                            .alpha(
+                                if (unselectable.contains(sports[index])
+                                ) 0.5f else 1f
+                            ),
                     ) {
                         Icon(
                             imageSelector(sports[index]),

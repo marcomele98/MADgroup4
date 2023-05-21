@@ -23,6 +23,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import io.github.boguszpawlowski.composecalendar.SelectableWeekCalendar
 import io.github.boguszpawlowski.composecalendar.rememberSelectableWeekCalendarState
 import io.github.boguszpawlowski.composecalendar.week.Week
@@ -34,6 +35,7 @@ import it.polito.madgroup4.utility.getWeekdaysStartingOnSunday
 import it.polito.madgroup4.view.components.DaysOfWeekHeader
 import it.polito.madgroup4.view.components.MyDay
 import it.polito.madgroup4.view.components.WeekHeader
+import it.polito.madgroup4.viewmodel.LoadingStateViewModel
 import it.polito.madgroup4.viewmodel.UserViewModel
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -41,11 +43,17 @@ import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateAchievement(userVm: UserViewModel, sport: Int, userState: State<User?>) {
+fun CreateAchievement(
+    userVm: UserViewModel,
+    sport: Int,
+    userState: State<User?>,
+    loadingVm: LoadingStateViewModel,
+    navController: NavController,
+) {
 
     var description by remember { mutableStateOf("") }
     var title by remember { mutableStateOf("") }
-    var date by remember { mutableStateOf(LocalDate.now())}
+    var date by remember { mutableStateOf(LocalDate.now()) }
 
     val calendarState = rememberSelectableWeekCalendarState(
         initialSelection = listOf(date),
@@ -123,23 +131,36 @@ fun CreateAchievement(userVm: UserViewModel, sport: Int, userState: State<User?>
         )
 
         Spacer(modifier = Modifier.weight(1f))
-        Button(onClick = {
-            val achievement = Achievement(title = title, description = description, date = formatDateToTimestamp(date))
-            val user = userVm.user.value!!
-            //TODO: legacy needed refactor
-            user.sports = user.sports.map {
-                if (it.name == userState.value!!.sports[sport].name) {
-                    it.achievements = it.achievements + achievement
-                    it
-                } else {
-                    it
+        Button(
+            onClick = {
+                val achievement = Achievement(
+                    title = title,
+                    description = description,
+                    date = formatDateToTimestamp(date)
+                )
+                val user = userVm.user.value!!
+                //TODO: legacy needed refactor
+                user.sports = user.sports.map { it ->
+                    if (it.name == userState.value!!.sports[sport].name) {
+                        it.achievements = it.achievements + achievement
+                        it.achievements = it.achievements.sortedByDescending { it.date }
+                        it
+                    } else {
+                        it
+                    }
                 }
-            }
-            userVm.saveUser(user)
-        },
+                userVm.saveUser(
+                    user,
+                    loadingVm,
+                    "Achievement created successfully",
+                    "Error while creating achievement"
+                )
+                navController.popBackStack()
+            },
             modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 16.dp)) {
+                .fillMaxWidth()
+                .padding(bottom = 16.dp)
+        ) {
             Text(text = "Create")
         }
     }

@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.AndroidEntryPoint
+import it.polito.madgroup4.model.LevelEnum
 import it.polito.madgroup4.model.PlayingCourt
 import it.polito.madgroup4.model.Reservation
 import it.polito.madgroup4.model.ReservationWithCourt
@@ -193,12 +194,11 @@ fun MainScreen(
     val (selectedSport, setSelectedSport) = remember { mutableStateOf(sports[0]) }
     val (creationDate, setCreationDate) = remember { mutableStateOf(LocalDate.now()) }
     val (selectedCourt, setSelectedCourt) = remember { mutableStateOf(CourtWithSlots(null, null)) }
-    val (selectedSlot, setSelectedSlot) = remember {
-        mutableStateOf(-1)
-    }
+    val (selectedSlot, setSelectedSlot) = remember { mutableStateOf(-1) }
     val (showedCourt, setShowedCourt) = remember { mutableStateOf(PlayingCourt()) }
     val (reviews, setReviews) = remember { mutableStateOf(listOf<Review>()) }
     val (favoriteSport, setFavoriteSport) = remember { mutableStateOf<Int?>(null) }
+    val (selectedLevel, setSelectedLevel) = remember { mutableStateOf(LevelEnum.BEGINNER.name) }
 
 
     //TODO: prendo l'id dalle preferences
@@ -231,7 +231,9 @@ fun MainScreen(
         setReviews,
         user,
         favoriteSport,
-        setFavoriteSport
+        setFavoriteSport,
+        selectedLevel,
+        setSelectedLevel
     )
 
 }

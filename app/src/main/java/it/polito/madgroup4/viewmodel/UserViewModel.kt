@@ -50,12 +50,15 @@ class UserViewModel @Inject constructor(private val repository: Repository) : Vi
     var storageRef = storage.reference
 
 
-    fun saveUser(editedUser: User) {
+    fun saveUser(editedUser: User, stateViewModel: LoadingStateViewModel, message: String, error: String) {
+        stateViewModel.setStatus(Status.Loading)
         db.collection("users").document("48JnBn7vpjvj0minb62P").set(editedUser, SetOptions.merge())
             .addOnSuccessListener {
-                Log.i("test", "User $it saved succesfully")
+                Log.i("test", "User updated successfully")
+                stateViewModel.setStatus(Status.Success(message, null))
             }.addOnFailureListener {
                 Log.i("test", "$it")
+                stateViewModel.setStatus(Status.Error(error, null))
             }
     }
 
@@ -93,7 +96,7 @@ class UserViewModel @Inject constructor(private val repository: Repository) : Vi
         return downloadUri
     }
 
-    fun removeAchievement(sportName: String, achievmentTitle: String) {
+    fun removeAchievement(sportName: String, achievmentTitle: String, stateViewModel: LoadingStateViewModel) {
         var userTmp = _user.value!!
         userTmp.sports?.forEach { sport ->
             if (sport.name == sportName) {
@@ -102,7 +105,7 @@ class UserViewModel @Inject constructor(private val repository: Repository) : Vi
                 }
             }
         }
-        saveUser(userTmp)
+        saveUser(userTmp, stateViewModel, "Achievement removed successfully", "Error while removing achievement")
     }
 
 

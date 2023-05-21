@@ -14,7 +14,7 @@ data class User(
 
 data class Sport(
     val name: String? = null,
-    val level: String? = null,
+    var level: String? = null,
     var achievements: List<Achievement> = arrayListOf()
 )
 

@@ -61,7 +61,9 @@ fun CreateReservation(
 
     val allReservations = reservationVm.allRes.observeAsState().value
 
-    if (date.isBefore(LocalDate.now())) setDate(LocalDate.now())
+    if (date.isBefore(LocalDate.now())) {
+        setDate(LocalDate.now())
+    }
 
     if (calendarState.selectionState.selection.isEmpty()) calendarState.selectionState.selection =
         listOf(LocalDate.now())

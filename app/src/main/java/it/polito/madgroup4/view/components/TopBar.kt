@@ -103,7 +103,7 @@ fun TopBar(
                         contentDescription = "Edit Profile"
                     )
                 }
-            } else if (title == "Edit Profile") {
+            } else if (title == "Edit Profile" || title == "Select Level") {
                 IconButton(onClick = {
                     topBarAction()
                 }) {

@@ -33,6 +33,7 @@ import it.polito.madgroup4.utility.CourtWithSlots
 import it.polito.madgroup4.view.components.BottomNavBar
 import it.polito.madgroup4.view.components.FloatingFab
 import it.polito.madgroup4.view.components.TopBar
+import it.polito.madgroup4.view.screens.AddSport
 import it.polito.madgroup4.view.screens.CameraScreen
 import it.polito.madgroup4.view.screens.Courts
 import it.polito.madgroup4.view.screens.CreateAchievement
@@ -40,6 +41,7 @@ import it.polito.madgroup4.view.screens.CreateReservation
 import it.polito.madgroup4.view.screens.EditReservation
 import it.polito.madgroup4.view.screens.Profile
 import it.polito.madgroup4.view.screens.EditProfile
+import it.polito.madgroup4.view.screens.LevelSelector
 import it.polito.madgroup4.view.screens.ReservationConfirmation
 import it.polito.madgroup4.view.screens.Reservations
 import it.polito.madgroup4.view.screens.ReviewForm
@@ -108,11 +110,13 @@ fun Navigation(
     favouriteSport: Int?,
     setFavoriteSport: (Int) -> Unit,
 
+    selectedLevel: String,
+    setSelectedLevel: (String) -> Unit,
 
     ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val (topBarAction, setTopBarAction) = remember{ mutableStateOf<() -> Unit>({}) }
+    val (topBarAction, setTopBarAction) = remember { mutableStateOf<() -> Unit>({}) }
 
     val context = LocalContext.current
 
@@ -134,9 +138,10 @@ fun Navigation(
                         )
                     )
                 }
-                if((status as Status.Error).nextRoute != null)
-                    navController.navigate((status as Status.Error).nextRoute!!)
+                /*if((status as Status.Error).nextRoute != null)
+                    navController.navigate((status as Status.Error).nextRoute!!)*/
             }
+
             is Status.Success -> {
                 coroutineScope.launch {
                     snackbarHostState.showSnackbar(
@@ -146,9 +151,10 @@ fun Navigation(
                         )
                     )
                 }
-                if((status as Status.Success).nextRoute != null)
-                    navController.navigate((status as Status.Success).nextRoute!!)
+                /*if((status as Status.Success).nextRoute != null)
+                    navController.navigate((status as Status.Success).nextRoute!!)*/
             }
+
             else -> {}
         }
     }
@@ -304,7 +310,7 @@ fun Navigation(
                 }
 
                 composable("Edit Profile") {
-                    EditProfile(setTopBarAction, user, userVm, navController)
+                    EditProfile(setTopBarAction, user, userVm, navController, loadingVm)
                 }
 
                 composable("Camera") {
@@ -312,11 +318,28 @@ fun Navigation(
                 }
 
                 composable("Your Sport") {
-                    ShowFavouriteSport(favouriteSport!!, user, userVm, navController)
+                    ShowFavouriteSport(favouriteSport!!, user, userVm, navController, loadingVm)
                 }
 
                 composable("Create Achievement") {
-                    CreateAchievement(userVm, favouriteSport!!, user)
+                    CreateAchievement(userVm, favouriteSport!!, user, loadingVm, navController)
+                }
+
+                composable("Select Level") {
+                    LevelSelector(
+                        favouriteSport!!,
+                        navController,
+                        selectedLevel,
+                        setSelectedLevel,
+                        setTopBarAction,
+                        userVm,
+                        user,
+                        loadingVm
+                    )
+                }
+
+                composable("Add Sport") {
+                    AddSport(userVm, loadingVm, navController, selectedSport)
                 }
 
             }

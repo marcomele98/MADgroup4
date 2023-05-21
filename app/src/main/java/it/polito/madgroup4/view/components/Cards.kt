@@ -37,6 +37,7 @@ import it.polito.madgroup4.model.Sport
 import it.polito.madgroup4.utility.calculateStartEndTime
 import it.polito.madgroup4.utility.formatTimestampToString
 import it.polito.madgroup4.utility.imageSelector
+import it.polito.madgroup4.viewmodel.LoadingStateViewModel
 
 
 @Composable
@@ -316,7 +317,7 @@ fun SportCard(sport: Sport, onClick: () -> Unit) {
 @Composable
 fun AchievementCard(
     achievement: Achievement,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
 ) {
     ElevatedCard(
         modifier = Modifier

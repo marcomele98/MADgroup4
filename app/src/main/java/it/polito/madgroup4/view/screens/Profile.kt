@@ -149,7 +149,7 @@ fun Profile(
                         modifier = Modifier
                             .size(30.dp)
                             .alpha(0.6f)
-                            .clickable {},
+                            .clickable {navController.navigate("Add Sport")},
                         //tint = MaterialTheme.colorScheme.secondary,
                         contentDescription = null
                     )

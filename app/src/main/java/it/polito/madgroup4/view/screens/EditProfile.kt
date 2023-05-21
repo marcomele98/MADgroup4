@@ -48,6 +48,7 @@ import it.polito.madgroup4.model.User
 import it.polito.madgroup4.utility.rotateBitmap
 import it.polito.madgroup4.utility.saveProPicInternally
 import it.polito.madgroup4.utility.uriToBitmap
+import it.polito.madgroup4.viewmodel.LoadingStateViewModel
 import it.polito.madgroup4.viewmodel.UserViewModel
 
 
@@ -58,11 +59,10 @@ fun EditProfile(
     user: State<User?>,
     userVm: UserViewModel,
     navController: NavController,
+    loadingVm: LoadingStateViewModel,
 ) {
 
     val (editedUser, setEditUser) = remember { mutableStateOf(user.value) }
-
-
 
     val context = LocalContext.current
 
@@ -190,7 +190,7 @@ fun EditProfile(
     LaunchedEffect(editedUser){
         if(editedUser != null){
             setTopBarAction {
-                userVm.saveUser(editedUser)
+                userVm.saveUser(editedUser, loadingVm, "Profile edited successfully", "Error while editing profile")
                 navController.navigate("Profile")
             }
         }

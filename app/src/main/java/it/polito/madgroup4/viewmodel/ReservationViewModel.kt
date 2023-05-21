@@ -74,16 +74,16 @@ class ReservationViewModel @Inject constructor(private val repository: Repositor
 
 
 
-    fun saveReservation(reservation: Reservation, stateViewModel: LoadingStateViewModel, nextRouteSuccess: String?, nextRouteError: String?){
+    fun saveReservation(reservation: Reservation, stateViewModel: LoadingStateViewModel, message: String, error: String) {
 
         stateViewModel.setStatus(Status.Loading)
 
         viewModelScope.launch {
             try {
                 repository.saveReservation(reservation)
-                stateViewModel.setStatus(Status.Success("Reservation added successfully", nextRouteSuccess))
+                stateViewModel.setStatus(Status.Success(message, null))
             } catch (e: Exception) {
-                stateViewModel.setStatus(Status.Error("Impossible to add the reservation", nextRouteError))
+                stateViewModel.setStatus(Status.Error(error, null))
             }
         }
     }

@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,6 +26,7 @@ import androidx.navigation.NavController
 import it.polito.madgroup4.model.Sport
 import it.polito.madgroup4.model.User
 import it.polito.madgroup4.view.components.AchievementCard
+import it.polito.madgroup4.viewmodel.LoadingStateViewModel
 import it.polito.madgroup4.viewmodel.UserViewModel
 
 @Composable
@@ -32,10 +34,9 @@ fun ShowFavouriteSport(
     sport: Int,
     user: State<User?>,
     userVm: UserViewModel,
-    navController: NavController
+    navController: NavController,
+    loadingVm: LoadingStateViewModel,
 ) {
-
-    //val sortedAchievements = sport.achievements?.sortedByDescending { formatDate(it.date!!) }
 
     LazyColumn(
         modifier = Modifier
@@ -53,15 +54,17 @@ fun ShowFavouriteSport(
                     fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
                 )
                 Spacer(modifier = Modifier.weight(1f))
-                Icon(
-                    imageVector = Icons.Outlined.Edit,
-                    modifier = Modifier
-                        .size(30.dp)
-                        .alpha(0.6f)
-                        .clickable {},
-                    //tint = MaterialTheme.colorScheme.secondary,
-                    contentDescription = null
-                )
+
+                IconButton(onClick = { navController.navigate("Select Level") }) {
+                    Icon(
+                        imageVector = Icons.Outlined.Edit,
+                        modifier = Modifier
+                            .size(30.dp)
+                            .alpha(0.6f),
+                        //tint = MaterialTheme.colorScheme.secondary,
+                        contentDescription = null,
+                    )
+                }
             }
             Text(
                 text = user.value?.sports?.get(sport)?.level!!,
@@ -100,7 +103,8 @@ fun ShowFavouriteSport(
                 onDelete = {
                     userVm.removeAchievement(
                         user.value?.sports?.get(sport)?.name!!,
-                        user.value?.sports?.get(sport)?.achievements!![index].title!!
+                        user.value?.sports?.get(sport)?.achievements!![index].title!!,
+                        loadingVm
                     )
                 }
             )
