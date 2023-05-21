@@ -2,7 +2,6 @@ package it.polito.madgroup4.view.screens
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -46,7 +45,6 @@ import it.polito.madgroup4.R
 import it.polito.madgroup4.model.Profile
 import it.polito.madgroup4.model.User
 import it.polito.madgroup4.utility.drawableToBitmap
-import it.polito.madgroup4.utility.stringToBitmap
 import it.polito.madgroup4.utility.uriToBitmap
 import it.polito.madgroup4.view.components.SportCard
 import it.polito.madgroup4.viewmodel.UserViewModel
@@ -57,24 +55,25 @@ fun Profile(
     setFavoriteSport: (Int) -> Unit,
     navController: NavController,
     userVm: UserViewModel,
-) {
+    ) {
 
     val context = LocalContext.current
 
-//    val (bitmap, setBitmap) = remember {
-//        mutableStateOf(ContextCompat.getDrawable(context, R.drawable.profile)
-//            ?.let { drawableToBitmap(it) })
-//    }
+  /*  val (bitmap, setBitmap) = remember { mutableStateOf(ContextCompat.getDrawable(context, R.drawable.profile)
+        ?.let { drawableToBitmap(it) }) }
 
-//    userVm.getImage("48JnBn7vpjvj0minb62P", setBitmap)
-//
+    userVm.getImage("48JnBn7vpjvj0minb62P", setBitmap)
+
+    println(bitmap)*/
 
 
-//    val sharedPref = context.getSharedPreferences("USER", Context.MODE_PRIVATE) ?: null
-//    var profile = Profile()
-//    if (sharedPref != null) {
-//        profile = Profile.getFromPreferences(sharedPref!!)
-//    }
+/*
+    val sharedPref = context.getSharedPreferences("USER", Context.MODE_PRIVATE) ?: null
+    var profile = Profile()
+    if (sharedPref != null) {
+        profile = Profile.getFromPreferences(sharedPref!!)
+    }
+*/
 
 
     val contactItems = listOf(
@@ -89,7 +88,7 @@ fun Profile(
         ) {
 
             if (user.value?.photo != null && user.value?.photo != "") {
-                stringToBitmap(user.value?.photo!!)?.let {
+                uriToBitmap(Uri.parse(user.value?.photo!!), context)?.let {
                     Image(
                         bitmap = it.asImageBitmap(),
                         contentDescription = null,
@@ -101,7 +100,6 @@ fun Profile(
                             .then(Modifier.align(Alignment.CenterHorizontally))
                     )
                 }
-
             } else {
                 Image(
                     painter = painterResource(id = R.drawable.profile),
@@ -167,7 +165,7 @@ fun Profile(
                         modifier = Modifier
                             .size(30.dp)
                             .alpha(0.6f)
-                            .clickable { navController.navigate("Add Sport") },
+                            .clickable {navController.navigate("Add Sport")},
                         //tint = MaterialTheme.colorScheme.secondary,
                         contentDescription = null
                     )
