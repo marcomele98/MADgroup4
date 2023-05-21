@@ -37,7 +37,6 @@ import it.polito.madgroup4.model.Sport
 import it.polito.madgroup4.utility.calculateStartEndTime
 import it.polito.madgroup4.utility.formatTimestampToString
 import it.polito.madgroup4.utility.imageSelector
-import it.polito.madgroup4.viewmodel.LoadingStateViewModel
 
 
 @Composable
@@ -156,12 +155,13 @@ fun PlayingCourtCard(
 fun SportCardSelector(
     sport: String,
     navController: NavController,
+    route: String
 ) {
 
     OutlinedCard(modifier = Modifier
         .padding(bottom = 10.dp)
         .clickable {
-            navController.navigate("Select Sport")
+            navController.navigate(route)
         }
     ) {
         Column(
@@ -171,7 +171,7 @@ fun SportCardSelector(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
-                    imageSelector(sport), contentDescription = "Reservations"
+                    imageSelector(sport), contentDescription = "Sport"
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(

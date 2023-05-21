@@ -33,6 +33,11 @@ import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Base64
+import androidx.compose.material.icons.filled.SportsBaseball
+import androidx.compose.material.icons.filled.SportsBasketball
+import androidx.compose.material.icons.filled.SportsHockey
+import androidx.compose.material.icons.filled.SportsRugby
+import androidx.compose.material.icons.filled.SportsVolleyball
 
 
 fun calculateStartEndTime(startTime: String, slotId: Int): String {
@@ -151,6 +156,11 @@ fun imageSelector(sport: String): ImageVector {
     return when (sport) {
         "Tennis" -> Icons.Default.SportsTennis
         "Football" -> Icons.Default.SportsSoccer
+        "Basketball" -> Icons.Default.SportsBasketball
+        "Baseball" -> Icons.Default.SportsBaseball
+        "Volleyball" -> Icons.Default.SportsVolleyball
+        "Rugby" -> Icons.Default.SportsRugby
+        "Hockey" -> Icons.Default.SportsHockey
         else -> Icons.Default.SportsTennis
     }
 }

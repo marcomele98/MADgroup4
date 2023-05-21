@@ -105,7 +105,7 @@ fun CreateReservation(
     ) {
 
         Row() {
-            SportCardSelector(sport = selectedSport, navController = navController)
+            SportCardSelector(sport = selectedSport, navController = navController, route = "Select Sport")
         }
         SelectableWeekCalendar(
             calendarState = calendarState,

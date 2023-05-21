@@ -58,7 +58,7 @@ fun SportSelector(
                             imageSelector(sports[index]),
                             modifier = Modifier
                                 .size(30.dp),
-                            contentDescription = "Reservations"
+                            contentDescription = "Sport"
                         )
                         Spacer(modifier = Modifier.width(16.dp))
                         Text(

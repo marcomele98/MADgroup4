@@ -46,7 +46,7 @@ fun LevelSelector(
         if(editedUser != null){
             setTopBarAction {
                 userVm.saveUser(editedUser, loadingVm, "Level changed successfully", "Error while changing level")
-                navController.popBackStack()
+                navController.navigate("Your Sport")
             }
         }
     }

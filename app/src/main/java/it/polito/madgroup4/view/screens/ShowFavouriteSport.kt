@@ -23,7 +23,6 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import it.polito.madgroup4.model.Sport
 import it.polito.madgroup4.model.User
 import it.polito.madgroup4.view.components.AchievementCard
 import it.polito.madgroup4.viewmodel.LoadingStateViewModel

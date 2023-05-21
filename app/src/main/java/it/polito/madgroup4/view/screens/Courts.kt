@@ -30,7 +30,7 @@ fun Courts(
         Row(
             Modifier.padding(bottom = 16.dp)
         ) {
-            SportCardSelector(sport = selectedSport, navController = navController)
+            SportCardSelector(sport = selectedSport, navController = navController, route = "Select Sport")
         }
         PlayingCourtList(
             playingCourts = playingCourts.value,

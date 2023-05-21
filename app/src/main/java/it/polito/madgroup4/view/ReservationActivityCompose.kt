@@ -21,8 +21,6 @@ import it.polito.madgroup4.model.PlayingCourt
 import it.polito.madgroup4.model.Reservation
 import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.model.Review
-import it.polito.madgroup4.model.Sport
-import it.polito.madgroup4.model.User
 import it.polito.madgroup4.utility.CourtWithSlots
 import it.polito.madgroup4.view.ui.theme.MADgroup4Theme
 import it.polito.madgroup4.viewmodel.ReservationViewModel
@@ -190,7 +188,9 @@ fun MainScreen(
         mutableStateOf(ReservationWithCourt(null, null))
     }
 
-    val sports = listOf("Tennis", "Football")
+    val sports = listOf("Tennis", "Football", "Basketball", "Volleyball", "Baseball","Rugby", "Hockey")
+    val remainingSports: List<String> = sports.minus(user.value?.sports?.map { it.name!! }?: emptyList())
+
     val (selectedSport, setSelectedSport) = remember { mutableStateOf(sports[0]) }
     val (creationDate, setCreationDate) = remember { mutableStateOf(LocalDate.now()) }
     val (selectedDate, setSelectedDate) = remember { mutableStateOf(LocalDate.now()) }
@@ -218,6 +218,7 @@ fun MainScreen(
         reservation,
         setReservation,
         sports,
+        remainingSports,
         selectedSport,
         setSelectedSport,
         creationDate,

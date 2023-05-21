@@ -83,6 +83,7 @@ fun Navigation(
     setReservationWithCourt: (ReservationWithCourt) -> Unit,
 
     sports: List<String>,
+    remainingSports: List<String>,
 
     selectedSport: String,
     setSelectedSport: (String) -> Unit,
@@ -182,7 +183,15 @@ fun Navigation(
             NavHost(navController = navController, startDestination = "Reservations") {
 
                 composable("Profile") {
-                    Profile(user, setFavoriteSport, navController, userVm, setSelectedLevel)
+                    Profile(user, setFavoriteSport, navController, userVm, setSelectedLevel, setSelectedSport, remainingSports)
+                }
+
+                composable("Edit Profile") {
+                    EditProfile(setTopBarAction, user, userVm, navController, loadingVm)
+                }
+
+                composable("Camera") {
+                    CameraScreen()
                 }
 
                 composable("Create Reservation") {
@@ -260,6 +269,7 @@ fun Navigation(
                         navController = navController
                     )
                 }
+
                 composable("Select A Time Slot") {
                     SlotSelectionReservation(
                         date = creationDate,
@@ -304,14 +314,6 @@ fun Navigation(
                     )
                 }
 
-                composable("Edit Profile") {
-                    EditProfile(setTopBarAction, user, userVm, navController, loadingVm)
-                }
-
-                composable("Camera") {
-                    CameraScreen()
-                }
-
                 composable("Your Sport") {
                     ShowFavouriteSport(favouriteSport!!, user, userVm, navController, loadingVm)
                 }
@@ -334,7 +336,15 @@ fun Navigation(
                 }
 
                 composable("Add Sport") {
-                    AddSport(userVm, loadingVm, navController, selectedSport)
+                    AddSport(userVm, loadingVm, navController, selectedSport, setFavoriteSport)
+                }
+
+                composable("Select New Sport") {
+                    SportSelector(
+                        sports = remainingSports,
+                        setSelectedSport = setSelectedSport,
+                        navController = navController
+                    )
                 }
 
             }
