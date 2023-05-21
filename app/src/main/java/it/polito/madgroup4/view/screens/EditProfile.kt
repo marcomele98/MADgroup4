@@ -45,8 +45,10 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import it.polito.madgroup4.R
 import it.polito.madgroup4.model.User
+import it.polito.madgroup4.utility.bitmapToString
 import it.polito.madgroup4.utility.rotateBitmap
 import it.polito.madgroup4.utility.saveProPicInternally
+import it.polito.madgroup4.utility.stringToBitmap
 import it.polito.madgroup4.utility.uriToBitmap
 import it.polito.madgroup4.viewmodel.LoadingStateViewModel
 import it.polito.madgroup4.viewmodel.UserViewModel
@@ -119,7 +121,7 @@ fun EditProfile(
     )
 
 
-    var imageUri by remember {
+    var (imageUri, setImageUri) = remember {
         mutableStateOf<Uri?>(editedUser?.photo?.toUri())
     }
 
@@ -133,11 +135,11 @@ fun EditProfile(
         onResult = { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 editImageUri = result.data?.data
-                var uri = userVm.uploadImage(editImageUri.toString())
                 val imageBitmap = uriToBitmap(editImageUri!!, context)
                 val rotatedBitmap = rotateBitmap(imageBitmap!!, context, editImageUri!!)
-                imageUri = saveProPicInternally(rotatedBitmap!!, context)
-                setEditUser(editedUser?.copy(photo = imageUri.toString()))
+//                userVm.uploadImage(rotatedBitmap!!, setImageUri)
+//            imageUri = saveProPicInternally(rotatedBitmap!!, context)
+                setEditUser(editedUser?.copy(photo = rotatedBitmap?.let { bitmapToString(it) }))
                 //setEditedUser( editedUser.copy(photo = uri.toString()))
             }
         }
@@ -147,11 +149,11 @@ fun EditProfile(
         contract = ActivityResultContracts.TakePicture(),
         onResult = { success ->
             editImageUri = imageUri
-            var uri = userVm.uploadImage(editImageUri.toString())
             val imageBitmap = uriToBitmap(editImageUri!!, context)
             val rotatedBitmap = rotateBitmap(imageBitmap!!, context, editImageUri!!)
-            imageUri = saveProPicInternally(rotatedBitmap!!, context)
-            setEditUser(editedUser?.copy(photo = imageUri.toString()))
+//            userVm.uploadImage(rotatedBitmap!!, setImageUri)
+//            imageUri = saveProPicInternally(rotatedBitmap!!, context)
+            setEditUser(editedUser?.copy(photo = rotatedBitmap?.let { bitmapToString(it) }))
             //setEditedUser( editedUser.copy(photo = uri.toString()))
         }
     )
@@ -243,8 +245,8 @@ fun EditProfile(
 
 
             Box(Modifier.align(Alignment.CenterHorizontally)) {
-                if (editImageUri != null && editedUser?.photo != "") {
-                    uriToBitmap(editImageUri!!, context)?.let {
+                if (editedUser?.photo != null && editedUser?.photo != "") {
+                    stringToBitmap(editedUser?.photo!!)?.let {
                         Image(
                             bitmap = it.asImageBitmap(),
                             contentDescription = null,

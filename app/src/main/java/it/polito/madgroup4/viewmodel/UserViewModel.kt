@@ -1,5 +1,7 @@
 package it.polito.madgroup4.viewmodel
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -11,14 +13,12 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import dagger.hilt.android.lifecycle.HiltViewModel
-import it.polito.madgroup4.model.Achievement
 import it.polito.madgroup4.model.Repository
-import it.polito.madgroup4.model.Sport
 import it.polito.madgroup4.model.User
-import it.polito.madgroup4.utility.formatDateToTimestamp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import java.time.LocalDate
+import java.io.ByteArrayOutputStream
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,6 +33,9 @@ class UserViewModel @Inject constructor(private val repository: Repository) : Vi
     private val userListener: ListenerRegistration
     private val db = Firebase.firestore
 
+    private var storage = Firebase.storage("gs://madgroup4-5de93.appspot.com")
+    var storageRef = storage.reference
+
     init {
         userListener =
             db.collection("users").document("48JnBn7vpjvj0minb62P")
@@ -46,11 +49,12 @@ class UserViewModel @Inject constructor(private val repository: Repository) : Vi
         super.onCleared(); userListener.remove(); }
 
 
-    private var storage = Firebase.storage("gs://madgroup4-5de93")
-    var storageRef = storage.reference
-
-
-    fun saveUser(editedUser: User, stateViewModel: LoadingStateViewModel, message: String, error: String) {
+    fun saveUser(
+        editedUser: User,
+        stateViewModel: LoadingStateViewModel,
+        message: String,
+        error: String
+    ) {
         stateViewModel.setStatus(Status.Loading)
         db.collection("users").document("48JnBn7vpjvj0minb62P").set(editedUser, SetOptions.merge())
             .addOnSuccessListener {
@@ -62,41 +66,12 @@ class UserViewModel @Inject constructor(private val repository: Repository) : Vi
             }
     }
 
-    fun uploadImage(photoString: String): Uri {
-        // Defining the child of storageReference
-        val ref = storageRef.child(
-            "images/" + "48JnBn7vpjvj0minb62P"
-        )
-        Log.i("test_vm", "after ref ${ref.toString()}")
-        var downloadUri: Uri = Uri.EMPTY
-        if (photoString != "") {
-            // adding listeners on upload
-            // or failure of image
-            var uploadTask = ref.putFile(Uri.parse(photoString))
-            val urlTask = uploadTask.continueWithTask { task ->
-                if (!task.isSuccessful) {
-                    task.exception?.let {
-                        throw it
-                    }
-                }
-                Log.i("test_vm", "after ref ${ref.downloadUrl.toString()}")
-                ref.downloadUrl
-            }.addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Log.i("test_vm", "salvata immagine " + ref + " " + Uri.parse(photoString))
-                    downloadUri = task.result
-                } else {
-                    Log.i("test_vm", "Errore")
-                }
-            }.addOnFailureListener { e ->
-                Log.i("test", "Error adding document", e)
-            }
-        }
-        Log.i("test_vm", "after ref ${ref.downloadUrl.toString()}")
-        return downloadUri
-    }
 
-    fun removeAchievement(sportName: String, achievmentTitle: String, stateViewModel: LoadingStateViewModel) {
+    fun removeAchievement(
+        sportName: String,
+        achievmentTitle: String,
+        stateViewModel: LoadingStateViewModel
+    ) {
         var userTmp = _user.value!!
         userTmp.sports?.forEach { sport ->
             if (sport.name == sportName) {
@@ -105,7 +80,62 @@ class UserViewModel @Inject constructor(private val repository: Repository) : Vi
                 }
             }
         }
-        saveUser(userTmp, stateViewModel, "Achievement removed successfully", "Error while removing achievement")
+        saveUser(
+            userTmp,
+            stateViewModel,
+            "Achievement removed successfully",
+            "Error while removing achievement"
+        )
+    }
+
+
+    fun uploadImage(photo: Bitmap, setImageUri:  (Uri) -> Unit) {
+        val ref = storageRef
+            .child("images")
+            .child("48JnBn7vpjvj0minb62P.jpg")
+        if (photo != null) {
+            val baos = ByteArrayOutputStream()
+            photo.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+            val data = baos.toByteArray()
+            // adding listeners on upload
+            // or failure of image
+            var uploadTask = ref.putBytes(data)
+
+            val urlTask = uploadTask.continueWithTask { task ->
+                if (!task.isSuccessful) {
+                    task.exception?.let {
+                        throw it
+                    }
+                }
+                ref.downloadUrl
+            }.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.i("test_vm", "Image saved with success")
+                    setImageUri(task.result)
+                } else {
+                    Log.i("test_vm", "Error while saving image")
+                }
+            }.addOnFailureListener { e ->
+                Log.i("test", "Error adding image ", e)
+            }
+        }
+        Log.i("test_vm", "after ref ${ref.downloadUrl}")
+    }
+
+    fun getImage(id: String, setBitmap: (Bitmap) -> Unit) {
+        val pathReference = storageRef
+            .child("images")
+            .child("48JnBn7vpjvj0minb62P.jpg")
+//        var bitmap: Bitmap? = null
+        val localFile = File.createTempFile("images", "jpg")
+        pathReference.getFile(localFile).addOnSuccessListener {
+            // Local temp file has been created
+            setBitmap(BitmapFactory.decodeFile(localFile.absolutePath))
+//            bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
+        }.addOnFailureListener {
+            // Handle any errors
+            Log.i("test", "error", it)
+        }
     }
 
 

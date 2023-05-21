@@ -29,6 +29,11 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.util.Date
 import java.util.Locale
+import android.graphics.Canvas
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
+import android.util.Base64
+
 
 fun calculateStartEndTime(startTime: String, slotId: Int): String {
     val startTime = calculateTimeAsNum(startTime)
@@ -210,4 +215,49 @@ fun rotateBitmap(input: Bitmap, context: Context, editImageUri: Uri): Bitmap? {
     val rotationMatrix = Matrix()
     rotationMatrix.setRotate(orientation.toFloat())
     return Bitmap.createBitmap(input, 0, 0, input.width, input.height, rotationMatrix, true)
+}
+
+fun drawableToBitmap(drawable: Drawable): Bitmap? {
+    if (drawable is BitmapDrawable) {
+        // Se il Drawable è già una BitmapDrawable, restituisci direttamente la Bitmap
+        return drawable.bitmap
+    }
+
+    // Ottieni le dimensioni del Drawable
+    val width = drawable.intrinsicWidth
+    val height = drawable.intrinsicHeight
+
+    // Crea una Bitmap vuota con le dimensioni del Drawable
+    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+
+    // Crea un oggetto Canvas per disegnare sulla Bitmap
+    val canvas = Canvas(bitmap)
+
+    // Imposta il limite del disegno sulla dimensione del Drawable
+    drawable.setBounds(0, 0, canvas.width, canvas.height)
+
+    // Disegna il Drawable sulla Bitmap utilizzando il Canvas
+    drawable.draw(canvas)
+
+    // Restituisci la Bitmap creata
+    return bitmap
+}
+
+
+fun stringToBitmap(encodedString: String): Bitmap? {
+    try {
+        val decodedBytes = Base64.decode(encodedString, Base64.DEFAULT)
+        return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+    return null
+}
+
+fun bitmapToString(bitmap: Bitmap): String {
+    val outputStream = ByteArrayOutputStream()
+    bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+    val byteArray = outputStream.toByteArray()
+    val encodedString = Base64.encodeToString(byteArray, Base64.DEFAULT)
+    return encodedString
 }

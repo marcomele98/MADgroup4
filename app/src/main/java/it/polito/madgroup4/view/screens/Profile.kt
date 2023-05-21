@@ -1,6 +1,8 @@
 package it.polito.madgroup4.view.screens
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -24,6 +26,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -36,28 +40,41 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import it.polito.madgroup4.R
 import it.polito.madgroup4.model.Profile
-import it.polito.madgroup4.model.Sport
 import it.polito.madgroup4.model.User
+import it.polito.madgroup4.utility.drawableToBitmap
+import it.polito.madgroup4.utility.stringToBitmap
 import it.polito.madgroup4.utility.uriToBitmap
 import it.polito.madgroup4.view.components.SportCard
+import it.polito.madgroup4.viewmodel.UserViewModel
 
 @Composable
 fun Profile(
     user: State<User?>,
     setFavoriteSport: (Int) -> Unit,
-    navController: NavController
-    ) {
+    navController: NavController,
+    userVm: UserViewModel,
+) {
 
     val context = LocalContext.current
 
-    val sharedPref = context.getSharedPreferences("USER", Context.MODE_PRIVATE) ?: null
-    var profile = Profile()
-    if (sharedPref != null) {
-        profile = Profile.getFromPreferences(sharedPref!!)
-    }
+//    val (bitmap, setBitmap) = remember {
+//        mutableStateOf(ContextCompat.getDrawable(context, R.drawable.profile)
+//            ?.let { drawableToBitmap(it) })
+//    }
+
+//    userVm.getImage("48JnBn7vpjvj0minb62P", setBitmap)
+//
+
+
+//    val sharedPref = context.getSharedPreferences("USER", Context.MODE_PRIVATE) ?: null
+//    var profile = Profile()
+//    if (sharedPref != null) {
+//        profile = Profile.getFromPreferences(sharedPref!!)
+//    }
 
 
     val contactItems = listOf(
@@ -72,7 +89,7 @@ fun Profile(
         ) {
 
             if (user.value?.photo != null && user.value?.photo != "") {
-                uriToBitmap(Uri.parse(user.value?.photo!!), context)?.let {
+                stringToBitmap(user.value?.photo!!)?.let {
                     Image(
                         bitmap = it.asImageBitmap(),
                         contentDescription = null,
@@ -84,6 +101,7 @@ fun Profile(
                             .then(Modifier.align(Alignment.CenterHorizontally))
                     )
                 }
+
             } else {
                 Image(
                     painter = painterResource(id = R.drawable.profile),
@@ -149,7 +167,7 @@ fun Profile(
                         modifier = Modifier
                             .size(30.dp)
                             .alpha(0.6f)
-                            .clickable {navController.navigate("Add Sport")},
+                            .clickable { navController.navigate("Add Sport") },
                         //tint = MaterialTheme.colorScheme.secondary,
                         contentDescription = null
                     )
