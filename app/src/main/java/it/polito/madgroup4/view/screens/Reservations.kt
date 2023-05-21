@@ -20,21 +20,29 @@ import java.time.LocalDate
 fun Reservations(
     reservationVm: ReservationViewModel,
     userId: String,
-    date: LocalDate,
-    setDate: (LocalDate) -> Unit,
+    selectedDate: LocalDate,
+    setSelectedDate: (LocalDate) -> Unit,
     setReservation: (ReservationWithCourt) -> Unit,
-    navController: NavController
+    navController: NavController,
+    setCreationDate: (LocalDate) -> Unit
 ) {
 
     val calendarState = rememberSelectableCalendarState()
     val allReservations = reservationVm.allRes.observeAsState().value
 
     if (calendarState.selectionState.selection.isEmpty()) {
-        calendarState.selectionState.selection = listOf(date)
-        setDate(date)
+        calendarState.selectionState.selection = listOf(selectedDate)
+        setSelectedDate(selectedDate)
     } else {
-        setDate(calendarState.selectionState.selection[0])
+        setSelectedDate(calendarState.selectionState.selection[0])
     }
+
+    if(!(selectedDate.isBefore(LocalDate.now()))) {
+        setCreationDate(selectedDate)
+    } else {
+        setCreationDate(LocalDate.now())
+    }
+
 
     Column(
         Modifier.padding(start = 16.dp, end = 16.dp)
@@ -43,7 +51,7 @@ fun Reservations(
         Spacer(modifier = Modifier.size(10.dp))
         ReservationList(
             reservationVm = reservationVm,
-            date = date.toString(),
+            date = selectedDate.toString(),
             userId = userId,
             setReservation = setReservation,
             navController = navController

@@ -17,9 +17,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -38,10 +36,10 @@ import it.polito.madgroup4.view.screens.CameraScreen
 import it.polito.madgroup4.view.screens.Courts
 import it.polito.madgroup4.view.screens.CreateAchievement
 import it.polito.madgroup4.view.screens.CreateReservation
-import it.polito.madgroup4.view.screens.EditReservation
-import it.polito.madgroup4.view.screens.Profile
 import it.polito.madgroup4.view.screens.EditProfile
+import it.polito.madgroup4.view.screens.EditReservation
 import it.polito.madgroup4.view.screens.LevelSelector
+import it.polito.madgroup4.view.screens.Profile
 import it.polito.madgroup4.view.screens.ReservationConfirmation
 import it.polito.madgroup4.view.screens.Reservations
 import it.polito.madgroup4.view.screens.ReviewForm
@@ -51,18 +49,17 @@ import it.polito.madgroup4.view.screens.ShowFavouriteSport
 import it.polito.madgroup4.view.screens.ShowReservation
 import it.polito.madgroup4.view.screens.SlotSelectionReservation
 import it.polito.madgroup4.view.screens.SportSelector
+import it.polito.madgroup4.viewmodel.LoadingStateViewModel
 import it.polito.madgroup4.viewmodel.ReservationViewModel
 import it.polito.madgroup4.viewmodel.ReviewViewModel
-import it.polito.madgroup4.viewmodel.UserViewModel
-import it.polito.madgroup4.viewmodel.LoadingStateViewModel
 import it.polito.madgroup4.viewmodel.Status
+import it.polito.madgroup4.viewmodel.UserViewModel
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 
 class SnackbarVisualsWithError(
-    override val message: String,
-    val isError: Boolean
+    override val message: String, val isError: Boolean
 ) : SnackbarVisuals {
     override val actionLabel: String
         get() = if (isError) "Error" else "OK"
@@ -113,12 +110,14 @@ fun Navigation(
     selectedLevel: String,
     setSelectedLevel: (String) -> Unit,
 
+    selectedDate: LocalDate,
+    setSelectedDate: (LocalDate) -> Unit,
+
     ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val (topBarAction, setTopBarAction) = remember { mutableStateOf<() -> Unit>({}) }
 
-    val context = LocalContext.current
 
     val loading by loadingVm.status.observeAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -133,14 +132,12 @@ fun Navigation(
                 coroutineScope.launch {
                     snackbarHostState.showSnackbar(
                         SnackbarVisualsWithError(
-                            (loading as Status.Error).message,
-                            isError = true
+                            (loading as Status.Error).message, isError = true
                         )
                     )
                     loadingVm.setStatus(Status.Loading)
 
-                }
-                /*if((status as Status.Error).nextRoute != null)
+                }/*if((status as Status.Error).nextRoute != null)
                     navController.navigate((status as Status.Error).nextRoute!!)*/
             }
 
@@ -148,13 +145,11 @@ fun Navigation(
                 coroutineScope.launch {
                     snackbarHostState.showSnackbar(
                         SnackbarVisualsWithError(
-                            (loading as Status.Success).message,
-                            isError = false
+                            (loading as Status.Success).message, isError = false
                         )
                     )
                     loadingVm.setStatus(Status.Loading)
-                }
-                /*if((status as Status.Success).nextRoute != null)
+                }/*if((status as Status.Success).nextRoute != null)
                     navController.navigate((status as Status.Success).nextRoute!!)*/
             }
 
@@ -162,10 +157,9 @@ fun Navigation(
         }
     }
 
-    Scaffold(
-        bottomBar = {
-            BottomNavBar(navController = navController)
-        },
+    Scaffold(bottomBar = {
+        BottomNavBar(navController = navController)
+    },
         topBar = {
             TopBar(
                 title = navBackStackEntry?.destination?.route ?: "",
@@ -178,12 +172,12 @@ fun Navigation(
         },
 
         floatingActionButton = {
-            if (navBackStackEntry?.destination?.route == "Reservations")
-                FloatingFab(navController)
+            if (navBackStackEntry?.destination?.route == "Reservations") FloatingFab(
+                navController,
+            )
         },
         floatingActionButtonPosition = FabPosition.End,
-        snackbarHost = { SnackbarHost(snackbarHostState) }
-    ) {
+        snackbarHost = { SnackbarHost(snackbarHostState) }) {
         Box(Modifier.padding(it)) {
             NavHost(navController = navController, startDestination = "Reservations") {
 
@@ -199,7 +193,8 @@ fun Navigation(
                         setCreationDate,
                         setSelectedSlot,
                         setSelectedCourt,
-                        navController
+                        navController,
+                        setSelectedDate
                     )
                 }
 
@@ -207,20 +202,17 @@ fun Navigation(
                     Reservations(
                         reservationVm,
                         userId,
-                        creationDate,
-                        setCreationDate,
+                        selectedDate,
+                        setSelectedDate,
                         setReservationWithCourt,
-                        navController
+                        navController,
+                        setCreationDate,
                     )
                 }
 
                 composable("Edit Reservation") {
                     EditReservation(
-                        reservationVm,
-                        reservation,
-                        selectedSlot,
-                        setSelectedSlot,
-                        navController
+                        reservationVm, reservation, selectedSlot, setSelectedSlot, navController
                     )
                 }
 
@@ -308,8 +300,7 @@ fun Navigation(
 
                 composable("Reviews") {
                     ReviewList(
-                        reviews = reviews,
-                        modifier = Modifier.padding(16.dp)
+                        reviews = reviews, modifier = Modifier.padding(16.dp)
                     )
                 }
 

@@ -51,7 +51,8 @@ fun CreateReservation(
     setDate: (LocalDate) -> Unit,
     setSelectedSlot: (Int) -> Unit,
     setSelectedCourt: (CourtWithSlots) -> Unit,
-    navController: NavController
+    navController: NavController,
+    setSelectedDate: (LocalDate) -> Unit,
 ) {
 
     val calendarState = rememberSelectableWeekCalendarState(
@@ -61,14 +62,12 @@ fun CreateReservation(
 
     val allReservations = reservationVm.allRes.observeAsState().value
 
-    if (date.isBefore(LocalDate.now())) {
-        setDate(LocalDate.now())
-    }
-
     if (calendarState.selectionState.selection.isEmpty()) calendarState.selectionState.selection =
         listOf(LocalDate.now())
 
     if (calendarState.selectionState.selection[0] != date) setDate(calendarState.selectionState.selection[0])
+
+    setSelectedDate(date)
 
     setSelectedSlot(-1)
 

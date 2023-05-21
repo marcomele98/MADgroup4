@@ -193,6 +193,7 @@ fun MainScreen(
     val sports = listOf("Tennis", "Football")
     val (selectedSport, setSelectedSport) = remember { mutableStateOf(sports[0]) }
     val (creationDate, setCreationDate) = remember { mutableStateOf(LocalDate.now()) }
+    val (selectedDate, setSelectedDate) = remember { mutableStateOf(LocalDate.now()) }
     val (selectedCourt, setSelectedCourt) = remember { mutableStateOf(CourtWithSlots(null, null)) }
     val (selectedSlot, setSelectedSlot) = remember { mutableStateOf(-1) }
     val (showedCourt, setShowedCourt) = remember { mutableStateOf(PlayingCourt()) }
@@ -233,7 +234,9 @@ fun MainScreen(
         favoriteSport,
         setFavoriteSport,
         selectedLevel,
-        setSelectedLevel
+        setSelectedLevel,
+        selectedDate,
+        setSelectedDate
     )
 
 }
