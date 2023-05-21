@@ -13,6 +13,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,7 +41,7 @@ import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateAchievement(userVm: UserViewModel, sport: Sport) {
+fun CreateAchievement(userVm: UserViewModel, sport: Int, userState: State<User?>) {
 
     var description by remember { mutableStateOf("") }
     var title by remember { mutableStateOf("") }
@@ -125,8 +126,9 @@ fun CreateAchievement(userVm: UserViewModel, sport: Sport) {
         Button(onClick = {
             val achievement = Achievement(title = title, description = description, date = formatDateToTimestamp(date))
             val user = userVm.user.value!!
+            //TODO: legacy needed refactor
             user.sports = user.sports.map {
-                if (it.name == sport.name) {
+                if (it.name == userState.value!!.sports[sport].name) {
                     it.achievements = it.achievements + achievement
                     it
                 } else {

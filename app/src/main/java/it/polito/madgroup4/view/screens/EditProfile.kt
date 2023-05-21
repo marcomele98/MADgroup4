@@ -54,11 +54,15 @@ import it.polito.madgroup4.viewmodel.UserViewModel
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun EditProfile(
+    setTopBarAction: (() -> Unit) -> Unit,
+    user: State<User?>,
+    userVm: UserViewModel,
     navController: NavController,
-    editedUser: User,
-    setEditedUser: (User) -> Unit,
-    userVm: UserViewModel
 ) {
+
+    val (editedUser, setEditUser) = remember { mutableStateOf(user.value) }
+
+
 
     val context = LocalContext.current
 
@@ -82,31 +86,31 @@ fun EditProfile(
     val contactItems = listOf(
         listOf(
             null,
-            editedUser.name,
+            editedUser?.name,
             "Name",
-            { it: String -> setEditedUser(editedUser.copy(name = it)) },
+            { it: String -> setEditUser(editedUser?.copy(name = it)) },
             KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
         ),
         listOf(
             null,
-            editedUser.surname,
+            editedUser?.surname,
             "Surname",
-            { it: String -> setEditedUser(editedUser.copy(surname = it)) },
+            { it: String -> setEditUser(editedUser?.copy(surname = it)) },
             KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
         ),
         listOf(
             null,
-            editedUser.nickname,
+            editedUser?.nickname,
             "Nickname",
-            { it: String -> setEditedUser(editedUser.copy(nickname = it)) },
+            { it: String -> setEditUser(editedUser?.copy(nickname = it)) },
             KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
         ),
 //        Pair(Icons.Default.Phone, editedUser.phone),
         listOf(
             Icons.Default.Email,
-            editedUser.email,
+            editedUser?.email,
             "Email",
-            { it: String -> setEditedUser(editedUser.copy(email = it)) },
+            { it: String -> setEditUser(editedUser?.copy(email = it)) },
             KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Email)
         )
         ,
@@ -116,11 +120,11 @@ fun EditProfile(
 
 
     var imageUri by remember {
-        mutableStateOf<Uri?>(editedUser.photo?.toUri())
+        mutableStateOf<Uri?>(editedUser?.photo?.toUri())
     }
 
     var editImageUri by remember {
-        mutableStateOf<Uri?>(editedUser.photo?.toUri())
+        mutableStateOf<Uri?>(editedUser?.photo?.toUri())
     }
 
 
@@ -133,7 +137,7 @@ fun EditProfile(
                 val imageBitmap = uriToBitmap(editImageUri!!, context)
                 val rotatedBitmap = rotateBitmap(imageBitmap!!, context, editImageUri!!)
                 imageUri = saveProPicInternally(rotatedBitmap!!, context)
-                setEditedUser(editedUser.copy(photo = imageUri.toString()))
+                setEditUser(editedUser?.copy(photo = imageUri.toString()))
                 //setEditedUser( editedUser.copy(photo = uri.toString()))
             }
         }
@@ -147,7 +151,7 @@ fun EditProfile(
             val imageBitmap = uriToBitmap(editImageUri!!, context)
             val rotatedBitmap = rotateBitmap(imageBitmap!!, context, editImageUri!!)
             imageUri = saveProPicInternally(rotatedBitmap!!, context)
-            setEditedUser(editedUser.copy(photo = imageUri.toString()))
+            setEditUser(editedUser?.copy(photo = imageUri.toString()))
             //setEditedUser( editedUser.copy(photo = uri.toString()))
         }
     )
@@ -181,6 +185,15 @@ fun EditProfile(
     LaunchedEffect(galleryPermissionState.allPermissionsGranted) {
         if (galleryPermissionState.allPermissionsGranted != precedentGalleryPermission)
             launchGallery()
+    }
+
+    LaunchedEffect(editedUser){
+        if(editedUser != null){
+            setTopBarAction {
+                userVm.saveUser(editedUser)
+                navController.navigate("Profile")
+            }
+        }
     }
 
     if (openDialog.value) {
@@ -230,7 +243,7 @@ fun EditProfile(
 
 
             Box(Modifier.align(Alignment.CenterHorizontally)) {
-                if (editImageUri != null && editedUser.photo != "") {
+                if (editImageUri != null && editedUser?.photo != "") {
                     uriToBitmap(editImageUri!!, context)?.let {
                         Image(
                             bitmap = it.asImageBitmap(),

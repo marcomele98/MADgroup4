@@ -15,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -38,9 +39,9 @@ fun TopBar(
     title: String,
     reservation: ReservationWithCourt? = null,
     navController: NavController,
-    editedUser: User,
-    favoriteSport: Sport? = null,
-    userVm: UserViewModel
+    user: State<User?>,
+    topBarAction: () -> Unit = {},
+    favoriteSport: Int? = null,
 ) {
 
     var isInThePast = false
@@ -67,11 +68,11 @@ fun TopBar(
                 ) {
                     //Spacer(modifier = Modifier.weight(1f))
                     Icon(
-                        imageSelector(favoriteSport?.name!!), contentDescription = null
+                        imageSelector(user?.value?.sports?.get(favoriteSport!!)?.name!!), contentDescription = null
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = favoriteSport.name
+                        text = user?.value?.sports?.get(favoriteSport!!)?.name!!
                     )
                     //Spacer(modifier = Modifier.weight(1f))
                 }
@@ -104,22 +105,7 @@ fun TopBar(
                 }
             } else if (title == "Edit Profile") {
                 IconButton(onClick = {
-/*
-                    val sharedPref =
-                        context.getSharedPreferences("USER", Context.MODE_PRIVATE) ?: null
-                    val profile = Profile(
-                        editedUser.name!!,
-                        editedUser.surname!!,
-                        editedUser.nickname!!,
-                        editedUser.email!!,
-                        editedUser.photo
-                    )
-                    if (sharedPref != null)
-                        profile.saveToPreferences(sharedPref)
-*/
-
-                    userVm.saveUser(editedUser)
-                    navController.navigate("Profile")
+                    topBarAction()
                 }) {
                     Icon(
                         Icons.Default.Check,

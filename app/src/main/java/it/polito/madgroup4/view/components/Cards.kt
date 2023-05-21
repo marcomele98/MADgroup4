@@ -9,8 +9,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
@@ -313,6 +316,7 @@ fun SportCard(sport: Sport, onClick: () -> Unit) {
 @Composable
 fun AchievementCard(
     achievement: Achievement,
+    onDelete: () -> Unit
 ) {
     ElevatedCard(
         modifier = Modifier
@@ -336,6 +340,9 @@ fun AchievementCard(
                         .weight(1f)
                         .fillMaxHeight()
                 )
+                IconButton(onClick = onDelete) {
+                    Icon(imageVector = Icons.Default.Delete, contentDescription = null)
+                }
             }
             Spacer(modifier = Modifier.height(10.dp))
             Text(

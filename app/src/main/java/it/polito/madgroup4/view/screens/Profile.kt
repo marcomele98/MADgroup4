@@ -17,15 +17,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.AddCircle
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -45,13 +43,11 @@ import it.polito.madgroup4.model.Sport
 import it.polito.madgroup4.model.User
 import it.polito.madgroup4.utility.uriToBitmap
 import it.polito.madgroup4.view.components.SportCard
-import it.polito.madgroup4.viewmodel.UserViewModel
 
 @Composable
 fun Profile(
-    setEditedUser: (User) -> Unit,
-    vm: UserViewModel,
-    setFavoriteSport: (Sport) -> Unit,
+    user: State<User?>,
+    setFavoriteSport: (Int) -> Unit,
     navController: NavController
     ) {
 
@@ -63,21 +59,9 @@ fun Profile(
         profile = Profile.getFromPreferences(sharedPref!!)
     }
 
-    val u = vm.user
-
-    println("prova ${u.value}")
-
-    /* val user = remember {
-         mutableStateOf(
-             u
-         )
-     }*/
-
-
-    setEditedUser(u.value!!)
 
     val contactItems = listOf(
-        Pair(Icons.Default.Email, u.value?.email!!),
+        Pair(Icons.Default.Email, user.value?.email!!),
 //        Pair(Icons.Default.Transgender, user.gender)
     )
 
@@ -87,8 +71,8 @@ fun Profile(
             Modifier.fillMaxWidth()
         ) {
 
-            if (u.value?.photo != null && u.value?.photo != "") {
-                uriToBitmap(Uri.parse(u.value?.photo!!), context)?.let {
+            if (user.value?.photo != null && user.value?.photo != "") {
+                uriToBitmap(Uri.parse(user.value?.photo!!), context)?.let {
                     Image(
                         bitmap = it.asImageBitmap(),
                         contentDescription = null,
@@ -112,22 +96,11 @@ fun Profile(
                         .then(Modifier.align(Alignment.CenterHorizontally))
                 )
             }
-            /*Image(
-                painter = painterResource(R.drawable.profile),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(120.dp)
-                    .clip(CircleShape)
-                    .border(1.dp, MaterialTheme.colorScheme.secondary, CircleShape)
-                    .then(Modifier.align(Alignment.CenterHorizontally))
-            )*/
 
             Spacer(modifier = Modifier.height(25.dp))
 
-
             Text(
-                text = u.value?.name + " " + u.value?.surname,
+                text = user.value?.name + " " + user.value?.surname,
                 textAlign = TextAlign.Center,
                 fontSize = 30.sp,
                 modifier = Modifier.fillMaxWidth()
@@ -135,7 +108,7 @@ fun Profile(
 
 
             Text(
-                text = "@" + u.value?.nickname,
+                text = "@" + user.value?.nickname,
                 textAlign = TextAlign.Center,
                 fontSize = 16.sp,
                 modifier = Modifier.fillMaxWidth()
@@ -184,9 +157,9 @@ fun Profile(
                 Spacer(modifier = Modifier.height(10.dp))
             }
 
-            items(u.value?.sports?.size!!) { index ->
-                SportCard(sport = u.value?.sports?.get(index)!!, onClick = {
-                    setFavoriteSport(u.value?.sports?.get(index)!!)
+            items(user.value?.sports?.size!!) { index ->
+                SportCard(sport = user.value?.sports?.get(index)!!, onClick = {
+                    setFavoriteSport(index)
                     navController.navigate("Your Sport")
                 })
                 Spacer(modifier = Modifier.height(10.dp))

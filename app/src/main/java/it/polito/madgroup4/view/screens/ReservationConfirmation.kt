@@ -25,6 +25,7 @@ import androidx.navigation.NavController
 import it.polito.madgroup4.model.PlayingCourt
 import it.polito.madgroup4.model.Reservation
 import it.polito.madgroup4.view.components.ReservationDetails
+import it.polito.madgroup4.viewmodel.LoadingStateViewModel
 import it.polito.madgroup4.viewmodel.ReservationViewModel
 import it.polito.madgroup4.viewmodel.UserViewModel
 import java.text.SimpleDateFormat
@@ -35,6 +36,7 @@ import java.time.LocalDate
 fun ReservationConfirmation(
     reservationVm: ReservationViewModel,
     userVm: UserViewModel,
+    loadingVm: LoadingStateViewModel,
     playingCourt: PlayingCourt,
     reservationDate: LocalDate,
     reservationTimeSlot: Int,
@@ -97,8 +99,7 @@ fun ReservationConfirmation(
                 reservation.slotNumber = reservationTimeSlot
                 if (text.trim() != "")
                     reservation.particularRequests = text
-                reservationVm.saveReservation(reservation)
-                navController.navigate("Reservations")
+                reservationVm.saveReservation(reservation, loadingVm, "Reservations", null)
                 setSelectedSlot(-1)
             },
             modifier = Modifier

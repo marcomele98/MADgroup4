@@ -39,11 +39,6 @@ class ReservationViewModel @Inject constructor(private val repository: Repositor
     val allCourtsBySport: LiveData<List<PlayingCourt>> = _allCourtsBySport
 
 
-
-
-
-
-
     fun getReservationsByDate(date: Date, userId: String) {
         repository.getAllReservationsByDate(date, userId).observeForever { reservations ->
             _reservations.value = reservations
@@ -70,7 +65,6 @@ class ReservationViewModel @Inject constructor(private val repository: Repositor
         }
     }
 
-
     //TODO: metto l'id dell'utente loggato in preferences o lo hardcodato
     fun getAllReservations(userId: String) {
         repository.getAllReservationsByUserId(userId).observeForever { allRes ->
@@ -80,8 +74,25 @@ class ReservationViewModel @Inject constructor(private val repository: Repositor
 
 
 
-    fun saveReservation(reservation: Reservation) = viewModelScope.launch {
-        repository.saveReservation(reservation)
+    fun saveReservation(reservation: Reservation, stateViewModel: LoadingStateViewModel, nextRouteSuccess: String?, nextRouteError: String?){
+
+        stateViewModel.setStatus(Status.Loading)
+
+        viewModelScope.launch {
+            try {
+                repository.saveReservation(reservation)
+                stateViewModel.setStatus(Status.Success("Reservation added successfully", nextRouteSuccess))
+            } catch (e: Exception) {
+                stateViewModel.setStatus(Status.Error("Impossible to add the reservation", nextRouteError))
+            }
+        }
+    }
+
+    fun saveReservationUtility(reservation: Reservation){
+
+        viewModelScope.launch {
+            repository.saveReservation(reservation)
+        }
     }
 
     fun deleteReservation(reservation: Reservation) = viewModelScope.launch {

@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -25,6 +27,7 @@ import it.polito.madgroup4.view.ui.theme.MADgroup4Theme
 import it.polito.madgroup4.viewmodel.ReservationViewModel
 import it.polito.madgroup4.viewmodel.ReviewViewModel
 import it.polito.madgroup4.viewmodel.UserViewModel
+import it.polito.madgroup4.viewmodel.LoadingStateViewModel
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.Date
@@ -38,6 +41,8 @@ class ReservationActivityCompose : ComponentActivity() {
     val userVm by viewModels<UserViewModel>()
 
     val reviewVm by viewModels<ReviewViewModel>()
+
+    val loadingVm by viewModels<LoadingStateViewModel>()
 
     private val db = FirebaseFirestore.getInstance()
 
@@ -131,11 +136,11 @@ class ReservationActivityCompose : ComponentActivity() {
         /*        userVm.saveUser(u1)
                 userVm.saveUser(u2)
                 userVm.saveUser(u3)*/
-        reservationVm.saveReservation(reservation)
-        reservationVm.saveReservation(reservation2)
-        reservationVm.saveReservation(reservation3)
-        reservationVm.saveReservation(reservation4)
-        reservationVm.saveReservation(reservation5)
+        reservationVm.saveReservationUtility(reservation)
+        reservationVm.saveReservationUtility(reservation2)
+        reservationVm.saveReservationUtility(reservation3)
+        reservationVm.saveReservationUtility(reservation4)
+        reservationVm.saveReservationUtility(reservation5)
         /*      reservationVm.saveReservation(reservation6)
                 reservationVm.saveReservation(reservation7)
                 reservationVm.saveReservation(reservation8)
@@ -153,7 +158,7 @@ class ReservationActivityCompose : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface
                 ) {
-                    MainScreen(reservationVm, userVm, reviewVm)
+                    MainScreen(reservationVm, userVm, reviewVm, loadingVm)
                 }
             }
         }
@@ -164,11 +169,11 @@ class ReservationActivityCompose : ComponentActivity() {
 fun MainScreen(
     reservationVm: ReservationViewModel,
     userVm: UserViewModel,
-    reviewVm: ReviewViewModel
+    reviewVm: ReviewViewModel,
+    loadingVm: LoadingStateViewModel
 ) {
 
     val context = LocalContext.current
-    userVm.getUser()
 
     /*
         val sharedPref = context.getSharedPreferences("USER", Context.MODE_PRIVATE) ?: null
@@ -178,13 +183,7 @@ fun MainScreen(
         }
     */
 
-
-
-    val (editedUser, setEditedUser) = remember {
-        mutableStateOf(
-            User()
-        )
-    }
+    var user = userVm.user.observeAsState()
 
     val (reservation, setReservation) = remember {
         mutableStateOf(ReservationWithCourt(null, null))
@@ -199,7 +198,7 @@ fun MainScreen(
     }
     val (showedCourt, setShowedCourt) = remember { mutableStateOf(PlayingCourt()) }
     val (reviews, setReviews) = remember { mutableStateOf(listOf<Review>()) }
-    val (favoriteSport, setFavoriteSport) = remember { mutableStateOf(Sport()) }
+    val (favoriteSport, setFavoriteSport) = remember { mutableStateOf<Int?>(null) }
 
 
     //TODO: prendo l'id dalle preferences
@@ -213,6 +212,7 @@ fun MainScreen(
         reservationVm,
         reviewVm,
         userVm,
+        loadingVm,
         userId,
         reservation,
         setReservation,
@@ -229,8 +229,7 @@ fun MainScreen(
         setShowedCourt,
         reviews,
         setReviews,
-        editedUser,
-        setEditedUser,
+        user,
         favoriteSport,
         setFavoriteSport
     )

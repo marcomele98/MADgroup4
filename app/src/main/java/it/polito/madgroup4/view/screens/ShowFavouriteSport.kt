@@ -15,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontStyle
@@ -22,11 +23,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import it.polito.madgroup4.model.Sport
+import it.polito.madgroup4.model.User
 import it.polito.madgroup4.view.components.AchievementCard
+import it.polito.madgroup4.viewmodel.UserViewModel
 
 @Composable
 fun ShowFavouriteSport(
-    sport: Sport,
+    sport: Int,
+    user: State<User?>,
+    userVm: UserViewModel,
     navController: NavController
 ) {
 
@@ -39,22 +44,6 @@ fun ShowFavouriteSport(
 
     ) {
         item {
-            /*
-            Row() {
-                Icon(
-                    imageSelector(sport.name!!), contentDescription = null
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = sport.name, fontSize = 22.sp
-                )
-                Spacer(
-                    modifier = Modifier.weight(1f)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
-            */
             Row() {
                 Text(
                     text = "Your Level",
@@ -75,7 +64,7 @@ fun ShowFavouriteSport(
                 )
             }
             Text(
-                text = sport.level!!,
+                text = user.value?.sports?.get(sport)?.level!!,
                 fontSize = 18.sp,
                 fontStyle = FontStyle.Italic,
                 //color = MaterialTheme.colorScheme.primary
@@ -105,8 +94,16 @@ fun ShowFavouriteSport(
             Spacer(modifier = Modifier.height(10.dp))
         }
 
-        items(sport?.achievements?.size ?: 0) { index ->
-            AchievementCard(achievement = sport?.achievements!![index])
+        items(user.value?.sports?.get(sport)?.achievements?.size ?: 0) { index ->
+            AchievementCard(
+                achievement = user.value?.sports?.get(sport)?.achievements!![index],
+                onDelete = {
+                    userVm.removeAchievement(
+                        user.value?.sports?.get(sport)?.name!!,
+                        user.value?.sports?.get(sport)?.achievements!![index].title!!
+                    )
+                }
+            )
         }
     }
 
