@@ -20,6 +20,7 @@ import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.model.Review
 import it.polito.madgroup4.utility.formatDate
 import it.polito.madgroup4.utility.imageSelector
+import it.polito.madgroup4.viewmodel.LoadingStateViewModel
 import it.polito.madgroup4.viewmodel.ReviewViewModel
 import java.util.Date
 
@@ -30,6 +31,7 @@ fun ReviewForm(
     userId: String,
     reservation: ReservationWithCourt,
     navController: NavController,
+    loadingVm: LoadingStateViewModel,
     review: Review = Review(
         courtId = reservation.playingCourt!!.id,
         userId = userId,
@@ -143,7 +145,12 @@ fun ReviewForm(
 
             if (atLeastOnRating && title.trim() != "") {
                 review.title = title
-                reviewVm.saveReview(review)
+                reviewVm.saveReview(
+                    review,
+                    loadingVm,
+                    "Review saved successfully",
+                    "Error while saving review"
+                )
             } //TODO: else mostra un toast per notificare che non è stato inserito un titolo o un voto
             //setReview(review)
             navController.popBackStack()
@@ -164,7 +171,7 @@ fun CostumeRatingBar(
         Text(
             modifier = Modifier.weight(1f),
             text = text,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = if(rating == 0f) 0.5f else 1f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = if (rating == 0f) 0.5f else 1f),
             fontSize = 24.sp
         )
         Spacer(modifier = Modifier.width(10.dp))

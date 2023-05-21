@@ -25,8 +25,21 @@ class ReviewViewModel @Inject constructor(private val repository: Repository) : 
         MutableLiveData<Review>().apply { value = null }
     val review: LiveData<Review> = _review
 
-    fun saveReview(review: Review) = viewModelScope.launch {
-        repository.saveReview(review)
+    fun saveReview(
+        review: Review,
+        stateViewModel: LoadingStateViewModel,
+        message: String,
+        error: String
+    ) {
+        viewModelScope.launch {
+            stateViewModel.setStatus(Status.Loading)
+            try {
+                repository.saveReview(review)
+                stateViewModel.setStatus(Status.Success(message, null))
+            } catch (e: Exception) {
+                stateViewModel.setStatus(Status.Error(error, null))
+            }
+        }
     }
 
     /*fun deleteReview(review: Review) = viewModelScope.launch {

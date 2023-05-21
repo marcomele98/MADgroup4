@@ -55,6 +55,7 @@ fun Profile(
     setFavoriteSport: (Int) -> Unit,
     navController: NavController,
     userVm: UserViewModel,
+    setSelectedLevel: (String) -> Unit,
     ) {
 
     val context = LocalContext.current
@@ -74,7 +75,6 @@ fun Profile(
         profile = Profile.getFromPreferences(sharedPref!!)
     }
 */
-
 
     val contactItems = listOf(
         Pair(Icons.Default.Email, user.value?.email!!),
@@ -176,6 +176,7 @@ fun Profile(
             items(user.value?.sports?.size!!) { index ->
                 SportCard(sport = user.value?.sports?.get(index)!!, onClick = {
                     setFavoriteSport(index)
+                    setSelectedLevel(user.value?.sports?.get(index)?.level!!)
                     navController.navigate("Your Sport")
                 })
                 Spacer(modifier = Modifier.height(10.dp))

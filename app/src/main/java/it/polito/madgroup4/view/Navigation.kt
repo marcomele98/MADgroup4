@@ -185,7 +185,7 @@ fun Navigation(
             NavHost(navController = navController, startDestination = "Reservations") {
 
                 composable("Profile") {
-                    Profile(user, setFavoriteSport, navController, userVm)
+                    Profile(user, setFavoriteSport, navController, userVm, setSelectedLevel)
                 }
 
                 composable("Create Reservation") {
@@ -298,7 +298,8 @@ fun Navigation(
                         reviewVm = reviewVm,
                         userId = userId,
                         reservation = reservation,
-                        navController = navController
+                        navController = navController,
+                        loadingVm = loadingVm
                     )
                 }
 
