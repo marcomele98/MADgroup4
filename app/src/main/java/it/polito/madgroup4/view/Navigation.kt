@@ -23,6 +23,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import it.polito.madgroup4.model.LevelEnum
 import it.polito.madgroup4.model.PlayingCourt
 import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.model.Review
@@ -59,10 +60,10 @@ import java.time.LocalDate
 
 
 class SnackbarVisualsWithError(
-    override val message: String, val isError: Boolean
+    override val message: String
 ) : SnackbarVisuals {
     override val actionLabel: String
-        get() = if (isError) "Error" else "OK"
+        get() = "OK"
     override val withDismissAction: Boolean
         get() = false
     override val duration: SnackbarDuration
@@ -133,7 +134,7 @@ fun Navigation(
                 coroutineScope.launch {
                     snackbarHostState.showSnackbar(
                         SnackbarVisualsWithError(
-                            (loading as Status.Error).message, isError = true
+                            "Error: ${(loading as Status.Error).message}"
                         )
                     )
                     loadingVm.setStatus(Status.Loading)
@@ -146,7 +147,7 @@ fun Navigation(
                 coroutineScope.launch {
                     snackbarHostState.showSnackbar(
                         SnackbarVisualsWithError(
-                            (loading as Status.Success).message, isError = false
+                            (loading as Status.Success).message
                         )
                     )
                     loadingVm.setStatus(Status.Loading)
@@ -178,12 +179,20 @@ fun Navigation(
             )
         },
         floatingActionButtonPosition = FabPosition.End,
-        snackbarHost = { SnackbarHost(snackbarHostState) }) {
+        snackbarHost = { SnackbarHost(snackbarHostState) }) { it ->
         Box(Modifier.padding(it)) {
             NavHost(navController = navController, startDestination = "Reservations") {
 
                 composable("Profile") {
-                    Profile(user, setFavoriteSport, navController, userVm, setSelectedLevel, setSelectedSport, remainingSports)
+                    Profile(
+                        user,
+                        setFavoriteSport,
+                        navController,
+                        userVm,
+                        setSelectedLevel,
+                        setSelectedSport,
+                        remainingSports
+                    )
                 }
 
                 composable("Edit Profile") {
@@ -221,7 +230,11 @@ fun Navigation(
 
                 composable("Edit Reservation") {
                     EditReservation(
-                        reservationVm, reservation, selectedSlot, setSelectedSlot, navController
+                        reservationVm,
+                        reservation,
+                        selectedSlot,
+                        setSelectedSlot,
+                        navController
                     )
                 }
 
@@ -245,20 +258,22 @@ fun Navigation(
                         reservationTimeSlot = selectedSlot,
                         setSelectedSlot = setSelectedSlot,
                         navController = navController,
+                        setTopBarAction = setTopBarAction,
                     )
                 }
 
                 composable("Confirm Changes") {
                     ReservationConfirmation(
-                        playingCourt = reservation.playingCourt!!,
-                        reservationDate = creationDate,
-                        loadingVm = loadingVm,
-                        reservationTimeSlot = selectedSlot,
-                        setSelectedSlot = setSelectedSlot,
                         reservationVm = reservationVm,
                         userVm = userVm,
+                        loadingVm = loadingVm,
+                        playingCourt = reservation.playingCourt!!,
+                        reservationDate = creationDate,
+                        reservationTimeSlot = selectedSlot,
+                        setSelectedSlot = setSelectedSlot,
                         navController = navController,
                         reservation = reservation.reservation!!,
+                        setTopBarAction = setTopBarAction
                     )
                 }
 
@@ -267,6 +282,15 @@ fun Navigation(
                         sports = sports,
                         setSelectedSport = setSelectedSport,
                         navController = navController
+                    )
+                }
+
+                composable("Select Your Sport") {
+                    SportSelector(
+                        sports = sports,
+                        setSelectedSport = setSelectedSport,
+                        navController = navController,
+                        unselectable = user.value?.sports?.map { it.name!! } ?: listOf()
                     )
                 }
 
@@ -304,7 +328,8 @@ fun Navigation(
                         userId = userId,
                         reservation = reservation,
                         navController = navController,
-                        loadingVm = loadingVm
+                        loadingVm = loadingVm,
+                        setTopBarAction = setTopBarAction
                     )
                 }
 
@@ -315,28 +340,37 @@ fun Navigation(
                 }
 
                 composable("Your Sport") {
-                    ShowFavouriteSport(favouriteSport!!, user, userVm, navController, loadingVm)
+                    ShowFavouriteSport(
+                        favouriteSport!!,
+                        user,
+                        userVm,
+                        navController,
+                        loadingVm,
+                        setSelectedLevel
+                    )
                 }
 
                 composable("Create Achievement") {
                     CreateAchievement(userVm, favouriteSport!!, user, loadingVm, navController)
                 }
 
-                composable("Select Level") {
+                composable("Select Your Level") {
                     LevelSelector(
-                        favouriteSport!!,
-                        navController,
-                        selectedLevel,
-                        setSelectedLevel,
-                        setTopBarAction,
-                        userVm,
-                        user,
-                        loadingVm
+                        levels = LevelEnum.values().map { l -> l.name },
+                        setSelectedLevel = setSelectedLevel,
+                        navController = navController
                     )
                 }
 
                 composable("Add Sport") {
-                    AddSport(userVm, loadingVm, navController, selectedSport, setFavoriteSport)
+                    AddSport(
+                        userVm,
+                        loadingVm,
+                        navController,
+                        selectedSport,
+                        selectedLevel,
+                        setTopBarAction
+                    )
                 }
 
                 composable("Select New Sport") {

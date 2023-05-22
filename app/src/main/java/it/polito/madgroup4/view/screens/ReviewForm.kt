@@ -5,7 +5,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -22,9 +24,10 @@ import it.polito.madgroup4.utility.formatDate
 import it.polito.madgroup4.utility.imageSelector
 import it.polito.madgroup4.viewmodel.LoadingStateViewModel
 import it.polito.madgroup4.viewmodel.ReviewViewModel
+import it.polito.madgroup4.viewmodel.Status
 import java.util.Date
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun ReviewForm(
     reviewVm: ReviewViewModel,
@@ -42,7 +45,8 @@ fun ReviewForm(
         text = "",
         date = formatDate(Date()),
         reservationId = reservation.reservation!!.id
-    )
+    ),
+    setTopBarAction: (() -> Unit) -> Unit
 ) {
 
     val (service, setService) = remember { mutableStateOf(0.toFloat()) }
@@ -50,6 +54,35 @@ fun ReviewForm(
     val (cleaning, setCleaning) = remember { mutableStateOf(0.toFloat()) }
     var comment by remember { mutableStateOf("") }
     var title by remember { mutableStateOf("") }
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    setTopBarAction{
+        // I voti sono tutti opzionali (ma almeno uno deve esserci), nel caso uno non venga inserito non deve essere conteggiato nella media della review
+        keyboardController?.hide()
+        val atLeastOnRating = structure != 0f || cleaning != 0f || service != 0f
+        if (comment.trim() != "")
+            review.text = comment
+
+        review.serviceRating = service
+        review.structureRating = structure
+        review.cleaningRating = cleaning
+
+        if(title.trim() == ""){
+            loadingVm.setStatus(Status.Error("You have to insert a title", null))
+        }else if(!atLeastOnRating){
+            loadingVm.setStatus(Status.Error("You have to insert at least one rating", null))
+        } else {
+            review.title = title
+            reviewVm.saveReview(
+                review,
+                loadingVm,
+                "Review saved successfully",
+                "Error while saving review"
+            )
+            navController.popBackStack()
+        }
+        //setReview(review)
+    }
 
     Column(
         Modifier
@@ -128,33 +161,6 @@ fun ReviewForm(
                 placeholder = { Text(text = "Add comments") },
             )
         }
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        Button(modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(
-            contentColor = MaterialTheme.colorScheme.onPrimary
-        ), onClick = {
-            // I voti sono tutti opzionali (ma almeno uno deve esserci), nel caso uno non venga inserito non deve essere conteggiato nella media della review
-            val atLeastOnRating = structure != 0f || cleaning != 0f || service != 0f
-            if (comment.trim() != "")
-                review.text = comment
-
-            review.serviceRating = service
-            review.structureRating = structure
-            review.cleaningRating = cleaning
-
-            if (atLeastOnRating && title.trim() != "") {
-                review.title = title
-                reviewVm.saveReview(
-                    review,
-                    loadingVm,
-                    "Review saved successfully",
-                    "Error while saving review"
-                )
-            } //TODO: else mostra un toast per notificare che non è stato inserito un titolo o un voto
-            //setReview(review)
-            navController.popBackStack()
-        }, content = { Text("Submit Review") })
     }
 }
 

@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,9 +16,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -32,9 +35,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import it.polito.madgroup4.R
 import it.polito.madgroup4.model.User
@@ -55,28 +61,12 @@ fun Profile(
 
     val context = LocalContext.current
 
-    /*  val (bitmap, setBitmap) = remember { mutableStateOf(ContextCompat.getDrawable(context, R.drawable.profile)
-          ?.let { drawableToBitmap(it) }) }
-
-      userVm.getImage("48JnBn7vpjvj0minb62P", setBitmap)
-
-      println(bitmap)*/
-
-
-    /*
-        val sharedPref = context.getSharedPreferences("USER", Context.MODE_PRIVATE) ?: null
-        var profile = Profile()
-        if (sharedPref != null) {
-            profile = Profile.getFromPreferences(sharedPref!!)
-        }
-    */
-
     val contactItems = listOf(
         Pair(Icons.Default.Email, user.value?.email!!),
 //        Pair(Icons.Default.Transgender, user.gender)
     )
 
-    Column(Modifier.fillMaxSize()) {
+    Column(Modifier.padding(horizontal = 16.dp).fillMaxSize()) {
 
         Column(
             Modifier.fillMaxWidth()
@@ -127,57 +117,69 @@ fun Profile(
 
         }
 
-        LazyColumn(
+        Spacer(modifier = Modifier.height(20.dp))
+
+        ContactItem(
+            icon = contactItems[0].first,
+            text = contactItems[0].second
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Row {
+            Text(
+                text = "Your Sports",
+                fontSize = 23.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary,
+                fontStyle = FontStyle.Italic
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Icon(
+                imageVector = Icons.Outlined.Add,
+                modifier = Modifier
+                    .size(30.dp)
+                    .alpha(0.6f)
+                    .clickable {
+                        navController.navigate("Add Sport")
+                        setSelectedSport(remainingSports[0])
+                    },
+                //tint = MaterialTheme.colorScheme.secondary,
+                contentDescription = null
+            )
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+
+
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
+                .fillMaxSize()
+                .clip(RoundedCornerShape(12.dp))
         ) {
-
-            item {
-                Spacer(modifier = Modifier.height(20.dp))
-            }
-
-            items(contactItems.size) { index ->
-                ContactItem(
-                    icon = contactItems[index].first,
-                    text = contactItems[index].second
+            if (user.value?.sports?.size == 0) {
+                Text(
+                    text = "You have not added any sport yet",
+                    modifier = Modifier
+                        .align(Alignment.Center),
+                    fontSize = 18.sp,
+                    fontStyle = FontStyle.Italic,
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
 
-            item {
-                Spacer(modifier = Modifier.height(20.dp))
-                Row {
-                    Text(
-                        text = "Your Sports",
-                        fontSize = 23.sp,
-                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-                    Icon(
-                        imageVector = Icons.Outlined.Add,
-                        modifier = Modifier
-                            .size(30.dp)
-                            .alpha(0.6f)
-                            .clickable {
-                                navController.navigate("Add Sport")
-                                setSelectedSport(remainingSports[0])
-                            },
-                        //tint = MaterialTheme.colorScheme.secondary,
-                        contentDescription = null
-                    )
+
+                items(user.value?.sports?.size!!) { index ->
+                    SportCard(sport = user.value?.sports?.get(index)!!, onClick = {
+                        setFavoriteSport(index)
+                        setSelectedLevel(user.value?.sports?.get(index)?.level!!)
+                        navController.navigate("Your Sport")
+                    })
+                    Spacer(modifier = Modifier.height(10.dp))
                 }
-                Spacer(modifier = Modifier.height(10.dp))
-            }
-
-            items(user.value?.sports?.size!!) { index ->
-                SportCard(sport = user.value?.sports?.get(index)!!, onClick = {
-                    setFavoriteSport(index)
-                    setSelectedLevel(user.value?.sports?.get(index)?.level!!)
-                    navController.navigate("Your Sport")
-                })
-                Spacer(modifier = Modifier.height(10.dp))
             }
         }
     }
@@ -198,7 +200,5 @@ fun ContactItem(icon: ImageVector, text: String) {
             text = text,
             fontSize = 22.sp
         )
-
-        Spacer(modifier = Modifier.height(50.dp))
     }
 }

@@ -103,7 +103,12 @@ fun TopBar(
                         contentDescription = "Edit Profile"
                     )
                 }
-            } else if (title == "Edit Profile" || title == "Select Level") {
+            } else if (
+            title == "Edit Profile" ||
+            title == "Add Sport" ||
+            title == "Confirm Reservation" ||
+            title == "Rate This Playing Court" ||
+            title == "Confirm Changes") {
                 IconButton(onClick = {
                     topBarAction()
                 }) {

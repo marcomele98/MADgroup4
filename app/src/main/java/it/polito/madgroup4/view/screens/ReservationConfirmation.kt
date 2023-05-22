@@ -10,12 +10,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
@@ -28,10 +26,8 @@ import it.polito.madgroup4.model.Reservation
 import it.polito.madgroup4.view.components.ReservationDetails
 import it.polito.madgroup4.viewmodel.LoadingStateViewModel
 import it.polito.madgroup4.viewmodel.ReservationViewModel
-import it.polito.madgroup4.viewmodel.Status
 import it.polito.madgroup4.viewmodel.UserViewModel
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
+import java.sql.Date
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 
@@ -52,15 +48,25 @@ fun ReservationConfirmation(
         userId = userVm.user.value!!.email!!,
         date = SimpleDateFormat("dd/MM/yyyy").parse(
             SimpleDateFormat("dd/MM/yyyy").format(
-                java.sql.Date.valueOf(
+                Date.valueOf(
                     reservationDate.toString()
                 )
             )
         )
-    )
+    ),
+    setTopBarAction: (() -> Unit) -> Unit
 ) {
 
     var text by remember { mutableStateOf(reservation.particularRequests ?: "") }
+
+    setTopBarAction{
+        reservation.slotNumber = reservationTimeSlot
+        if (text.trim() != "")
+            reservation.particularRequests = text
+        reservationVm.saveReservation(reservation, loadingVm, "Reservation saved successfully", "Error while saving the reservation" )
+        navController.navigate("Reservations")
+        setSelectedSlot(-1)
+    }
 
     Column(
         modifier = Modifier
@@ -95,23 +101,5 @@ fun ReservationConfirmation(
             label = { Text(text = "Particular requests") },
             placeholder = { Text(text = "Add particular requests") },
         )
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        Button(
-            onClick = {
-                reservation.slotNumber = reservationTimeSlot
-                if (text.trim() != "")
-                    reservation.particularRequests = text
-                reservationVm.saveReservation(reservation, loadingVm, "Reservation saved successfully", "Error while saving the reservation" )
-                navController.navigate("Reservations")
-                setSelectedSlot(-1)
-            },
-            modifier = Modifier
-                .padding(start = 8.dp)
-                .fillMaxWidth()
-        ) {
-            Text(text = "Confirm")
-        }
     }
 }

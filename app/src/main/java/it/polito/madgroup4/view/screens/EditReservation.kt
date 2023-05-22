@@ -12,7 +12,7 @@ fun EditReservation(
     reservationVm: ReservationViewModel,
     reservation: ReservationWithCourt,
     selectedSlot: Int,
-    setSelectedSlot: (Int)->Unit,
+    setSelectedSlot: (Int) -> Unit,
     navController: NavController
 ) {
 

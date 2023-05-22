@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -154,14 +155,13 @@ fun PlayingCourtCard(
 @Composable
 fun SportCardSelector(
     sport: String,
-    navController: NavController,
-    route: String
+    onClick: () -> Unit
 ) {
 
     OutlinedCard(modifier = Modifier
         .padding(bottom = 10.dp)
         .clickable {
-            navController.navigate(route)
+            onClick()
         }
     ) {
         Column(
@@ -176,6 +176,36 @@ fun SportCardSelector(
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = sport, fontWeight = FontWeight.Bold, fontSize = 22.sp
+                )
+                Spacer(
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
+    }
+
+}
+
+@Composable
+fun LevelCardSelector(
+    level: String,
+    onClick: () -> Unit
+) {
+
+    OutlinedCard(modifier = Modifier
+        .padding(bottom = 10.dp)
+        .clickable {
+            onClick()
+        }
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = level, fontWeight = FontWeight.Bold, fontSize = 22.sp
                 )
                 Spacer(
                     modifier = Modifier.weight(1f)
@@ -342,7 +372,7 @@ fun AchievementCard(
                         .fillMaxHeight()
                 )
                 IconButton(onClick = onDelete) {
-                    Icon(imageVector = Icons.Default.Delete, contentDescription = null)
+                    Icon(imageVector = Icons.Outlined.Delete, contentDescription = null)
                 }
             }
             Spacer(modifier = Modifier.height(10.dp))
