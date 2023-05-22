@@ -204,30 +204,30 @@ fun Navigation(
                         content = content,
                         enterTransition = {
                             slideIntoContainer(
-                                AnimatedContentScope.SlideDirection.Left,
-                                animationSpec = tween(700)
+                                AnimatedContentScope.SlideDirection.Up,
+                                animationSpec = tween(300)
                             )
                         },
                         exitTransition = {
 
                             slideOutOfContainer(
-                                AnimatedContentScope.SlideDirection.Left,
-                                animationSpec = tween(700)
+                                AnimatedContentScope.SlideDirection.Up,
+                                animationSpec = tween(300)
                             )
                         },
                         popEnterTransition = {
 
                             slideIntoContainer(
-                                AnimatedContentScope.SlideDirection.Right,
-                                animationSpec = tween(700)
+                                AnimatedContentScope.SlideDirection.Up,
+                                animationSpec = tween(300)
                             )
 
                         },
                         popExitTransition = {
 
                             slideOutOfContainer(
-                                AnimatedContentScope.SlideDirection.Right,
-                                animationSpec = tween(700)
+                                AnimatedContentScope.SlideDirection.Up,
+                                animationSpec = tween(300)
                             )
 
                         }
