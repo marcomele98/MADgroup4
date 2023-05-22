@@ -45,6 +45,8 @@ import androidx.navigation.NavController
 import it.polito.madgroup4.R
 import it.polito.madgroup4.model.LevelEnum
 import it.polito.madgroup4.model.User
+import it.polito.madgroup4.utility.bitmapToString
+import it.polito.madgroup4.utility.stringToBitmap
 import it.polito.madgroup4.utility.uriToBitmap
 import it.polito.madgroup4.view.components.SportCard
 import it.polito.madgroup4.viewmodel.UserViewModel
@@ -74,18 +76,17 @@ fun Profile(
         ) {
 
             if (user.value?.photo != null && user.value?.photo != "") {
-                uriToBitmap(Uri.parse(user.value?.photo!!), context)?.let {
-                    Image(
-                        bitmap = it.asImageBitmap(),
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .size(120.dp)
-                            .clip(CircleShape)
-                            .border(1.dp, MaterialTheme.colorScheme.secondary, CircleShape)
-                            .then(Modifier.align(Alignment.CenterHorizontally))
-                    )
-                }
+                Image(
+                    bitmap = stringToBitmap(user.value!!.photo!!)!!.asImageBitmap(),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(120.dp)
+                        .clip(CircleShape)
+                        .border(1.dp, MaterialTheme.colorScheme.secondary, CircleShape)
+                        .then(Modifier.align(Alignment.CenterHorizontally))
+                )
+
             } else {
                 Image(
                     painter = painterResource(id = R.drawable.profile),
