@@ -92,8 +92,15 @@ class ReservationViewModel @Inject constructor(private val repository: Repositor
         }
     }
 
-    fun deleteReservation(reservation: Reservation) = viewModelScope.launch {
-        repository.deleteReservation(reservation)
+    fun deleteReservation(reservation: Reservation, stateViewModel: LoadingStateViewModel, message: String, error: String) {
+        viewModelScope.launch {
+            try {
+                repository.deleteReservation(reservation)
+                stateViewModel.setStatus(Status.Success(message, null))
+            } catch (e: Exception) {
+                stateViewModel.setStatus(Status.Error(error, null))
+            }
+        }
     }
 
     fun savePlayingCourt(playingCourt: PlayingCourt) = viewModelScope.launch {

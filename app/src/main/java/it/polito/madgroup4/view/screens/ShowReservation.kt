@@ -25,6 +25,7 @@ import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.utility.calculateStartEndTime
 import it.polito.madgroup4.utility.formatDate
 import it.polito.madgroup4.view.components.ReservationDetails
+import it.polito.madgroup4.viewmodel.LoadingStateViewModel
 import it.polito.madgroup4.viewmodel.ReservationViewModel
 import it.polito.madgroup4.viewmodel.ReviewViewModel
 import it.polito.madgroup4.viewmodel.UserViewModel
@@ -40,6 +41,7 @@ fun ShowReservation(
     userVm: UserViewModel,
     reservation: ReservationWithCourt,
     navController: NavController,
+    loadingVm: LoadingStateViewModel
 ) {
 
     val openDialog = remember { mutableStateOf(false) }
@@ -75,7 +77,7 @@ fun ShowReservation(
                 openDialog.value = false
             }, confirmButton = {
                 TextButton(onClick = {
-                    reservationVm.deleteReservation(reservation.reservation)
+                    reservationVm.deleteReservation(reservation.reservation, loadingVm, "Reservation deleted successfully", "Error while deleting the reservation")
                     openDialog.value = false
                     navController.navigate("Reservations")
                 }) {

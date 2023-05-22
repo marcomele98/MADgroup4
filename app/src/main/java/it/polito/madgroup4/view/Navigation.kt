@@ -297,6 +297,7 @@ fun Navigation(
                         userVm,
                         reservation,
                         navController,
+                        loadingVm
                     )
                 }
 
