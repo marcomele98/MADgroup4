@@ -140,7 +140,7 @@ fun EditProfile(
                 val rotatedBitmap = rotateBitmap(imageBitmap!!, context, editImageUri!!)
 //                val uri = userVm.uploadImage(rotatedBitmap!!)
                 //imageUri = saveProPicInternally(rotatedBitmap!!, context)
-                val reducedBitmap = ThumbnailUtils.extractThumbnail(rotatedBitmap, 100, 100)
+                val reducedBitmap = ThumbnailUtils.extractThumbnail(rotatedBitmap, 240, 240)
                 setEditUser(editedUser?.copy(photo = bitmapToString(reducedBitmap)))
                 //setEditedUser( editedUser.copy(photo = uri.toString()))
             }
@@ -156,7 +156,7 @@ fun EditProfile(
                 val rotatedBitmap = rotateBitmap(imageBitmap!!, context, editImageUri!!)
 //            val uri = userVm.uploadImage(imageBitmap!!)
                 //imageUri = saveProPicInternally(rotatedBitmap!!, context)
-                val reducedBitmap = ThumbnailUtils.extractThumbnail(rotatedBitmap, 100, 100)
+                val reducedBitmap = ThumbnailUtils.extractThumbnail(rotatedBitmap, 240, 240)
                 setEditUser(editedUser?.copy(photo = bitmapToString(reducedBitmap)))
 
                 //setEditedUser( editedUser.copy(photo = uri.toString()))
