@@ -1,5 +1,6 @@
 package it.polito.madgroup4.view
 
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -129,6 +130,7 @@ class ReservationActivityCompose : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         reservationVm.savePlayingCourt(playingCourt)
         reservationVm.savePlayingCourt(playingCourt2)
         reservationVm.savePlayingCourt(playingCourt3)
