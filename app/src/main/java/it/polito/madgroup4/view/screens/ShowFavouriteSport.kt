@@ -93,7 +93,7 @@ fun ShowFavouriteSport(
     }
 
 
-    if(user.value?.sports!!.filter { it.name == user.value?.sports?.get(sport)?.name }.isNotEmpty()) {
+    if(user.value?.sports!!.filter { it.name == user.value?.sports?.getOrNull(sport)?.name }.isNotEmpty()) {
 
         Column(
             modifier = Modifier
