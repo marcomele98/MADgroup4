@@ -1,5 +1,9 @@
 package it.polito.madgroup4.view
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,10 +23,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NamedNavArgument
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavDeepLink
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.get
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.composable
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import it.polito.madgroup4.model.LevelEnum
 import it.polito.madgroup4.model.PlayingCourt
 import it.polito.madgroup4.model.ReservationWithCourt
@@ -70,7 +82,7 @@ class SnackbarVisualsWithError(
         get() = SnackbarDuration.Short
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 fun Navigation(
     reservationVm: ReservationViewModel,
@@ -116,7 +128,7 @@ fun Navigation(
     setSelectedDate: (LocalDate) -> Unit,
 
     ) {
-    val navController = rememberNavController()
+    val navController = rememberAnimatedNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val (topBarAction, setTopBarAction) = remember { mutableStateOf<() -> Unit>({}) }
 
@@ -181,9 +193,48 @@ fun Navigation(
         floatingActionButtonPosition = FabPosition.End,
         snackbarHost = { SnackbarHost(snackbarHostState) }) { it ->
         Box(Modifier.padding(it)) {
-            NavHost(navController = navController, startDestination = "Reservations") {
+            AnimatedNavHost(navController = navController, startDestination = "Reservations") {
 
-                composable("Profile") {
+                fun animatedComposable(
+                    route: String,
+                    content: @Composable AnimatedVisibilityScope.(NavBackStackEntry) -> Unit
+                ) {
+                    composable(
+                        route,
+                        content = content,
+                        enterTransition = {
+                            slideIntoContainer(
+                                AnimatedContentScope.SlideDirection.Left,
+                                animationSpec = tween(700)
+                            )
+                        },
+                        exitTransition = {
+
+                            slideOutOfContainer(
+                                AnimatedContentScope.SlideDirection.Left,
+                                animationSpec = tween(700)
+                            )
+                        },
+                        popEnterTransition = {
+
+                            slideIntoContainer(
+                                AnimatedContentScope.SlideDirection.Right,
+                                animationSpec = tween(700)
+                            )
+
+                        },
+                        popExitTransition = {
+
+                            slideOutOfContainer(
+                                AnimatedContentScope.SlideDirection.Right,
+                                animationSpec = tween(700)
+                            )
+
+                        }
+                    )
+                }
+
+                animatedComposable("Profile") {
                     Profile(
                         user,
                         setFavoriteSport,
@@ -199,11 +250,11 @@ fun Navigation(
                     EditProfile(setTopBarAction, user, userVm, navController, loadingVm)
                 }
 
-                composable("Camera") {
+                animatedComposable("Camera") {
                     CameraScreen()
                 }
 
-                composable("Create Reservation") {
+                animatedComposable("Create Reservation") {
                     CreateReservation(
                         reservationVm,
                         creationDate,
@@ -216,7 +267,7 @@ fun Navigation(
                     )
                 }
 
-                composable("Reservations") {
+                animatedComposable("Reservations") {
                     Reservations(
                         reservationVm,
                         userId,
@@ -228,7 +279,7 @@ fun Navigation(
                     )
                 }
 
-                composable("Edit Reservation") {
+                animatedComposable("Edit Reservation") {
                     EditReservation(
                         reservationVm,
                         reservation,
@@ -238,7 +289,7 @@ fun Navigation(
                     )
                 }
 
-                composable("Reservation Details") {
+                animatedComposable("Reservation Details") {
                     ShowReservation(
                         reservationVm,
                         reviewVm,
@@ -248,7 +299,7 @@ fun Navigation(
                     )
                 }
 
-                composable("Confirm Reservation") {
+                animatedComposable("Confirm Reservation") {
                     ReservationConfirmation(
                         reservationVm = reservationVm,
                         userVm = userVm,
@@ -262,7 +313,7 @@ fun Navigation(
                     )
                 }
 
-                composable("Confirm Changes") {
+                animatedComposable("Confirm Changes") {
                     ReservationConfirmation(
                         reservationVm = reservationVm,
                         userVm = userVm,
@@ -277,7 +328,7 @@ fun Navigation(
                     )
                 }
 
-                composable("Select Sport") {
+                animatedComposable("Select Sport") {
                     SportSelector(
                         sports = sports,
                         setSelectedSport = setSelectedSport,
@@ -285,7 +336,7 @@ fun Navigation(
                     )
                 }
 
-                composable("Select Your Sport") {
+                animatedComposable("Select Your Sport") {
                     SportSelector(
                         sports = sports,
                         setSelectedSport = setSelectedSport,
@@ -294,7 +345,7 @@ fun Navigation(
                     )
                 }
 
-                composable("Select A Time Slot") {
+                animatedComposable("Select A Time Slot") {
                     SlotSelectionReservation(
                         date = creationDate,
                         selectedCourt = selectedCourt,
@@ -304,7 +355,7 @@ fun Navigation(
                     )
                 }
 
-                composable("Playing Courts") {
+                animatedComposable("Playing Courts") {
                     Courts(
                         reservationVm = reservationVm,
                         selectedSport = selectedSport,
@@ -313,7 +364,7 @@ fun Navigation(
                     )
                 }
 
-                composable("Playing Court Details") {
+                animatedComposable("Playing Court Details") {
                     ShowCourt(
                         reviewVm = reviewVm,
                         playingCourt = showedCourt,
@@ -322,7 +373,7 @@ fun Navigation(
                     )
                 }
 
-                composable("Rate This Playing Court") {
+                animatedComposable("Rate This Playing Court") {
                     ReviewForm(
                         reviewVm = reviewVm,
                         userId = userId,
@@ -333,13 +384,13 @@ fun Navigation(
                     )
                 }
 
-                composable("Reviews") {
+                animatedComposable("Reviews") {
                     ReviewList(
                         reviews = reviews, modifier = Modifier.padding(16.dp)
                     )
                 }
 
-                composable("Your Sport") {
+                animatedComposable("Your Sport") {
                     ShowFavouriteSport(
                         favouriteSport!!,
                         user,
@@ -350,11 +401,11 @@ fun Navigation(
                     )
                 }
 
-                composable("Create Achievement") {
+                animatedComposable("Create Achievement") {
                     CreateAchievement(userVm, favouriteSport!!, user, loadingVm, navController)
                 }
 
-                composable("Select Your Level") {
+                animatedComposable("Select Your Level") {
                     LevelSelector(
                         levels = LevelEnum.values().map { l -> l.name },
                         setSelectedLevel = setSelectedLevel,
@@ -362,7 +413,7 @@ fun Navigation(
                     )
                 }
 
-                composable("Add Sport") {
+                animatedComposable("Add Sport") {
                     AddSport(
                         userVm,
                         loadingVm,
@@ -373,7 +424,7 @@ fun Navigation(
                     )
                 }
 
-                composable("Select New Sport") {
+                animatedComposable("Select New Sport") {
                     SportSelector(
                         sports = remainingSports,
                         setSelectedSport = setSelectedSport,
@@ -385,6 +436,8 @@ fun Navigation(
         }
     }
 }
+
+
 
 
 
