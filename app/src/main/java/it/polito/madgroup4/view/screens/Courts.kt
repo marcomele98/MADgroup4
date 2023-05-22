@@ -30,11 +30,15 @@ fun Courts(
         Row(
             Modifier.padding(bottom = 16.dp)
         ) {
-            SportCardSelector(sport = selectedSport, onClick = {navController.navigate("Select Sport")})
+            SportCardSelector(
+                sport = selectedSport,
+                onClick = { navController.navigate("Select Sport") })
         }
         PlayingCourtList(
             playingCourts = playingCourts.value,
-            onClick = { setShowedCourt(playingCourts.value[it]); navController.navigate("Playing Court Details") })
+            onClick = { setShowedCourt(playingCourts.value[it]); navController.navigate("Playing Court Details") },
+            messageIfNoCourts = "No courts available for this sport"
+        )
     }
 
 }

@@ -17,10 +17,13 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import io.github.boguszpawlowski.composecalendar.SelectableWeekCalendar
 import io.github.boguszpawlowski.composecalendar.rememberSelectableWeekCalendarState
@@ -105,7 +108,9 @@ fun CreateReservation(
     ) {
 
         Row() {
-            SportCardSelector(sport = selectedSport, onClick = {navController.navigate("Select Sport")})
+            SportCardSelector(
+                sport = selectedSport,
+                onClick = { navController.navigate("Select Sport") })
         }
         SelectableWeekCalendar(
             calendarState = calendarState,
@@ -127,19 +132,12 @@ fun CreateReservation(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        if (filteredCourts.isEmpty()) {
-            Text(
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.error,
-                text = "No available courts for the selected date and sport.",
-                modifier = Modifier.padding(16.dp)
-            )
-        } else {
-            PlayingCourtList(
-                playingCourts = filteredCourts.map { it.playingCourt!! },
-                onClick = onClick
-            )
-        }
+        PlayingCourtList(
+            playingCourts = filteredCourts.map { it.playingCourt!! },
+            onClick = onClick,
+            messageIfNoCourts = "No courts available for this sport on this day"
+        )
+
 
     }
 }
@@ -148,6 +146,7 @@ fun CreateReservation(
 fun PlayingCourtList(
     playingCourts: List<PlayingCourt>,
     onClick: (Int) -> Unit,
+    messageIfNoCourts: String
 ) {
 
     Box(
@@ -155,6 +154,17 @@ fun PlayingCourtList(
             .fillMaxSize()
             .clip(RoundedCornerShape(12.dp))
     ) {
+        if (playingCourts.isEmpty()) {
+            Text(
+                text = "No available courts for the selected date and sport.",
+                modifier = Modifier
+                    .align(Alignment.Center),
+                textAlign = TextAlign.Center,
+                fontSize = 18.sp,
+                fontStyle = FontStyle.Italic,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
         LazyColumn(Modifier.fillMaxSize()) {
             items(playingCourts.size) { index ->
                 PlayingCourtCard(
