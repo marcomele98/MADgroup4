@@ -60,7 +60,7 @@ fun TopBar(
 
     CenterAlignedTopAppBar(
         title = {
-            if(title != "Your Sport")
+            if (title != "Your Sport")
                 Text(text = title)
             else
                 Row(
@@ -68,7 +68,8 @@ fun TopBar(
                 ) {
                     //Spacer(modifier = Modifier.weight(1f))
                     Icon(
-                        imageSelector(user?.value?.sports?.get(favoriteSport!!)?.name!!), contentDescription = null
+                        imageSelector(user?.value?.sports?.get(favoriteSport!!)?.name!!),
+                        contentDescription = null
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
@@ -104,11 +105,13 @@ fun TopBar(
                     )
                 }
             } else if (
-            title == "Edit Profile" ||
-            title == "Add Sport" ||
-            title == "Confirm Reservation" ||
-            title == "Rate This Playing Court" ||
-            title == "Confirm Changes") {
+                title == "Edit Profile" ||
+                title == "Add Sport" ||
+                title == "Confirm Reservation" ||
+                title == "Rate This Playing Court" ||
+                title == "Confirm Changes" ||
+                title == "Edit Your Level"
+            ) {
                 IconButton(onClick = {
                     topBarAction()
                 }) {

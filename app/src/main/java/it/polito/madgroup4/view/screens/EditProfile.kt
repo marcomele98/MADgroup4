@@ -63,6 +63,7 @@ fun EditProfile(
 ) {
 
     val (editedUser, setEditUser) = remember { mutableStateOf(user.value) }
+    val (selectedImageInput, setSelectedImageInput) = remember { mutableStateOf("") }
 
     val context = LocalContext.current
 
@@ -71,6 +72,8 @@ fun EditProfile(
     val cameraPermissionState = rememberMultiplePermissionsState(
         permissions = listOf(
             Manifest.permission.CAMERA,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE
         )
     )
 
@@ -110,8 +113,7 @@ fun EditProfile(
             "Email",
             { it: String -> setEditUser(editedUser?.copy(email = it)) },
             KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Email)
-        )
-        ,
+        ),
 //        Pair(Icons.Default.Cake, formatter.format(editedUser.birthday)),
 //        Pair(Icons.Default.Transgender, editedUser.gender)
     )
@@ -144,13 +146,16 @@ fun EditProfile(
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture(),
         onResult = { success ->
-            editImageUri = imageUri
-            val imageBitmap = uriToBitmap(editImageUri!!, context)
-            val rotatedBitmap = rotateBitmap(imageBitmap!!, context, editImageUri!!)
+            if(success) {
+                editImageUri = imageUri
+                val imageBitmap = uriToBitmap(editImageUri!!, context)
+                val rotatedBitmap = rotateBitmap(imageBitmap!!, context, editImageUri!!)
 //            val uri = userVm.uploadImage(imageBitmap!!)
-            imageUri = saveProPicInternally(rotatedBitmap!!, context)
-            setEditUser(editedUser?.copy(photo = imageUri.toString()))
-            //setEditedUser( editedUser.copy(photo = uri.toString()))
+                imageUri = saveProPicInternally(rotatedBitmap!!, context)
+                setEditUser(editedUser?.copy(photo = imageUri.toString()))
+
+                //setEditedUser( editedUser.copy(photo = uri.toString()))
+            }
         }
     )
 
@@ -166,10 +171,8 @@ fun EditProfile(
         cameraLauncher.launch(imageUri)
     }
 
-    val precedentCameraPermission by remember { mutableStateOf(cameraPermissionState.allPermissionsGranted) }
-
     LaunchedEffect(cameraPermissionState.allPermissionsGranted) {
-        if (cameraPermissionState.allPermissionsGranted != precedentCameraPermission)
+        if (selectedImageInput == "Camera" && cameraPermissionState.allPermissionsGranted)
             launchCamera()
     }
 
@@ -179,16 +182,20 @@ fun EditProfile(
         galleryLauncher.launch(galleryIntent)
     }
 
-    val precedentGalleryPermission by remember { mutableStateOf(galleryPermissionState.allPermissionsGranted) }
     LaunchedEffect(galleryPermissionState.allPermissionsGranted) {
-        if (galleryPermissionState.allPermissionsGranted != precedentGalleryPermission)
+        if (selectedImageInput == "Gallery" && galleryPermissionState.allPermissionsGranted)
             launchGallery()
     }
 
-    LaunchedEffect(editedUser){
-        if(editedUser != null){
+    LaunchedEffect(editedUser) {
+        if (editedUser != null) {
             setTopBarAction {
-                userVm.saveUser(editedUser, loadingVm, "Profile edited successfully", "Error while editing profile")
+                userVm.saveUser(
+                    editedUser,
+                    loadingVm,
+                    "Profile edited successfully",
+                    "Error while editing profile"
+                )
                 navController.navigate("Profile")
             }
         }
@@ -203,6 +210,7 @@ fun EditProfile(
                     launchCamera()
                     openDialog.value = false
                 } else {
+                    setSelectedImageInput("Camera")
                     cameraPermissionState.launchMultiplePermissionRequest()
                     openDialog.value = false
                 }
@@ -215,6 +223,7 @@ fun EditProfile(
                     launchGallery()
                     openDialog.value = false
                 } else {
+                    setSelectedImageInput("Gallery")
                     galleryPermissionState.launchMultiplePermissionRequest()
                     openDialog.value = false
                 }

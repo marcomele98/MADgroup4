@@ -9,10 +9,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import it.polito.madgroup4.model.LevelEnum
 import it.polito.madgroup4.model.Sport
 import it.polito.madgroup4.view.components.LevelCardSelector
 import it.polito.madgroup4.view.components.SportCardSelector
@@ -29,6 +31,7 @@ fun AddSport(
     selectedLevel: String,
     setTopBarAction: (() -> Unit) -> Unit
 ) {
+
 
     setTopBarAction {
         val user = userVm.user.value!!
@@ -47,7 +50,7 @@ fun AddSport(
             .padding(horizontal = 16.dp)
     ) {
 
-        Spacer(modifier =  Modifier.height(25.dp))
+        Spacer(modifier = Modifier.height(25.dp))
 
         Text(
             text = "Select a sport",

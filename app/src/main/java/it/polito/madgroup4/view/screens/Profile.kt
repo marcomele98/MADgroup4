@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import it.polito.madgroup4.R
+import it.polito.madgroup4.model.LevelEnum
 import it.polito.madgroup4.model.User
 import it.polito.madgroup4.utility.uriToBitmap
 import it.polito.madgroup4.view.components.SportCard
@@ -142,6 +143,7 @@ fun Profile(
                     .alpha(0.6f)
                     .clickable {
                         navController.navigate("Add Sport")
+                        setSelectedLevel(LevelEnum.BEGINNER.name)
                         setSelectedSport(remainingSports[0])
                     },
                 //tint = MaterialTheme.colorScheme.secondary,
@@ -178,7 +180,6 @@ fun Profile(
                         setSelectedLevel(user.value?.sports?.get(index)?.level!!)
                         navController.navigate("Your Sport")
                     })
-                    Spacer(modifier = Modifier.height(10.dp))
                 }
             }
         }

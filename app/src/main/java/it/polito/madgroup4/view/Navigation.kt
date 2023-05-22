@@ -49,6 +49,7 @@ import it.polito.madgroup4.view.screens.CameraScreen
 import it.polito.madgroup4.view.screens.Courts
 import it.polito.madgroup4.view.screens.CreateAchievement
 import it.polito.madgroup4.view.screens.CreateReservation
+import it.polito.madgroup4.view.screens.EditLevelSelector
 import it.polito.madgroup4.view.screens.EditProfile
 import it.polito.madgroup4.view.screens.EditReservation
 import it.polito.madgroup4.view.screens.LevelSelector
@@ -412,6 +413,21 @@ fun Navigation(
                         navController = navController
                     )
                 }
+
+                animatedComposable("Edit Your Level") {
+                    EditLevelSelector(
+                        favouriteSport!!,
+                        navController,
+                        selectedLevel,
+                        setSelectedLevel,
+                        setTopBarAction,
+                        userVm,
+                        user,
+                        loadingVm
+                    )
+                }
+
+
 
                 animatedComposable("Add Sport") {
                     AddSport(

@@ -113,7 +113,7 @@ fun ShowFavouriteSport(
 
                 IconButton(onClick = {
                     setSelectedLevel(user.value?.sports?.get(sport)?.level!!)
-                    navController.navigate("Select Your Level")
+                    navController.navigate("Edit Your Level")
                 }
                 ) {
                     Icon(
