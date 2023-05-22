@@ -253,8 +253,6 @@ fun drawableToBitmap(drawable: Drawable): Bitmap? {
     return bitmap
 }
 
-
-/*
 fun stringToBitmap(encodedString: String): Bitmap? {
     try {
         val decodedBytes = Base64.decode(encodedString, Base64.DEFAULT)
@@ -271,4 +269,4 @@ fun bitmapToString(bitmap: Bitmap): String {
     val byteArray = outputStream.toByteArray()
     val encodedString = Base64.encodeToString(byteArray, Base64.DEFAULT)
     return encodedString
-}*/
+}
