@@ -11,7 +11,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
@@ -28,10 +27,9 @@ import io.github.boguszpawlowski.composecalendar.SelectableWeekCalendar
 import io.github.boguszpawlowski.composecalendar.rememberSelectableWeekCalendarState
 import io.github.boguszpawlowski.composecalendar.week.Week
 import it.polito.madgroup4.model.Achievement
-import it.polito.madgroup4.model.Sport
 import it.polito.madgroup4.model.User
 import it.polito.madgroup4.utility.formatDateToTimestamp
-import it.polito.madgroup4.utility.getWeekdaysStartingOnSunday
+import it.polito.madgroup4.utility.getWeekdaysStartingOn
 import it.polito.madgroup4.view.components.DaysOfWeekHeader
 import it.polito.madgroup4.view.components.MyDay
 import it.polito.madgroup4.view.components.WeekHeader
@@ -57,7 +55,8 @@ fun CreateAchievement(
 
     val calendarState = rememberSelectableWeekCalendarState(
         initialSelection = listOf(date),
-        initialWeek = Week(getWeekdaysStartingOnSunday(date, DayOfWeek.SUNDAY))
+        initialWeek = Week(getWeekdaysStartingOn(date, DayOfWeek.MONDAY)),
+        firstDayOfWeek = DayOfWeek.MONDAY,
     )
 
     //val allReservations = reservationVm.allRes.observeAsState().value
@@ -101,7 +100,7 @@ fun CreateAchievement(
             calendarState = calendarState,
             weekHeader = { WeekHeader(weekState = it) },
             daysOfWeekHeader = {
-                DaysOfWeekHeader(daysOfWeek = it)
+                DaysOfWeekHeader(daysOfWeek = listOf(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY))
             },
             dayContent = { dayState ->
                 MyDay(

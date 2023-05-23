@@ -36,6 +36,7 @@ fun AddSport(
     setTopBarAction {
         val user = userVm.user.value!!
         user.sports = user.sports.plus(Sport(selectedSport, selectedLevel))
+        user.sports = user.sports.sortedBy { it.name }
         userVm.saveUser(
             user,
             loadingVm,

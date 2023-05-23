@@ -63,7 +63,7 @@ fun ReservationConfirmation(
         reservation.slotNumber = reservationTimeSlot
         if (text.trim() != "")
             reservation.particularRequests = text
-        reservationVm.saveReservation(reservation, loadingVm, "Reservation saved successfully", "Error while saving the reservation" )
+        reservationVm.saveReservation(reservation, loadingVm, "Reservation confirmed successfully", "Error while saving the reservation" )
         navController.navigate("Reservations")
         setSelectedSlot(-1)
     }

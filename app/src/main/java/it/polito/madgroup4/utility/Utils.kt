@@ -88,7 +88,7 @@ private fun calculateTimeAsNum(time: String): Int {
     return timeArray[0].toInt() * 60 + timeArray[1].toInt()
 }
 
-fun getWeekdaysStartingOnSunday(localDate: LocalDate, firstDayOfWeek: DayOfWeek): List<LocalDate> {
+fun getWeekdaysStartingOn(localDate: LocalDate, firstDayOfWeek: DayOfWeek): List<LocalDate> {
     var currentDay: LocalDate = localDate
     val weekdays = mutableListOf<LocalDate>()
     while (currentDay.dayOfWeek != firstDayOfWeek) {
@@ -98,6 +98,7 @@ fun getWeekdaysStartingOnSunday(localDate: LocalDate, firstDayOfWeek: DayOfWeek)
         weekdays.add(currentDay)
         currentDay = currentDay.plusDays(1)
     }
+    println(weekdays)
     return weekdays
 }
 

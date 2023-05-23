@@ -56,6 +56,7 @@ fun Calendar(
         monthHeader = {
             MonthHeader(monthState = it)
         },
+        firstDayOfWeek = DayOfWeek.MONDAY,
         dayContent = { dayState ->
             MyDay(
                 state = dayState,
@@ -64,7 +65,8 @@ fun Calendar(
                         .atZone(ZoneId.systemDefault())
                         .toLocalDate() == dayState.date
                 },
-                showReservations = true
+                showReservations = true,
+                isOpacized = !dayState.date.isBefore(LocalDate.now()),
             )
         },
         calendarState = calendarState,
@@ -92,7 +94,7 @@ fun MonthHeader(
         Text(
             modifier = Modifier.testTag("MonthLabel"),
             text = monthState.currentMonth.month
-                .getDisplayName(TextStyle.FULL, Locale.getDefault())
+                .getDisplayName(TextStyle.FULL, Locale.ENGLISH)
                 .lowercase()
                 .replaceFirstChar { it.titlecase() }
         )
@@ -115,11 +117,13 @@ fun DaysOfWeekHeader(
     daysOfWeek: List<DayOfWeek>,
     modifier: Modifier = Modifier,
 ) {
+
+    println("a" + daysOfWeek)
     Row(modifier = modifier) {
         daysOfWeek.forEach { dayOfWeek ->
             androidx.compose.material.Text(
                 textAlign = TextAlign.Center,
-                text = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
+                text = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.ENGLISH),
                 modifier = modifier
                     .weight(1f)
                     .wrapContentHeight()
@@ -134,8 +138,10 @@ fun MyDay(
     reservations: Reservation? = null,
     modifier: Modifier = Modifier,
     isActive: Boolean = true,
-    showReservations: Boolean = false
+    showReservations: Boolean = false,
+    isOpacized: Boolean? = null,
 ) {
+    var opacized = isOpacized
     val date = state.date
     val selectionState = state.selectionState
     val isSelected =
@@ -144,6 +150,9 @@ fun MyDay(
         } else {
             selectionState.isDateSelected(date)
         }
+    if (opacized == null)
+        opacized = isActive
+
 
     Box(
         modifier = modifier
@@ -153,7 +162,7 @@ fun MyDay(
         Column(
             modifier = Modifier
                 .align(Alignment.Center)
-                .alpha(if (isActive) 1f else 0.5f)
+                .alpha(if (opacized) 1f else 0.5f)
                 .clickable {
                     if (isActive)
                         selectionState.onDateSelected(date)
@@ -223,7 +232,7 @@ fun WeekHeader(
         Text(
             modifier = Modifier.testTag("MonthLabel"),
             text = weekState.currentWeek.yearMonth.month
-                .getDisplayName(TextStyle.FULL, Locale.getDefault())
+                .getDisplayName(TextStyle.FULL, Locale.ENGLISH)
                 .lowercase()
                 .replaceFirstChar { it.titlecase() }
         )

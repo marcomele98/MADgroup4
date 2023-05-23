@@ -31,7 +31,7 @@ import io.github.boguszpawlowski.composecalendar.week.Week
 import it.polito.madgroup4.model.PlayingCourt
 import it.polito.madgroup4.utility.CourtWithSlots
 import it.polito.madgroup4.utility.formatDate
-import it.polito.madgroup4.utility.getWeekdaysStartingOnSunday
+import it.polito.madgroup4.utility.getWeekdaysStartingOn
 import it.polito.madgroup4.view.components.DaysOfWeekHeader
 import it.polito.madgroup4.view.components.MyDay
 import it.polito.madgroup4.view.components.PlayingCourtCard
@@ -60,7 +60,8 @@ fun CreateReservation(
 
     val calendarState = rememberSelectableWeekCalendarState(
         initialSelection = listOf(date),
-        initialWeek = Week(getWeekdaysStartingOnSunday(date, DayOfWeek.SUNDAY))
+        initialWeek = Week(getWeekdaysStartingOn(date, DayOfWeek.MONDAY)),
+        firstDayOfWeek = DayOfWeek.MONDAY,
     )
 
     val allReservations = reservationVm.allRes.observeAsState().value
@@ -116,7 +117,7 @@ fun CreateReservation(
             calendarState = calendarState,
             weekHeader = { WeekHeader(weekState = it) },
             daysOfWeekHeader = {
-                DaysOfWeekHeader(daysOfWeek = it)
+                DaysOfWeekHeader(daysOfWeek = listOf(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY))
             },
             dayContent = { dayState ->
                 MyDay(
