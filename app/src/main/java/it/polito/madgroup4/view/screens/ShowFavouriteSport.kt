@@ -97,29 +97,22 @@ fun ShowFavouriteSport(
         )
     }
 
-    if (/*openDialogCard.value*/ deletedAchievement != null) {
+    if (deletedAchievement != null) {
         AlertDialog(onDismissRequest = {
             deletedAchievement = null
-            //openDialogCard.value = false
         }, confirmButton = {
             TextButton(onClick = {
-                val user = userVm.user.value!!
-                user.sports[sport].achievements =
-                    user.sports[sport].achievements.minus(user.sports[sport].achievements[deletedAchievement!!])
-                userVm.saveUser(
-                    user,
+                userVm.removeAchievement(
+                    user.value?.sports?.get(sport)?.name!!,
+                    user.value?.sports?.get(sport)?.achievements!![deletedAchievement!!].title!!,
                     loadingVm,
-                    "Achievement deleted successfully",
-                    "Error while deleting the achievement"
                 )
-                //openDialogCard.value = false
                 deletedAchievement = null
             }) {
                 Text("Remove")
             }
         }, dismissButton = {
             TextButton(onClick = {
-                //openDialogCard.value = false
                 deletedAchievement = null
             }) {
                 Text("Cancel")
@@ -164,7 +157,6 @@ fun ShowFavouriteSport(
                         modifier = Modifier
                             .size(30.dp)
                             .alpha(0.6f),
-                        //tint = MaterialTheme.colorScheme.secondary,
                         contentDescription = null,
                     )
                 }
@@ -173,7 +165,6 @@ fun ShowFavouriteSport(
                 text = user.value?.sports?.get(sport)?.level!!,
                 fontSize = 18.sp,
                 fontStyle = FontStyle.Italic,
-                //color = MaterialTheme.colorScheme.primary
             )
             Spacer(modifier = Modifier.height(20.dp))
             Row {
@@ -193,7 +184,6 @@ fun ShowFavouriteSport(
                         .clickable {
                             navController.navigate("Create Achievement")
                         },
-                    //tint = MaterialTheme.colorScheme.secondary,
                     contentDescription = null
                 )
             }
@@ -225,13 +215,8 @@ fun ShowFavouriteSport(
                         AchievementCard(
                             achievement = user.value?.sports?.get(sport)?.achievements!![index],
                             onDelete = {
-                                //openDialogCard.value = true
                                 deletedAchievement = index
-                                /*userVm.removeAchievement(
-                                    user.value?.sports?.get(sport)?.name!!,
-                                    user.value?.sports?.get(sport)?.achievements!![index].title!!,
-                                    loadingVm
-                                )*/
+
                             }
                         )
                     }
@@ -250,7 +235,7 @@ fun ShowFavouriteSport(
                     openDialog.value = !openDialog.value
                 }
             ) {
-                Text(text = "Delete Sport")
+                Text(text = "Remove Sport")
             }
 
             Spacer(modifier = Modifier.height(16.dp))
