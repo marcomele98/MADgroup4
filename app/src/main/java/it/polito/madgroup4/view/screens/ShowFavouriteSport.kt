@@ -25,9 +25,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -55,6 +58,8 @@ fun ShowFavouriteSport(
 ) {
 
     val openDialog = remember { mutableStateOf(false) }
+    //val openDialogCard = remember { mutableStateOf(false) }
+    var deletedAchievement by remember { mutableStateOf<Int?>(null) }
 
     if (openDialog.value) {
         AlertDialog(onDismissRequest = {
@@ -92,6 +97,44 @@ fun ShowFavouriteSport(
         )
     }
 
+    if (/*openDialogCard.value*/ deletedAchievement != null) {
+        AlertDialog(onDismissRequest = {
+            deletedAchievement = null
+            //openDialogCard.value = false
+        }, confirmButton = {
+            TextButton(onClick = {
+                val user = userVm.user.value!!
+                user.sports[sport].achievements =
+                    user.sports[sport].achievements.minus(user.sports[sport].achievements[deletedAchievement!!])
+                userVm.saveUser(
+                    user,
+                    loadingVm,
+                    "Achievement deleted successfully",
+                    "Error while deleting the achievement"
+                )
+                //openDialogCard.value = false
+                deletedAchievement = null
+            }) {
+                Text("Remove")
+            }
+        }, dismissButton = {
+            TextButton(onClick = {
+                //openDialogCard.value = false
+                deletedAchievement = null
+            }) {
+                Text("Cancel")
+            }
+        }, title = {
+            Text("Remove Achievement")
+        }, text = {
+            Text(
+                text = "Are you sure you want to remove this achievement?",
+            )
+        }, properties = DialogProperties(
+            dismissOnBackPress = true, dismissOnClickOutside = true
+        )
+        )
+    }
 
     if(user.value?.sports!!.filter { it.name == user.value?.sports?.getOrNull(sport)?.name }.isNotEmpty()) {
 
@@ -182,11 +225,13 @@ fun ShowFavouriteSport(
                         AchievementCard(
                             achievement = user.value?.sports?.get(sport)?.achievements!![index],
                             onDelete = {
-                                userVm.removeAchievement(
+                                //openDialogCard.value = true
+                                deletedAchievement = index
+                                /*userVm.removeAchievement(
                                     user.value?.sports?.get(sport)?.name!!,
                                     user.value?.sports?.get(sport)?.achievements!![index].title!!,
                                     loadingVm
-                                )
+                                )*/
                             }
                         )
                     }
