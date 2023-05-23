@@ -32,6 +32,7 @@ import it.polito.madgroup4.viewmodel.ReservationViewModel
 import it.polito.madgroup4.viewmodel.ReviewViewModel
 import it.polito.madgroup4.viewmodel.UserViewModel
 import it.polito.madgroup4.viewmodel.LoadingStateViewModel
+import it.polito.madgroup4.viewmodel.SplashViewModel
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.Date
@@ -47,6 +48,8 @@ class ReservationActivityCompose : ComponentActivity() {
     val reviewVm by viewModels<ReviewViewModel>()
 
     val loadingVm by viewModels<LoadingStateViewModel>()
+
+    val splashViewModel by viewModels<SplashViewModel>()
 
     private val db = FirebaseFirestore.getInstance()
 
@@ -133,6 +136,9 @@ class ReservationActivityCompose : ComponentActivity() {
         val reservation16 = Reservation(16, 1, 4, formatter.parse(formatter.format(Date())))*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashScreen = installSplashScreen()
+        splashScreen.setKeepOnScreenCondition{splashViewModel.isLoading.value}
+
         super.onCreate(savedInstanceState)
         this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         reservationVm.savePlayingCourt(playingCourt)

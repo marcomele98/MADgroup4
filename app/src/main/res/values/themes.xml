@@ -14,15 +14,4 @@
         <!-- Customize your theme here. -->
     </style>
 
-
-<!--    <style name="Theme.CustomSplashScreenTheme" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/white</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/start</item>
-        <item name="windowSplashScreenAnimationDuration">600</item>
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name="postSplashScreenTheme">@style/Theme.MADgroup4</item>
-
-    </style>-->
-
 </resources>
