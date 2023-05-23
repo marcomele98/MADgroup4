@@ -33,6 +33,11 @@ class UserViewModel @Inject constructor(private val repository: Repository) : Vi
     private val userListener: ListenerRegistration
     private val db = Firebase.firestore
 
+
+    private var _userPhoto = MutableLiveData<Bitmap?>().apply { value = null }
+    val userPhoto: LiveData<Bitmap?> = _userPhoto
+
+
     private var storage = Firebase.storage("gs://madgroup4-5de93.appspot.com")
     var storageRef = storage.reference
 
@@ -43,6 +48,20 @@ class UserViewModel @Inject constructor(private val repository: Repository) : Vi
                     _user.value = if (e != null) throw e
                     else r?.toObject(User::class.java)
                 }
+        val pathReference = storageRef
+            .child("images")
+            .child("48JnBn7vpjvj0minb62P.jpg")
+//        var bitmap: Bitmap? = null
+        val localFile = File.createTempFile("images", "jpg")
+        pathReference.getFile(localFile).addOnSuccessListener {
+            // Local temp file has been created
+            _userPhoto.value = (BitmapFactory.decodeFile(localFile.absolutePath))
+//            bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
+        }.addOnFailureListener {
+            // Handle any errors
+            Log.i("test", "error", it)
+        }
+
     }
 
     override fun onCleared() {
@@ -53,17 +72,30 @@ class UserViewModel @Inject constructor(private val repository: Repository) : Vi
         editedUser: User,
         stateViewModel: LoadingStateViewModel,
         message: String,
-        error: String
+        error: String,
+        imageBitmap: Bitmap? = null,
+        nextRoute: String
     ) {
+
+        fun saveUserDetails() {
+            db.collection("users").document("48JnBn7vpjvj0minb62P")
+                .set(editedUser, SetOptions.merge())
+                .addOnSuccessListener {
+                    Log.i("test", "User updated successfully")
+                    stateViewModel.setStatus(Status.Success(message, nextRoute))
+                }.addOnFailureListener {
+                    Log.i("test", "$it")
+                    stateViewModel.setStatus(Status.Error(error, nextRoute))
+                }
+        }
         stateViewModel.setStatus(Status.Loading)
-        db.collection("users").document("48JnBn7vpjvj0minb62P").set(editedUser, SetOptions.merge())
-            .addOnSuccessListener {
-                Log.i("test", "User updated successfully")
-                stateViewModel.setStatus(Status.Success(message, null))
-            }.addOnFailureListener {
-                Log.i("test", "$it")
-                stateViewModel.setStatus(Status.Error(error, null))
+        if (imageBitmap != null) {
+            uploadImage(imageBitmap){
+                saveUserDetails()
             }
+        }else{
+            saveUserDetails()
+        }
     }
 
 
@@ -84,12 +116,14 @@ class UserViewModel @Inject constructor(private val repository: Repository) : Vi
             userTmp,
             stateViewModel,
             "Achievement removed successfully",
-            "Error while removing achievement"
+            "Error while removing achievement",
+            null,
+            "Your Sport"
         )
     }
 
 
-    fun uploadImage(photo: Bitmap, setImageUri:  (Uri) -> Unit) {
+    fun uploadImage(photo: Bitmap, then : () -> Unit) {
         val ref = storageRef
             .child("images")
             .child("48JnBn7vpjvj0minb62P.jpg")
@@ -111,7 +145,8 @@ class UserViewModel @Inject constructor(private val repository: Repository) : Vi
             }.addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Log.i("test_vm", "Image saved with success")
-                    setImageUri(task.result)
+                    _userPhoto.value = photo
+                    then()
                 } else {
                     Log.i("test_vm", "Error while saving image")
                 }

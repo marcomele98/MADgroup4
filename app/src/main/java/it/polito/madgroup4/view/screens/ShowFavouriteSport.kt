@@ -72,7 +72,9 @@ fun ShowFavouriteSport(
                     user,
                     loadingVm,
                     "Sport deleted successfully",
-                    "Error while deleting the sport"
+                    "Error while deleting the sport",
+                    null,
+                    "Profile"
                 )
                 navController.navigate("Profile")
                 openDialog.value = false

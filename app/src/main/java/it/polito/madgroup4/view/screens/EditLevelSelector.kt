@@ -48,9 +48,11 @@ fun EditLevelSelector(
             editedUser!!,
             loadingVm,
             "Level changed successfully",
-            "Error while changing level"
+            "Error while changing level",
+            null,
+            "Your Sport"
         )
-        navController.popBackStack()
+//        navController.popBackStack()
     }
 
 

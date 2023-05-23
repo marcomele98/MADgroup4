@@ -152,9 +152,11 @@ fun CreateAchievement(
                     user,
                     loadingVm,
                     "Achievement created successfully",
-                    "Error while creating achievement"
+                    "Error while creating achievement",
+                    null,
+                    "Your Sport"
                 )
-                navController.popBackStack()
+//                navController.popBackStack()
             },
             modifier = Modifier
                 .fillMaxWidth()

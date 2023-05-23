@@ -1,13 +1,18 @@
 package it.polito.madgroup4.view
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -21,17 +26,11 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavDeepLink
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.ComposeNavigator
-import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.get
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -62,6 +61,7 @@ import it.polito.madgroup4.view.screens.ShowCourt
 import it.polito.madgroup4.view.screens.ShowFavouriteSport
 import it.polito.madgroup4.view.screens.ShowReservation
 import it.polito.madgroup4.view.screens.SlotSelectionReservation
+import it.polito.madgroup4.view.screens.SplashScreen
 import it.polito.madgroup4.view.screens.SportSelector
 import it.polito.madgroup4.viewmodel.LoadingStateViewModel
 import it.polito.madgroup4.viewmodel.ReservationViewModel
@@ -98,33 +98,34 @@ fun Navigation(
 
     sports: List<String>,
     remainingSports: List<String>,
+    setRemainingSports: (List<String>) -> Unit,
 
     selectedSport: String,
+
     setSelectedSport: (String) -> Unit,
-
     creationDate: LocalDate,
+
     setCreationDate: (LocalDate) -> Unit,
-
     selectedCourt: CourtWithSlots,
+
     setSelectedCourt: (CourtWithSlots) -> Unit,
-
     selectedSlot: Int,
+
     setSelectedSlot: (Int) -> Unit,
-
     showedCourt: PlayingCourt,
-    setShowedCourt: (PlayingCourt) -> Unit,
 
+    setShowedCourt: (PlayingCourt) -> Unit,
     reviews: List<Review>,
+
     setReviews: (List<Review>) -> Unit,
 
     user: State<User?>,
-
     favouriteSport: Int?,
+
     setFavoriteSport: (Int) -> Unit,
-
     selectedLevel: String,
-    setSelectedLevel: (String) -> Unit,
 
+    setSelectedLevel: (String) -> Unit,
     selectedDate: LocalDate,
     setSelectedDate: (LocalDate) -> Unit,
 
@@ -142,28 +143,32 @@ fun Navigation(
 
     LaunchedEffect(loading) {
         when (loading) {
-            is Status.Loading -> println("Loading...")
+            is Status.Loading -> navController.navigate("Loading")
             is Status.Error -> {
                 coroutineScope.launch {
+                    if((loading as Status.Error).nextRoute != null)
+                        navController.navigate((loading as Status.Error).nextRoute!!)
                     snackbarHostState.showSnackbar(
                         SnackbarVisualsWithError(
                             "Error: ${(loading as Status.Error).message}"
                         )
                     )
-                    loadingVm.setStatus(Status.Loading)
+                    loadingVm.setStatus(Status.Running)
 
                 }/*if((status as Status.Error).nextRoute != null)
                     navController.navigate((status as Status.Error).nextRoute!!)*/
             }
 
             is Status.Success -> {
+                if((loading as Status.Success).nextRoute != null)
+                    navController.navigate((loading as Status.Success).nextRoute!!)
                 coroutineScope.launch {
                     snackbarHostState.showSnackbar(
                         SnackbarVisualsWithError(
                             (loading as Status.Success).message
                         )
                     )
-                    loadingVm.setStatus(Status.Loading)
+                    loadingVm.setStatus(Status.Running)
                 }/*if((status as Status.Success).nextRoute != null)
                     navController.navigate((status as Status.Success).nextRoute!!)*/
             }
@@ -235,6 +240,21 @@ fun Navigation(
                     )
                 }
 
+                composable(route = "splash") {
+                    SplashScreen(
+                        valid = true,
+                        onStart = { },
+                        onSplashEndedValid = {
+                            navController.navigate("Reservations") {
+                                popUpTo("splash") { inclusive = true }
+                            }
+                        },
+                        onSplashEndedInvalid = {
+                            println("suca")
+                        }
+                    )
+                }
+
                 animatedComposable("Profile") {
                     Profile(
                         user,
@@ -243,11 +263,13 @@ fun Navigation(
                         userVm,
                         setSelectedLevel,
                         setSelectedSport,
-                        remainingSports
+                        remainingSports,
+                        setRemainingSports,
+                        sports
                     )
                 }
 
-                composable("Edit Profile") {
+                animatedComposable("Edit Profile") {
                     EditProfile(setTopBarAction, user, userVm, navController, loadingVm)
                 }
 
@@ -449,12 +471,27 @@ fun Navigation(
                     )
                 }
 
+                animatedComposable("Loading") {
+                    LoadingScreen()
+                }
+
             }
         }
     }
 }
 
-
+@Composable
+fun LoadingScreen() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier.align(Alignment.Center)
+        )
+    }
+}
 
 
 

@@ -1,5 +1,6 @@
 package it.polito.madgroup4.model
 
+import android.graphics.Bitmap
 import com.google.firebase.Timestamp
 
 data class User(
@@ -8,8 +9,8 @@ data class User(
     val surname: String? = null,
     val nickname: String? = null,
     val email: String? = null,
-    val photo: String? = null,
-    var sports: List<Sport> = listOf(),
+    val photo: Boolean? = null,
+    var sports: List<Sport> = listOf()
 )
 
 data class Sport(

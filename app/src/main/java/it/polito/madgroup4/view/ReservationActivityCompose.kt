@@ -9,12 +9,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.AndroidEntryPoint
 import it.polito.madgroup4.model.LevelEnum
@@ -191,7 +193,9 @@ fun MainScreen(
     }
 
     val sports = listOf("Tennis", "Football", "Basketball", "Volleyball", "Baseball","Rugby", "Hockey")
-    val remainingSports: List<String> = sports.minus(user.value?.sports?.map { it.name!! }?: emptyList())
+    val (remainingSports, setRemainingSports) = remember {
+        mutableStateOf( sports.minus((user.value?.sports?.map { it.name!! }?: emptyList()).toSet()))
+    }
 
     val (selectedSport, setSelectedSport) = remember { mutableStateOf(sports[0]) }
     val (creationDate, setCreationDate) = remember { mutableStateOf(LocalDate.now()) }
@@ -221,6 +225,7 @@ fun MainScreen(
         setReservation,
         sports,
         remainingSports,
+        setRemainingSports,
         selectedSport,
         setSelectedSport,
         creationDate,

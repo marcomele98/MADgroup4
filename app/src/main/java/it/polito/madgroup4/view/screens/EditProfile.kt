@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.ContentValues
 import android.content.Intent
+import android.graphics.Bitmap
 import android.media.ThumbnailUtils
 import android.net.Uri
 import android.provider.MediaStore
@@ -52,6 +53,7 @@ import it.polito.madgroup4.utility.saveProPicInternally
 import it.polito.madgroup4.utility.stringToBitmap
 import it.polito.madgroup4.utility.uriToBitmap
 import it.polito.madgroup4.viewmodel.LoadingStateViewModel
+import it.polito.madgroup4.viewmodel.Status
 import it.polito.madgroup4.viewmodel.UserViewModel
 
 
@@ -123,13 +125,16 @@ fun EditProfile(
 
 
     var imageUri by remember {
-        mutableStateOf<Uri?>(editedUser?.photo?.toUri())
+        mutableStateOf<Uri?>(null)
+    }
+
+    var editImageBitmap by remember {
+        mutableStateOf<Bitmap?>(userVm.userPhoto.value)
     }
 
     var editImageUri by remember {
-        mutableStateOf<Uri?>(editedUser?.photo?.toUri())
+        mutableStateOf<Uri?>(null)
     }
-
 
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
@@ -137,11 +142,11 @@ fun EditProfile(
             if (result.resultCode == Activity.RESULT_OK) {
                 editImageUri = result.data?.data
                 val imageBitmap = uriToBitmap(editImageUri!!, context)
-                val rotatedBitmap = rotateBitmap(imageBitmap!!, context, editImageUri!!)
-//                val uri = userVm.uploadImage(rotatedBitmap!!)
+                editImageBitmap = rotateBitmap(imageBitmap!!, context, editImageUri!!)
+//                userVm.uploadImage(rotatedBitmap!!)
                 //imageUri = saveProPicInternally(rotatedBitmap!!, context)
-                val reducedBitmap = ThumbnailUtils.extractThumbnail(rotatedBitmap, 240, 240)
-                setEditUser(editedUser?.copy(photo = bitmapToString(reducedBitmap)))
+//                val reducedBitmap = ThumbnailUtils.extractThumbnail(rotatedBitmap, 240, 240)
+                setEditUser(editedUser?.copy(photo = true))
                 //setEditedUser( editedUser.copy(photo = uri.toString()))
             }
         }
@@ -150,14 +155,14 @@ fun EditProfile(
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture(),
         onResult = { success ->
-            if(success) {
+            if (success) {
                 editImageUri = imageUri
                 val imageBitmap = uriToBitmap(editImageUri!!, context)
-                val rotatedBitmap = rotateBitmap(imageBitmap!!, context, editImageUri!!)
+                editImageBitmap = rotateBitmap(imageBitmap!!, context, editImageUri!!)
 //            val uri = userVm.uploadImage(imageBitmap!!)
                 //imageUri = saveProPicInternally(rotatedBitmap!!, context)
-                val reducedBitmap = ThumbnailUtils.extractThumbnail(rotatedBitmap, 240, 240)
-                setEditUser(editedUser?.copy(photo = bitmapToString(reducedBitmap)))
+                //val reducedBitmap = ThumbnailUtils.extractThumbnail(rotatedBitmap, 240, 240)
+                setEditUser(editedUser?.copy(photo = true))
 
                 //setEditedUser( editedUser.copy(photo = uri.toString()))
             }
@@ -192,19 +197,20 @@ fun EditProfile(
             launchGallery()
     }
 
-    LaunchedEffect(editedUser) {
-        if (editedUser != null) {
-            setTopBarAction {
-                userVm.saveUser(
-                    editedUser,
-                    loadingVm,
-                    "Profile edited successfully",
-                    "Error while editing profile"
-                )
-                navController.navigate("Profile")
-            }
-        }
+    setTopBarAction {
+        loadingVm.setStatus(Status.Loading)
+        userVm.saveUser(
+            editedUser!!,
+            loadingVm,
+            "Profile edited successfully",
+            "Error while editing profile",
+            rotateBitmap(uriToBitmap(editImageUri!!, context)!!, context, editImageUri!!),
+            "Profile"
+        )
+        //navController.navigate("Profile")
     }
+
+
 
     if (openDialog.value) {
         AlertDialog(onDismissRequest = {
@@ -255,9 +261,9 @@ fun EditProfile(
 
 
             Box(Modifier.align(Alignment.CenterHorizontally)) {
-                if (editedUser?.photo != null && editedUser.photo != "") {
+                if (editedUser?.photo == true) {
                     Image(
-                        bitmap = stringToBitmap(editedUser.photo)!!.asImageBitmap(),
+                        bitmap = editImageBitmap!!.asImageBitmap(),
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier

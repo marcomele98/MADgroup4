@@ -41,9 +41,11 @@ fun AddSport(
             user,
             loadingVm,
             "New favorite sport added successfully",
-            "Error while adding new favorite sport"
+            "Error while adding new favorite sport",
+            null,
+            "Profile"
         )
-        navController.navigate("Profile")
+//        navController.navigate("Profile")
     }
 
     Column(

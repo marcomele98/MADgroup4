@@ -1,6 +1,5 @@
 package it.polito.madgroup4.view.screens
 
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,11 +19,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,14 +39,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import it.polito.madgroup4.R
 import it.polito.madgroup4.model.LevelEnum
 import it.polito.madgroup4.model.User
-import it.polito.madgroup4.utility.bitmapToString
-import it.polito.madgroup4.utility.stringToBitmap
-import it.polito.madgroup4.utility.uriToBitmap
 import it.polito.madgroup4.view.components.SportCard
 import it.polito.madgroup4.viewmodel.UserViewModel
 
@@ -60,6 +55,8 @@ fun Profile(
     setSelectedLevel: (String) -> Unit,
     setSelectedSport: (String) -> Unit,
     remainingSports: List<String>,
+    setRemainingSports: (List<String>) -> Unit,
+    sports: List<String>,
 ) {
 
     val context = LocalContext.current
@@ -69,15 +66,22 @@ fun Profile(
 //        Pair(Icons.Default.Transgender, user.gender)
     )
 
-    Column(Modifier.padding(horizontal = 16.dp).fillMaxSize()) {
+    LaunchedEffect(Unit) {
+        setRemainingSports(sports.minus((user.value?.sports?.map { it.name!! }?: emptyList()).toSet()))
+    }
+
+    Column(
+        Modifier
+            .padding(horizontal = 16.dp)
+            .fillMaxSize()) {
 
         Column(
             Modifier.fillMaxWidth()
         ) {
 
-            if (user.value?.photo != null && user.value?.photo != "") {
+            if (user.value?.photo == true || userVm.userPhoto!!.value != null) {
                 Image(
-                    bitmap = stringToBitmap(user.value!!.photo!!)!!.asImageBitmap(),
+                    bitmap = userVm.userPhoto!!.value!!.asImageBitmap(),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -137,19 +141,21 @@ fun Profile(
                 fontStyle = FontStyle.Italic
             )
             Spacer(modifier = Modifier.weight(1f))
-            Icon(
-                imageVector = Icons.Outlined.Add,
-                modifier = Modifier
-                    .size(30.dp)
-                    .alpha(0.6f)
-                    .clickable {
-                        navController.navigate("Add Sport")
-                        setSelectedLevel(LevelEnum.BEGINNER.name)
-                        setSelectedSport(remainingSports[0])
-                    },
-                //tint = MaterialTheme.colorScheme.secondary,
-                contentDescription = null
-            )
+            if(remainingSports.isNotEmpty()) {
+                Icon(
+                    imageVector = Icons.Outlined.Add,
+                    modifier = Modifier
+                        .size(30.dp)
+                        .alpha(0.6f)
+                        .clickable {
+                            navController.navigate("Add Sport")
+                            setSelectedLevel(LevelEnum.BEGINNER.name)
+                            setSelectedSport(remainingSports[0])
+                        },
+                    //tint = MaterialTheme.colorScheme.secondary,
+                    contentDescription = null
+                )
+            }
         }
         Spacer(modifier = Modifier.height(10.dp))
 

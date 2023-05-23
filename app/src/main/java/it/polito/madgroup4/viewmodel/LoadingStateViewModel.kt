@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 
 sealed class Status {
     object Loading : Status()
+
+    object Running: Status()
     data class Error(val message: String, val nextRoute: String?) : Status()
     data class Success(val message: String, val nextRoute: String?) : Status()
 }
