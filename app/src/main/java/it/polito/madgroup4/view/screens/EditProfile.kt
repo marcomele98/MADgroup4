@@ -142,7 +142,7 @@ fun EditProfile(
     }
 
     LaunchedEffect(userPic.value) {
-        if(userPic.value != null) {
+        if (userPic.value != null) {
             editImageBitmap = userPic.value
         }
         println(userPic.value)
@@ -216,7 +216,11 @@ fun EditProfile(
             loadingVm,
             "Profile edited successfully",
             "Error while editing profile",
-            rotateBitmap(uriToBitmap(editImageUri!!, context)!!, context, editImageUri!!),
+            if (editImageUri != null) rotateBitmap(
+                uriToBitmap(editImageUri!!, context)!!,
+                context,
+                editImageUri!!
+            ) else null,
             "Profile"
         )
         //navController.navigate("Profile")
@@ -261,7 +265,7 @@ fun EditProfile(
         )
     }
 
-    if(editImageBitmap != null) {
+    if (editImageBitmap != null) {
 
         Column(
             Modifier
