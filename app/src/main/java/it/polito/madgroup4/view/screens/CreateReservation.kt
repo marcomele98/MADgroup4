@@ -157,7 +157,7 @@ fun PlayingCourtList(
     ) {
         if (playingCourts.isEmpty()) {
             Text(
-                text = "No available courts for the selected date and sport.",
+                text = messageIfNoCourts,
                 modifier = Modifier
                     .align(Alignment.Center),
                 textAlign = TextAlign.Center,

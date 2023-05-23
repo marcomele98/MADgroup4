@@ -22,7 +22,7 @@ class ReservationViewModel @Inject constructor(private val repository: Repositor
 
     private val viewModelScope = CoroutineScope(Dispatchers.Main)
     private var _reservations =
-        MutableLiveData<List<ReservationWithCourt>>().apply { value = emptyList() }
+        MutableLiveData<List<ReservationWithCourt>>().apply { value = null }
     val reservations: LiveData<List<ReservationWithCourt>> = _reservations
 
     private var _slots = MutableLiveData<List<Int>>().apply { value = emptyList() }

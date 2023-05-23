@@ -14,17 +14,13 @@
         <!-- Customize your theme here. -->
     </style>
 
-    <style name="Theme.DatePicker" parent="Theme.MaterialComponents.DayNight.Dialog">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">#6e2ad4</item>
-        <item name="colorPrimaryVariant">#6e2ad4</item>
-        <item name="colorOnPrimary">#6e2ad4</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">#6e2ad4</item>
-        <item name="colorSecondaryVariant">#6e2ad4</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
-        <!-- Customize your theme here. -->
+
+    <style name="Theme.CustomSplashScreenTheme" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/white</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/start</item>
+        <item name="windowSplashScreenAnimationDuration">600</item>
+        <item name="postSplashScreenTheme">@style/Theme.MADgroup4</item>
+
     </style>
 
 </resources>

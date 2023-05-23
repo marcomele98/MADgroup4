@@ -29,6 +29,7 @@ import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,6 +53,7 @@ import it.polito.madgroup4.utility.rotateBitmap
 import it.polito.madgroup4.utility.saveProPicInternally
 import it.polito.madgroup4.utility.stringToBitmap
 import it.polito.madgroup4.utility.uriToBitmap
+import it.polito.madgroup4.view.LoadingScreen
 import it.polito.madgroup4.viewmodel.LoadingStateViewModel
 import it.polito.madgroup4.viewmodel.Status
 import it.polito.madgroup4.viewmodel.UserViewModel
@@ -128,12 +130,22 @@ fun EditProfile(
         mutableStateOf<Uri?>(null)
     }
 
+    val userPic = userVm.userPhoto.observeAsState()
+
+
     var editImageBitmap by remember {
-        mutableStateOf<Bitmap?>(userVm.userPhoto.value)
+        mutableStateOf<Bitmap?>(null)
     }
 
     var editImageUri by remember {
         mutableStateOf<Uri?>(null)
+    }
+
+    LaunchedEffect(userPic.value) {
+        if(userPic.value != null) {
+            editImageBitmap = userPic.value
+        }
+        println(userPic.value)
     }
 
     val galleryLauncher = rememberLauncherForActivityResult(
@@ -249,71 +261,76 @@ fun EditProfile(
         )
     }
 
-    Column(
-        Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
-    ) {
+    if(editImageBitmap != null) {
 
         Column(
-            Modifier.fillMaxWidth()
+            Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)
         ) {
 
+            Column(
+                Modifier.fillMaxWidth()
+            ) {
 
-            Box(Modifier.align(Alignment.CenterHorizontally)) {
-                if (editedUser?.photo == true) {
-                    Image(
-                        bitmap = editImageBitmap!!.asImageBitmap(),
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .size(120.dp)
-                            .clip(CircleShape)
-                            .border(1.dp, MaterialTheme.colorScheme.secondary, CircleShape)
-                    )
 
-                } else {
-                    Image(
-                        painter = painterResource(id = R.drawable.profile),
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .size(120.dp)
-                            .clip(CircleShape)
-                            .border(1.dp, MaterialTheme.colorScheme.secondary, CircleShape)
-                    )
+                Box(Modifier.align(Alignment.CenterHorizontally)) {
+                    if (editedUser?.photo == true) {
+                        Image(
+                            bitmap = editImageBitmap!!.asImageBitmap(),
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .size(120.dp)
+                                .clip(CircleShape)
+                                .border(1.dp, MaterialTheme.colorScheme.secondary, CircleShape)
+                        )
+
+                    } else {
+                        Image(
+                            painter = painterResource(id = R.drawable.profile),
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .size(120.dp)
+                                .clip(CircleShape)
+                                .border(1.dp, MaterialTheme.colorScheme.secondary, CircleShape)
+                        )
+                    }
+
+                    SmallFloatingActionButton(
+                        onClick = {
+                            openDialog.value = true
+                        },
+                        modifier = Modifier.align(Alignment.BottomEnd),
+                        shape = CircleShape,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Edit Picture",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
 
-                SmallFloatingActionButton(
-                    onClick = {
-                        openDialog.value = true
-                    },
-                    modifier = Modifier.align(Alignment.BottomEnd),
-                    shape = CircleShape,
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = "Edit Picture",
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
+                Spacer(modifier = Modifier.height(25.dp))
 
-            Spacer(modifier = Modifier.height(25.dp))
+                LazyColumn(modifier = Modifier.fillMaxWidth()) {
 
-            LazyColumn(modifier = Modifier.fillMaxWidth()) {
-
-                items(contactItems.size) { index ->
-                    ContactItem1(
-                        icon = contactItems[index][0] as ImageVector?,
-                        text = contactItems[index][1] as String,
-                        label = contactItems[index][2] as String,
-                        onClick = contactItems[index][3] as (String) -> Unit,
-                        keyboardOptions = contactItems[index][4] as KeyboardOptions,
-                    )
+                    items(contactItems.size) { index ->
+                        ContactItem1(
+                            icon = contactItems[index][0] as ImageVector?,
+                            text = contactItems[index][1] as String,
+                            label = contactItems[index][2] as String,
+                            onClick = contactItems[index][3] as (String) -> Unit,
+                            keyboardOptions = contactItems[index][4] as KeyboardOptions,
+                        )
+                    }
                 }
             }
         }
+    } else {
+        LoadingScreen()
     }
 }
 

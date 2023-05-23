@@ -19,12 +19,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -43,6 +45,7 @@ import androidx.navigation.NavController
 import it.polito.madgroup4.R
 import it.polito.madgroup4.model.LevelEnum
 import it.polito.madgroup4.model.User
+import it.polito.madgroup4.view.LoadingScreen
 import it.polito.madgroup4.view.components.SportCard
 import it.polito.madgroup4.viewmodel.UserViewModel
 
@@ -61,135 +64,152 @@ fun Profile(
 
     val context = LocalContext.current
 
-    val contactItems = listOf(
-        Pair(Icons.Default.Email, user.value?.email!!),
-//        Pair(Icons.Default.Transgender, user.gender)
-    )
 
     LaunchedEffect(Unit) {
-        setRemainingSports(sports.minus((user.value?.sports?.map { it.name!! }?: emptyList()).toSet()))
+        setRemainingSports(sports.minus((user.value?.sports?.map { it.name!! }
+            ?: emptyList()).toSet()))
     }
 
-    Column(
-        Modifier
-            .padding(horizontal = 16.dp)
-            .fillMaxSize()) {
+    val userPic = userVm.userPhoto.observeAsState()
 
-        Column(
-            Modifier.fillMaxWidth()
-        ) {
-
-            if (user.value?.photo == true || userVm.userPhoto!!.value != null) {
-                Image(
-                    bitmap = userVm.userPhoto!!.value!!.asImageBitmap(),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .size(120.dp)
-                        .clip(CircleShape)
-                        .border(1.dp, MaterialTheme.colorScheme.secondary, CircleShape)
-                        .then(Modifier.align(Alignment.CenterHorizontally))
-                )
-
-            } else {
-                Image(
-                    painter = painterResource(id = R.drawable.profile),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .size(120.dp)
-                        .clip(CircleShape)
-                        .border(1.dp, MaterialTheme.colorScheme.secondary, CircleShape)
-                        .then(Modifier.align(Alignment.CenterHorizontally))
-                )
-            }
-
-            Spacer(modifier = Modifier.height(25.dp))
-
-            Text(
-                text = user.value?.name + " " + user.value?.surname,
-                textAlign = TextAlign.Center,
-                fontSize = 30.sp,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-
-            Text(
-                text = "@" + user.value?.nickname,
-                textAlign = TextAlign.Center,
-                fontSize = 16.sp,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        ContactItem(
-            icon = contactItems[0].first,
-            text = contactItems[0].second
+    if (user.value != null) {
+        val contactItems = listOf(
+            Pair(Icons.Default.Email, user.value?.email!!),
+//        Pair(Icons.Default.Transgender, user.gender)
         )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Row {
-            Text(
-                text = "Your Sports",
-                fontSize = 23.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
-                fontStyle = FontStyle.Italic
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            if(remainingSports.isNotEmpty()) {
-                Icon(
-                    imageVector = Icons.Outlined.Add,
-                    modifier = Modifier
-                        .size(30.dp)
-                        .alpha(0.6f)
-                        .clickable {
-                            navController.navigate("Add Sport")
-                            setSelectedLevel(LevelEnum.BEGINNER.name)
-                            setSelectedSport(remainingSports[0])
-                        },
-                    //tint = MaterialTheme.colorScheme.secondary,
-                    contentDescription = null
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(10.dp))
-
-
-        Box(
-            modifier = Modifier
+        Column(
+            Modifier
+                .padding(horizontal = 16.dp)
                 .fillMaxSize()
-                .clip(RoundedCornerShape(12.dp))
         ) {
-            if (user.value?.sports?.size == 0) {
-                Text(
-                    text = "You have not added any sport yet",
-                    modifier = Modifier
-                        .align(Alignment.Center),
-                    fontSize = 18.sp,
-                    fontStyle = FontStyle.Italic,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
+
+            Column(
+                Modifier.fillMaxWidth()
             ) {
+                if (userPic.value != null) {
+                    Image(
+                        bitmap = userPic.value!!.asImageBitmap(),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(120.dp)
+                            .clip(CircleShape)
+                            .border(1.dp, MaterialTheme.colorScheme.secondary, CircleShape)
+                            .then(Modifier.align(Alignment.CenterHorizontally))
+                    )
+                } else if (user.value?.photo == true) {
+                    Box(modifier = Modifier
+                        .size(120.dp)
+                        .clip(CircleShape)
+                        .align(Alignment.CenterHorizontally)
+                        .border(1.dp, MaterialTheme.colorScheme.secondary, CircleShape)
+                    ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.align(Alignment.Center),
+                            )
+                        }
+                } else {
+                    Image(
+                        painter = painterResource(id = R.drawable.profile),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(120.dp)
+                            .clip(CircleShape)
+                            .border(1.dp, MaterialTheme.colorScheme.secondary, CircleShape)
+                            .then(Modifier.align(Alignment.CenterHorizontally))
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(25.dp))
+
+                Text(
+                    text = user.value?.name + " " + user.value?.surname,
+                    textAlign = TextAlign.Center,
+                    fontSize = 30.sp,
+                    modifier = Modifier.fillMaxWidth()
+                )
 
 
-                items(user.value?.sports?.size!!) { index ->
-                    SportCard(sport = user.value?.sports?.get(index)!!, onClick = {
-                        setFavoriteSport(index)
-                        setSelectedLevel(user.value?.sports?.get(index)?.level!!)
-                        navController.navigate("Your Sport")
-                    })
+                Text(
+                    text = "@" + user.value?.nickname,
+                    textAlign = TextAlign.Center,
+                    fontSize = 16.sp,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            ContactItem(
+                icon = contactItems[0].first,
+                text = contactItems[0].second
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Row {
+                Text(
+                    text = "Your Sports",
+                    fontSize = 23.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontStyle = FontStyle.Italic
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                if (remainingSports.isNotEmpty()) {
+                    Icon(
+                        imageVector = Icons.Outlined.Add,
+                        modifier = Modifier
+                            .size(30.dp)
+                            .alpha(0.6f)
+                            .clickable {
+                                navController.navigate("Add Sport")
+                                setSelectedLevel(LevelEnum.BEGINNER.name)
+                                setSelectedSport(remainingSports[0])
+                            },
+                        //tint = MaterialTheme.colorScheme.secondary,
+                        contentDescription = null
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(10.dp))
+
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(12.dp))
+            ) {
+                if (user.value?.sports?.size == 0) {
+                    Text(
+                        text = "You have not added any sport yet",
+                        modifier = Modifier
+                            .align(Alignment.Center),
+                        fontSize = 18.sp,
+                        fontStyle = FontStyle.Italic,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+
+
+                    items(user.value?.sports?.size!!) { index ->
+                        SportCard(sport = user.value?.sports?.get(index)!!, onClick = {
+                            setFavoriteSport(index)
+                            setSelectedLevel(user.value?.sports?.get(index)?.level!!)
+                            navController.navigate("Your Sport")
+                        })
+                    }
                 }
             }
         }
+    } else {
+        LoadingScreen()
     }
 
 }

@@ -6,6 +6,7 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
@@ -25,8 +26,6 @@ fun BottomNavBar(
 ) {
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-
-
 
     NavigationBar(
         modifier = Modifier.height(75.dp),

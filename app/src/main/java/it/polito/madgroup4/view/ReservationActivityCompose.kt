@@ -1,7 +1,11 @@
 package it.polito.madgroup4.view
 
+import android.content.Context
 import android.content.pm.ActivityInfo
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -9,14 +13,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.AndroidEntryPoint
 import it.polito.madgroup4.model.LevelEnum
@@ -136,44 +138,51 @@ class ReservationActivityCompose : ComponentActivity() {
         reservationVm.savePlayingCourt(playingCourt)
         reservationVm.savePlayingCourt(playingCourt2)
         reservationVm.savePlayingCourt(playingCourt3)
-        /*        userVm.saveUser(u1)
-                userVm.saveUser(u2)
-                userVm.saveUser(u3)*/
         reservationVm.saveReservationUtility(reservation)
         reservationVm.saveReservationUtility(reservation2)
         reservationVm.saveReservationUtility(reservation3)
         reservationVm.saveReservationUtility(reservation4)
         reservationVm.saveReservationUtility(reservation5)
-        /*      reservationVm.saveReservation(reservation6)
-                reservationVm.saveReservation(reservation7)
-                reservationVm.saveReservation(reservation8)
-                reservationVm.saveReservation(reservation9)
-                reservationVm.saveReservation(reservation10)
-                reservationVm.saveReservation(reservation11)
-                reservationVm.saveReservation(reservation12)
-                reservationVm.saveReservation(reservation13)
-                reservationVm.saveReservation(reservation14)
-                reservationVm.saveReservation(reservation15)
-                reservationVm.saveReservation(reservation16)*/
+
+        val connectivity = isNetworkAvailable(this)
 
         setContent {
             MADgroup4Theme {
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface
                 ) {
-                    MainScreen(reservationVm, userVm, reviewVm, loadingVm)
+                    MainScreen(reservationVm, userVm, reviewVm, loadingVm, connectivity, this)
                 }
             }
         }
     }
 }
 
+fun isNetworkAvailable(context: Context): Boolean {
+    val connectivity = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    if (connectivity != null) {
+        val info = connectivity.allNetworkInfo
+        if (info != null) {
+            for (i in info.indices) {
+                Log.i("Class", info[i].state.toString())
+                if (info[i].state == NetworkInfo.State.CONNECTED) {
+                    return true
+                }
+            }
+        }
+    }
+    return false
+}
+
+
 @Composable
 fun MainScreen(
     reservationVm: ReservationViewModel,
     userVm: UserViewModel,
     reviewVm: ReviewViewModel,
-    loadingVm: LoadingStateViewModel
+    loadingVm: LoadingStateViewModel,
+    connectivity: Boolean,
+    activity: ReservationActivityCompose,
 ) {
 
     val context = LocalContext.current
@@ -192,9 +201,10 @@ fun MainScreen(
         mutableStateOf(ReservationWithCourt(null, null))
     }
 
-    val sports = listOf("Tennis", "Football", "Basketball", "Volleyball", "Baseball","Rugby", "Hockey")
+    val sports =
+        listOf("Tennis", "Football", "Basketball", "Volleyball", "Baseball", "Rugby", "Hockey")
     val (remainingSports, setRemainingSports) = remember {
-        mutableStateOf( sports.minus((user.value?.sports?.map { it.name!! }?: emptyList()).toSet()))
+        mutableStateOf(sports.minus((user.value?.sports?.map { it.name!! } ?: emptyList()).toSet()))
     }
 
     val (selectedSport, setSelectedSport) = remember { mutableStateOf(sports[0]) }
@@ -244,7 +254,9 @@ fun MainScreen(
         selectedLevel,
         setSelectedLevel,
         selectedDate,
-        setSelectedDate
+        setSelectedDate,
+        connectivity,
+        activity
     )
 
 }
