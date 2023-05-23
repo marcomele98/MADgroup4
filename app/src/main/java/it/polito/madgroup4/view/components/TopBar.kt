@@ -110,7 +110,8 @@ fun TopBar(
                 title == "Confirm Reservation" ||
                 title == "Rate This Playing Court" ||
                 title == "Confirm Changes" ||
-                title == "Edit Your Level"
+                title == "Edit Your Level" ||
+                title == "Create Achievement"
             ) {
                 IconButton(onClick = {
                     topBarAction()

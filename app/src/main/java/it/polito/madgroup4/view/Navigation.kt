@@ -313,7 +313,7 @@ fun Navigation(
                             setSelectedSlot,
                             setSelectedCourt,
                             navController,
-                            setSelectedDate
+                            setSelectedDate,
                         )
                     }
 
@@ -442,7 +442,7 @@ fun Navigation(
                     }
 
                     animatedComposable("Create Achievement") {
-                        CreateAchievement(userVm, favouriteSport!!, user, loadingVm, navController)
+                        CreateAchievement(userVm, favouriteSport!!, user, loadingVm, navController, setTopBarAction)
                     }
 
                     animatedComposable("Select Your Level") {

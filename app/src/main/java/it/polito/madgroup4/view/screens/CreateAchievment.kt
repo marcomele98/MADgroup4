@@ -47,6 +47,7 @@ fun CreateAchievement(
     userState: State<User?>,
     loadingVm: LoadingStateViewModel,
     navController: NavController,
+    setTopBarAction: (() -> Unit) -> Unit,
 ) {
 
     var description by remember { mutableStateOf("") }
@@ -71,6 +72,32 @@ fun CreateAchievement(
         date = calendarState.selectionState.selection[0]
 
 
+    setTopBarAction {
+        val achievement = Achievement(
+            title = title,
+            description = description,
+            date = formatDateToTimestamp(date)
+        )
+        val user = userVm.user.value!!
+        //TODO: legacy needed refactor
+        user.sports = user.sports.map { it ->
+            if (it.name == userState.value!!.sports[sport].name) {
+                it.achievements = it.achievements + achievement
+                it.achievements = it.achievements.sortedByDescending { it.date }
+                it
+            } else {
+                it
+            }
+        }
+        userVm.saveUser(
+            user,
+            loadingVm,
+            "Achievement created successfully",
+            "Error while creating achievement",
+            null,
+            "Your Sport"
+        )
+    }
 
     Column(
         Modifier.padding(horizontal = 16.dp)
@@ -100,7 +127,17 @@ fun CreateAchievement(
             calendarState = calendarState,
             weekHeader = { WeekHeader(weekState = it) },
             daysOfWeekHeader = {
-                DaysOfWeekHeader(daysOfWeek = listOf(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY))
+                DaysOfWeekHeader(
+                    daysOfWeek = listOf(
+                        DayOfWeek.MONDAY,
+                        DayOfWeek.TUESDAY,
+                        DayOfWeek.WEDNESDAY,
+                        DayOfWeek.THURSDAY,
+                        DayOfWeek.FRIDAY,
+                        DayOfWeek.SATURDAY,
+                        DayOfWeek.SUNDAY
+                    )
+                )
             },
             dayContent = { dayState ->
                 MyDay(
@@ -128,41 +165,5 @@ fun CreateAchievement(
             label = { Text(text = "Description") },
             placeholder = { Text(text = "Add description") },
         )
-
-        Spacer(modifier = Modifier.weight(1f))
-        Button(
-            onClick = {
-                val achievement = Achievement(
-                    title = title,
-                    description = description,
-                    date = formatDateToTimestamp(date)
-                )
-                val user = userVm.user.value!!
-                //TODO: legacy needed refactor
-                user.sports = user.sports.map { it ->
-                    if (it.name == userState.value!!.sports[sport].name) {
-                        it.achievements = it.achievements + achievement
-                        it.achievements = it.achievements.sortedByDescending { it.date }
-                        it
-                    } else {
-                        it
-                    }
-                }
-                userVm.saveUser(
-                    user,
-                    loadingVm,
-                    "Achievement created successfully",
-                    "Error while creating achievement",
-                    null,
-                    "Your Sport"
-                )
-//                navController.popBackStack()
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp)
-        ) {
-            Text(text = "Create")
-        }
     }
 }
