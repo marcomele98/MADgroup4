@@ -147,13 +147,14 @@ class ReservationActivityCompose : ComponentActivity() {
         val connectivity = isNetworkAvailable(this)
 
         setContent {
-            MADgroup4Theme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface
-                ) {
-                    MainScreen(reservationVm, userVm, reviewVm, loadingVm, connectivity, this)
+                MADgroup4Theme {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface
+                    ) {
+                        MainScreen(reservationVm, userVm, reviewVm, loadingVm, connectivity, this)
+                    }
                 }
-            }
+
         }
     }
 }

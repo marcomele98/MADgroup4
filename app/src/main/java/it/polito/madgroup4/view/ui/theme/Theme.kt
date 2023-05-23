@@ -60,6 +60,11 @@ fun MADgroup4Theme(
       window.statusBarColor = colorScheme.primary.toArgb()
       window.navigationBarColor = colorScheme.primary.toArgb()
       WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
+/*      WindowCompat.setDecorFitsSystemWindows(window, false)
+      window.setFlags(
+        android.view.WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+        android.view.WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+      )*/
     }
   }
 
