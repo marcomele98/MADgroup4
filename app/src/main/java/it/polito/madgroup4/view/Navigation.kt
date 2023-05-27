@@ -96,8 +96,6 @@ fun Navigation(
     userVm: UserViewModel,
     loadingVm: LoadingStateViewModel,
 
-    userId: String,
-
     reservation: String,
     setReservationWithCourt: (String) -> Unit,
 
@@ -422,7 +420,6 @@ fun Navigation(
                     animatedComposable("Rate This Playing Court") {
                         ReviewForm(
                             reservationVm = reservationVm,
-                            userId = userId,
                             reservationId = reservation,
                             reservations = reservations,
                             navController = navController,

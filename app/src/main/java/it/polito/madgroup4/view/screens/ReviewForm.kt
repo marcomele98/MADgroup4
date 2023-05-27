@@ -31,7 +31,6 @@ import java.util.Date
 @Composable
 fun ReviewForm(
     reservationVm: ReservationViewModel,
-    userId: String,
     navController: NavController,
     loadingVm: LoadingStateViewModel,
     setTopBarAction: (() -> Unit) -> Unit,

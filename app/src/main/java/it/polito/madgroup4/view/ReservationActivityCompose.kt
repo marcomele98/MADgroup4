@@ -103,8 +103,6 @@ fun MainScreen(
         mutableStateOf("")
     }
 
-
-
     val sports =
         listOf("Tennis", "Football", "Basketball", "Volleyball", "Baseball", "Rugby", "Hockey")
     val (remainingSports, setRemainingSports) = remember {
@@ -125,19 +123,10 @@ fun MainScreen(
 
     val courtsWithSlots = reservationVm.playingCourts.observeAsState(initial = null)
 
-    //TODO: prendo l'id dalle preferences
-    val userId: String = "francesco@gmail.com"
-
-
-    /*
-        reservationVm.getAllReservations(userId)
-    */
-
     Navigation(
         reservationVm,
         userVm,
         loadingVm,
-        userId,
         reservation,
         setReservation,
         sports,
