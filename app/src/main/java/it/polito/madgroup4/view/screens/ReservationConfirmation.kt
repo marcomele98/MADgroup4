@@ -1,10 +1,10 @@
 package it.polito.madgroup4.view.screens
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
@@ -12,7 +12,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -40,7 +39,7 @@ fun ReservationConfirmation(
     reservationVm: ReservationViewModel,
     userVm: UserViewModel,
     loadingVm: LoadingStateViewModel,
-    playingCourt: String ? = null,
+    playingCourt: String? = null,
     reservationDate: LocalDate,
     reservationTimeSlot: Int,
     setSelectedSlot: (Int) -> Unit,
@@ -100,38 +99,43 @@ fun ReservationConfirmation(
         setSelectedSlot(-1)
     }
 
-    Column(
+    LazyColumn(
         modifier = Modifier
             .padding(horizontal = 16.dp)
             .padding(bottom = 16.dp)
 
     ) {
 
-        ReservationDetails(
-            playingCourt = reservation?.playingCourt!!,
-            reservationDate = reservation.reservation?.date!!.toDate(),
-            reservationTimeSlot = reservationTimeSlot,
-            particularRequests = null
-        )
+        item {
+            ReservationDetails(
+                playingCourt = reservation?.playingCourt!!,
+                reservationDate = reservation.reservation?.date!!.toDate(),
+                reservationTimeSlot = reservationTimeSlot,
+                particularRequests = null
+            )
+        }
 
-        Spacer(modifier = Modifier.height(20.dp))
+        item { Spacer(modifier = Modifier.height(20.dp)) }
 
-        OutlinedTextField(
-            value = text,
-            /*supportingText = { Text(text = "Max 200 characters") },*/
-            onValueChange = { text = it },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp),
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Done,
-                keyboardType = KeyboardType.Text,
-                capitalization = KeyboardCapitalization.Sentences
-            ),
-            singleLine = false,
-            maxLines = 5,
-            label = { Text(text = "Particular requests") },
-            placeholder = { Text(text = "Add particular requests") },
-        )
+
+        item {
+            OutlinedTextField(
+                value = text,
+                /*supportingText = { Text(text = "Max 200 characters") },*/
+                onValueChange = { text = it },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Done,
+                    keyboardType = KeyboardType.Text,
+                    capitalization = KeyboardCapitalization.Sentences
+                ),
+                singleLine = false,
+                maxLines = 5,
+                label = { Text(text = "Particular requests") },
+                placeholder = { Text(text = "Add particular requests") },
+            )
+        }
     }
 }
