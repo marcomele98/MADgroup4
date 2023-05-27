@@ -179,6 +179,7 @@ fun Navigation(
                 }/*if((status as Status.Success).nextRoute != null)
                     navController.navigate((status as Status.Success).nextRoute!!)*/
             }
+
             else -> {}
         }
     }
@@ -247,7 +248,8 @@ fun Navigation(
             snackbarHost = { SnackbarHost(snackbarHostState) }) { it ->
             Box(Modifier.padding(it)) {
                 AnimatedNavHost(
-                    navController = navController, startDestination = "Reservations"
+                    navController = navController,
+                    startDestination = if (user.value?.email != null) "Reservations" else "Sign up"
                 ) {
 
                     fun animatedComposable(
@@ -297,7 +299,7 @@ fun Navigation(
                     }
 
                     animatedComposable("Edit Profile") {
-                        EditProfile(setTopBarAction, user, userVm, navController, loadingVm)
+                        EditProfile(setTopBarAction, user, userVm, navController, loadingVm, true)
                     }
 
                     animatedComposable("Camera") {
@@ -442,7 +444,14 @@ fun Navigation(
                     }
 
                     animatedComposable("Create Achievement") {
-                        CreateAchievement(userVm, favouriteSport!!, user, loadingVm, navController, setTopBarAction)
+                        CreateAchievement(
+                            userVm,
+                            favouriteSport!!,
+                            user,
+                            loadingVm,
+                            navController,
+                            setTopBarAction
+                        )
                     }
 
                     animatedComposable("Select Your Level") {
@@ -491,9 +500,16 @@ fun Navigation(
                         LoadingScreen()
                     }
 
-                    /*                    animatedComposable("No Connectivity") {
-                                            NoConnectivity()
-                                        }*/
+                    animatedComposable("Sign Up") {
+                        EditProfile(
+                            setTopBarAction,
+                            user,
+                            userVm,
+                            navController,
+                            loadingVm,
+                            signUp = true
+                        )
+                    }
 
                 }
             }

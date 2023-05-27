@@ -111,7 +111,8 @@ fun TopBar(
                 title == "Rate This Playing Court" ||
                 title == "Confirm Changes" ||
                 title == "Edit Your Level" ||
-                title == "Create Achievement"
+                title == "Create Achievement" ||
+                title == "Sign Up"
             ) {
                 IconButton(onClick = {
                     topBarAction()

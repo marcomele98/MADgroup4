@@ -2,11 +2,11 @@ package it.polito.madgroup4.viewmodel
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
@@ -30,8 +30,9 @@ class UserViewModel @Inject constructor(private val repository: Repository) : Vi
     private var _user = MutableLiveData<User>().apply { value = null }
     val user: LiveData<User> = _user
 
-    private val userListener: ListenerRegistration
+    private var userListener: ListenerRegistration? = null
     private val db = Firebase.firestore
+    private val auth = Firebase.auth
 
 
     private var _userPhoto = MutableLiveData<Bitmap?>().apply { value = null }
@@ -42,30 +43,118 @@ class UserViewModel @Inject constructor(private val repository: Repository) : Vi
     var storageRef = storage.reference
 
     init {
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
+            auth.signInAnonymously()
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val currentUserId = auth.currentUser!!.uid
+                        db.collection("users2").document(currentUserId).set(User())
+                            .addOnSuccessListener {
+                                createUserListener(currentUserId)
+                            }
+                    } else {
+                        Log.i("test", "error", task.exception)
+                    }
+                }
+        } else {
+            createUserListener(currentUser.uid)
+        }
+    }
+
+    private fun createUserListener(uid: String) {
         userListener =
-            db.collection("users").document("48JnBn7vpjvj0minb62P")
+            db.collection("users2").document(uid)
                 .addSnapshotListener { r, e ->
                     _user.value = if (e != null) throw e
                     else r?.toObject(User::class.java)
                 }
         val pathReference = storageRef
             .child("images")
-            .child("48JnBn7vpjvj0minb62P.jpg")
-//        var bitmap: Bitmap? = null
+            .child("${uid}.jpg")
         val localFile = File.createTempFile("images", "jpg")
         pathReference.getFile(localFile).addOnSuccessListener {
             // Local temp file has been created
             _userPhoto.value = (BitmapFactory.decodeFile(localFile.absolutePath))
-//            bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
         }.addOnFailureListener {
             // Handle any errors
             Log.i("test", "error", it)
         }
-
     }
 
+    fun signUpAnonymously(
+        editedUser: User,
+        loadingVm: LoadingStateViewModel,
+        message: String,
+        error: String,
+        bitmap: Bitmap?,
+        nextRoute: String
+    ) {
+        auth.signInAnonymously()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val currentUserId = auth.currentUser!!.uid
+                    saveUser(
+                        editedUser.copy(id = currentUserId),
+                        loadingVm,
+                        message,
+                        error,
+                        bitmap,
+                        nextRoute
+                    )
+                    userListener =
+                        db.collection("users2").document(currentUserId)
+                            .addSnapshotListener { r, e ->
+                                _user.value = if (e != null) throw e
+                                else r?.toObject(User::class.java)
+                            }
+                    val pathReference = storageRef
+                        .child("images")
+                        .child("${currentUserId}.jpg")
+                    val localFile = File.createTempFile("images", "jpg")
+                    pathReference.getFile(localFile).addOnSuccessListener {
+                        // Local temp file has been created
+                        _userPhoto.value =
+                            (BitmapFactory.decodeFile(localFile.absolutePath))
+                    }.addOnFailureListener {
+                        // Handle any errors
+                        Log.i("test", "error", it)
+                    }
+                } else {
+                    // Gestisci l'errore durante il login.
+                }
+            }
+    }
+
+    /*    fun saveUsername(username: String, completion: (Boolean) -> Unit) {
+            val user = auth.currentUser
+            val userId = user?.uid
+
+            if (userId != null) {
+                val userRef = db.collection("users").document(userId)
+                val userData = hashMapOf(
+                    "username" to username,
+                    // Add any other user information you want to collect
+                )
+
+                userRef.set(userData)
+                    .addOnSuccessListener {
+                        completion(true)
+                    }
+                    .addOnFailureListener { exception ->
+                        // Handle the error during saving the user data
+                        completion(false)
+                    }
+            } else {
+                completion(false)
+            }
+        }*/
+
+
     override fun onCleared() {
-        super.onCleared(); userListener.remove(); }
+        super.onCleared();
+        userListener?.remove();
+    }
 
 
     fun saveUser(
@@ -78,7 +167,7 @@ class UserViewModel @Inject constructor(private val repository: Repository) : Vi
     ) {
 
         fun saveUserDetails() {
-            db.collection("users").document("48JnBn7vpjvj0minb62P")
+            db.collection("users2").document(editedUser.id!!)
                 .set(editedUser, SetOptions.merge())
                 .addOnSuccessListener {
                     Log.i("test", "User updated successfully")
@@ -90,10 +179,10 @@ class UserViewModel @Inject constructor(private val repository: Repository) : Vi
         }
         stateViewModel.setStatus(Status.Loading)
         if (imageBitmap != null) {
-            uploadImage(imageBitmap){
+            uploadImage(imageBitmap, editedUser.id!!) {
                 saveUserDetails()
             }
-        }else{
+        } else {
             saveUserDetails()
         }
     }
@@ -123,10 +212,10 @@ class UserViewModel @Inject constructor(private val repository: Repository) : Vi
     }
 
 
-    fun uploadImage(photo: Bitmap, then : () -> Unit) {
+    fun uploadImage(photo: Bitmap, uid: String, then: () -> Unit) {
         val ref = storageRef
             .child("images")
-            .child("48JnBn7vpjvj0minb62P.jpg")
+            .child("${uid}.jpg")
         if (photo != null) {
             val baos = ByteArrayOutputStream()
             photo.compress(Bitmap.CompressFormat.JPEG, 100, baos)
@@ -157,21 +246,7 @@ class UserViewModel @Inject constructor(private val repository: Repository) : Vi
         Log.i("test_vm", "after ref ${ref.downloadUrl}")
     }
 
-    fun getImage(id: String, setBitmap: (Bitmap) -> Unit) {
-        val pathReference = storageRef
-            .child("images")
-            .child("48JnBn7vpjvj0minb62P.jpg")
-//        var bitmap: Bitmap? = null
-        val localFile = File.createTempFile("images", "jpg")
-        pathReference.getFile(localFile).addOnSuccessListener {
-            // Local temp file has been created
-            setBitmap(BitmapFactory.decodeFile(localFile.absolutePath))
-//            bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
-        }.addOnFailureListener {
-            // Handle any errors
-            Log.i("test", "error", it)
-        }
-    }
+
 
 
     //TODO: metto l'id dell'utente loggato in preferences o lo hardcodato

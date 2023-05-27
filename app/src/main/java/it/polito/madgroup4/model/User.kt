@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import com.google.firebase.Timestamp
 
 data class User(
-    val id: Long = 0,
+    val id: String? = null,
     val name: String? = null,
     val surname: String? = null,
     val nickname: String? = null,

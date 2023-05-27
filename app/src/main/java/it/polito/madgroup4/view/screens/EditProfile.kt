@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.ContentValues
 import android.content.Intent
 import android.graphics.Bitmap
-import android.media.ThumbnailUtils
 import android.net.Uri
 import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -42,16 +41,12 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
-import androidx.core.net.toUri
 import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import it.polito.madgroup4.R
 import it.polito.madgroup4.model.User
-import it.polito.madgroup4.utility.bitmapToString
 import it.polito.madgroup4.utility.rotateBitmap
-import it.polito.madgroup4.utility.saveProPicInternally
-import it.polito.madgroup4.utility.stringToBitmap
 import it.polito.madgroup4.utility.uriToBitmap
 import it.polito.madgroup4.view.LoadingScreen
 import it.polito.madgroup4.viewmodel.LoadingStateViewModel
@@ -67,9 +62,10 @@ fun EditProfile(
     userVm: UserViewModel,
     navController: NavController,
     loadingVm: LoadingStateViewModel,
+    signUp: Boolean = false,
 ) {
 
-    val (editedUser, setEditUser) = remember { mutableStateOf(user.value) }
+    val (editedUser, setEditUser) = remember { mutableStateOf(if (user.value != null) user.value else User()) }
     val (selectedImageInput, setSelectedImageInput) = remember { mutableStateOf("") }
 
     val context = LocalContext.current
@@ -94,21 +90,21 @@ fun EditProfile(
     val contactItems = listOf(
         listOf(
             null,
-            editedUser?.name,
+            editedUser?.name ?: "",
             "Name",
             { it: String -> setEditUser(editedUser?.copy(name = it)) },
             KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
         ),
         listOf(
             null,
-            editedUser?.surname,
+            editedUser?.surname ?: "",
             "Surname",
             { it: String -> setEditUser(editedUser?.copy(surname = it)) },
             KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
         ),
         listOf(
             null,
-            editedUser?.nickname,
+            editedUser?.nickname ?: "",
             "Nickname",
             { it: String -> setEditUser(editedUser?.copy(nickname = it)) },
             KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
@@ -116,7 +112,7 @@ fun EditProfile(
 //        Pair(Icons.Default.Phone, editedUser.phone),
         listOf(
             Icons.Default.Email,
-            editedUser?.email,
+            editedUser?.email ?: "",
             "Email",
             { it: String -> setEditUser(editedUser?.copy(email = it)) },
             KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Email)
@@ -211,18 +207,33 @@ fun EditProfile(
 
     setTopBarAction {
         loadingVm.setStatus(Status.Loading)
-        userVm.saveUser(
-            editedUser!!,
-            loadingVm,
-            "Profile edited successfully",
-            "Error while editing profile",
-            if (editImageUri != null) rotateBitmap(
-                uriToBitmap(editImageUri!!, context)!!,
-                context,
-                editImageUri!!
-            ) else null,
-            "Profile"
-        )
+        if(signUp) {
+            userVm.signUpAnonymously(
+                editedUser!!,
+                loadingVm,
+                "Profile created successfully",
+                "Error while creating profile",
+                if (editImageUri != null) rotateBitmap(
+                    uriToBitmap(editImageUri!!, context)!!,
+                    context,
+                    editImageUri!!
+                ) else null,
+                "Profile"
+            )
+        } else {
+            userVm.saveUser(
+                editedUser!!,
+                loadingVm,
+                "Profile edited successfully",
+                "Error while editing profile",
+                if (editImageUri != null) rotateBitmap(
+                    uriToBitmap(editImageUri!!, context)!!,
+                    context,
+                    editImageUri!!
+                ) else null,
+                "Profile"
+            )
+        }
         //navController.navigate("Profile")
     }
 
@@ -265,7 +276,7 @@ fun EditProfile(
         )
     }
 
-    if (editImageBitmap != null) {
+    if (editImageBitmap != null || signUp) {
 
         Column(
             Modifier

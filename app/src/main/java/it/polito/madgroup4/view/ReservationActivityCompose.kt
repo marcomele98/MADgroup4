@@ -51,21 +51,6 @@ class ReservationActivityCompose : ComponentActivity() {
 
     val splashViewModel by viewModels<SplashViewModel>()
 
-    private val db = FirebaseFirestore.getInstance()
-
-    /*val user1 = db
-        .collection("users")
-        .document("48JnBn7vpjvj0minb62P")
-        .get()
-        .addOnSuccessListener { res ->
-            val users =
-                res.toObject(User::class.java)
-            //use it as needed
-        }
-        .addOnFailureListener {
-            Toast.makeText(this, "Error", Toast.LENGTH_LONG).show()
-        }
-*/
 
     val playingCourt = PlayingCourt(
         1,
@@ -123,17 +108,7 @@ class ReservationActivityCompose : ComponentActivity() {
     val reservation4 = Reservation(4, 1, "francesco@gmail.com", 3, formatter.parse("11/05/2023"))
     val reservation5 = Reservation(5, 2, "marco@gmail.com", 10, formatter.parse("21/05/2023"))
 
-    /*  val reservation6 = Reservation(6, 1, 2, formatter.parse(formatter.format(Date())))
-        val reservation7 = Reservation(7, 1, 0, formatter.parse(formatter.format(Date())))
-        val reservation8 = Reservation(8, 1, 5, formatter.parse(formatter.format(Date())))
-        val reservation9 = Reservation(9, 1, 6, formatter.parse(formatter.format(Date())))
-        val reservation10 = Reservation(10, 1, 7, formatter.parse(formatter.format(Date())))
-        val reservation11 = Reservation(11, 1, 8, formatter.parse(formatter.format(Date())))
-        val reservation12 = Reservation(12, 1, 9, formatter.parse(formatter.format(Date())))
-        val reservation13 = Reservation(13, 1, 10, formatter.parse(formatter.format(Date())))
-        val reservation14 = Reservation(14, 1, 11, formatter.parse(formatter.format(Date())))
-        val reservation15 = Reservation(15, 1, 3, formatter.parse(formatter.format(Date())))
-        val reservation16 = Reservation(16, 1, 4, formatter.parse(formatter.format(Date())))*/
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
@@ -192,16 +167,6 @@ fun MainScreen(
     activity: ReservationActivityCompose,
 ) {
 
-    val context = LocalContext.current
-
-    /*
-        val sharedPref = context.getSharedPreferences("USER", Context.MODE_PRIVATE) ?: null
-        var profile = Profile()
-        if (sharedPref != null) {
-            profile = Profile.getFromPreferences(sharedPref!!)
-        }
-    */
-
     var user = userVm.user.observeAsState()
 
     val (reservation, setReservation) = remember {
@@ -228,7 +193,6 @@ fun MainScreen(
     //TODO: prendo l'id dalle preferences
     val userId: String = "francesco@gmail.com"
 
-    /*    userVm.getUser(userId)*/
 
     reservationVm.getAllReservations(userId)
 
