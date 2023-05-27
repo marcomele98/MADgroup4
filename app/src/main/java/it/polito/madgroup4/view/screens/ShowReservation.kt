@@ -100,7 +100,7 @@ fun ShowReservation(
 
         if (reservation.reservation.review != null) {
             Spacer(modifier = Modifier.height(30.dp))
-            ReviewList(reviews = listOf(reservation.reservation.review!!))
+            ReviewList(reviews = listOf(reservation.reservation.review!!), showNickname = false)
         }
 
         Spacer(modifier = Modifier.weight(1f))

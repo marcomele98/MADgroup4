@@ -1,5 +1,6 @@
 package it.polito.madgroup4.view.screens
 
+import android.provider.ContactsContract.CommonDataKinds.Nickname
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -15,7 +16,8 @@ import it.polito.madgroup4.view.components.ReviewCard
 @Composable
 fun ReviewList(
     reviews: List<Review>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    showNickname: Boolean ? = true
 ) {
 
     Box(
@@ -27,7 +29,8 @@ fun ReviewList(
         LazyColumn(Modifier.fillMaxSize()) {
             items(reviews.size) { index ->
                 ReviewCard(
-                    reviews[index]
+                    reviews[index],
+                    showNickname!!
                 )
             }
         }

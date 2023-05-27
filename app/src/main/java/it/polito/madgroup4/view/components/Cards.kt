@@ -1,5 +1,6 @@
 package it.polito.madgroup4.view.components
 
+import android.provider.ContactsContract.CommonDataKinds.Nickname
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -218,6 +219,7 @@ fun LevelCardSelector(
 @Composable
 fun ReviewCard(
     review: Review,
+    showNickname: Boolean
 ) {
 
     ElevatedCard(
@@ -228,13 +230,18 @@ fun ReviewCard(
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-
-            Row( verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
-                Text(
-                    text = "@" + review.userId,
-                    fontSize = 20.sp
-                )
+            if (showNickname) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp)
+                ) {
+                    Text(
+                        text = "@" + review.userId,
+                        fontSize = 20.sp
+                    )
+                }
             }
 
             Row(
