@@ -14,7 +14,6 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import it.polito.madgroup4.model.User
-import kotlinx.coroutines.Dispatchers
 import java.io.ByteArrayOutputStream
 import java.io.File
 import javax.inject.Inject
@@ -117,14 +116,14 @@ class UserViewModel @Inject constructor() : ViewModel() {
 
     fun removeAchievement(
         sportName: String,
-        achievmentTitle: String,
+        achievementTitle: String,
         stateViewModel: LoadingStateViewModel
     ) {
-        var userTmp = _user.value!!
+        val userTmp = _user.value!!
         userTmp.sports?.forEach { sport ->
             if (sport.name == sportName) {
                 sport.achievements = sport.achievements.filter { achievement ->
-                    achievement.title != achievmentTitle
+                    achievement.title != achievementTitle
                 }
             }
         }
@@ -139,7 +138,7 @@ class UserViewModel @Inject constructor() : ViewModel() {
     }
 
 
-    fun uploadImage(photo: Bitmap, uid: String, then: () -> Unit) {
+    private fun uploadImage(photo: Bitmap, uid: String, then: () -> Unit) {
         val ref = storageRef
             .child("images")
             .child("${uid}.jpg")
@@ -149,7 +148,7 @@ class UserViewModel @Inject constructor() : ViewModel() {
             val data = baos.toByteArray()
             // adding listeners on upload
             // or failure of image
-            var uploadTask = ref.putBytes(data)
+            val uploadTask = ref.putBytes(data)
 
             val urlTask = uploadTask.continueWithTask { task ->
                 if (!task.isSuccessful) {
