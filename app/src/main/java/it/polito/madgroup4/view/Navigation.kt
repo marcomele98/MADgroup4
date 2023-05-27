@@ -70,6 +70,7 @@ import it.polito.madgroup4.view.screens.ShowFavouriteSport
 import it.polito.madgroup4.view.screens.ShowReservation
 import it.polito.madgroup4.view.screens.SlotSelectionReservation
 import it.polito.madgroup4.view.screens.SportSelector
+import it.polito.madgroup4.viewmodel.CourtViewModel
 import it.polito.madgroup4.viewmodel.LoadingStateViewModel
 import it.polito.madgroup4.viewmodel.ReservationViewModel
 import it.polito.madgroup4.viewmodel.ReviewViewModel
@@ -137,6 +138,7 @@ fun Navigation(
     setSelectedDate: (LocalDate) -> Unit,
     connectivity: Boolean,
     activity: ReservationActivityCompose,
+    courtVm: CourtViewModel,
 
     ) {
     val navController = rememberAnimatedNavController()
@@ -400,7 +402,7 @@ fun Navigation(
 
                     animatedComposable("Playing Courts") {
                         Courts(
-                            reservationVm = reservationVm,
+                            courtVm = courtVm,
                             selectedSport = selectedSport,
                             setShowedCourt = setShowedCourt,
                             navController = navController

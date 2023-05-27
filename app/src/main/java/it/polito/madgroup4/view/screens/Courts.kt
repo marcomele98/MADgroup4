@@ -10,19 +10,19 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import it.polito.madgroup4.model.PlayingCourt
 import it.polito.madgroup4.view.components.SportCardSelector
-import it.polito.madgroup4.viewmodel.ReservationViewModel
+import it.polito.madgroup4.viewmodel.CourtViewModel
 
 @Composable
 fun Courts(
-    reservationVm: ReservationViewModel,
     selectedSport: String,
     setShowedCourt: (PlayingCourt) -> Unit,
-    navController: NavController
+    navController: NavController,
+    courtVm: CourtViewModel
 ) {
 
-    reservationVm.getAllPlayingCourtBySport(selectedSport)
+    val playingCourts = courtVm.allCourts.observeAsState(initial = emptyList())
 
-    val playingCourts = reservationVm.allCourtsBySport.observeAsState(initial = emptyList())
+    println(playingCourts.value)
 
     Column(
         Modifier.padding(horizontal = 16.dp)
@@ -35,7 +35,7 @@ fun Courts(
                 onClick = { navController.navigate("Select Sport") })
         }
         PlayingCourtList(
-            playingCourts = playingCourts.value,
+            playingCourts = playingCourts.value.filter { it.sport == selectedSport },
             onClick = { setShowedCourt(playingCourts.value[it]); navController.navigate("Playing Court Details") },
             messageIfNoCourts = "No courts available for this sport"
         )

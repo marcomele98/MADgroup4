@@ -26,6 +26,7 @@ import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.model.Review
 import it.polito.madgroup4.utility.CourtWithSlots
 import it.polito.madgroup4.view.ui.theme.MADgroup4Theme
+import it.polito.madgroup4.viewmodel.CourtViewModel
 import it.polito.madgroup4.viewmodel.LoadingStateViewModel
 import it.polito.madgroup4.viewmodel.ReservationViewModel
 import it.polito.madgroup4.viewmodel.ReviewViewModel
@@ -43,11 +44,13 @@ class ReservationActivityCompose : ComponentActivity() {
 
     val userVm by viewModels<UserViewModel>()
 
-    private val reviewVm by viewModels<ReviewViewModel>()
+    val reviewVm by viewModels<ReviewViewModel>()
 
     val loadingVm by viewModels<LoadingStateViewModel>()
 
     private val splashViewModel by viewModels<SplashViewModel>()
+
+    val courtVm by viewModels<CourtViewModel>()
 
 
     val playingCourt = PlayingCourt(
@@ -125,7 +128,7 @@ class ReservationActivityCompose : ComponentActivity() {
                     Surface(
                         modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface
                     ) {
-                        MainScreen(reservationVm, userVm, reviewVm, loadingVm, connectivity, this)
+                        MainScreen(reservationVm, userVm, reviewVm, loadingVm, courtVm, connectivity, this)
                     }
                 }
 
@@ -156,6 +159,7 @@ fun MainScreen(
     userVm: UserViewModel,
     reviewVm: ReviewViewModel,
     loadingVm: LoadingStateViewModel,
+    courtVm: CourtViewModel,
     connectivity: Boolean,
     activity: ReservationActivityCompose,
 ) {
@@ -220,7 +224,8 @@ fun MainScreen(
         selectedDate,
         setSelectedDate,
         connectivity,
-        activity
+        activity,
+        courtVm
     )
 
 }
