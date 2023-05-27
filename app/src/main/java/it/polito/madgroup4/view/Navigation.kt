@@ -301,7 +301,7 @@ fun Navigation(
                     }
 
                     animatedComposable("Edit Profile") {
-                        EditProfile(setTopBarAction, user, userVm, loadingVm, true)
+                        EditProfile(setTopBarAction, user, userVm, loadingVm, false)
                     }
 
                     animatedComposable("Camera") {

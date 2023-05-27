@@ -130,7 +130,6 @@ fun EditProfile(
 
     val userPic = userVm.userPhoto.observeAsState()
 
-
     var editImageBitmap by remember {
         mutableStateOf<Bitmap?>(null)
     }
@@ -291,7 +290,7 @@ fun EditProfile(
 
 
                 Box(Modifier.align(Alignment.CenterHorizontally)) {
-                    if (editedUser?.photo == true) {
+                    if (editedUser?.photo == true && editImageBitmap != null) {
                         Image(
                             bitmap = editImageBitmap!!.asImageBitmap(),
                             contentDescription = null,
