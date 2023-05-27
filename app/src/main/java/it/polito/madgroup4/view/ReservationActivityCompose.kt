@@ -19,22 +19,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import dagger.hilt.android.AndroidEntryPoint
+import it.polito.madgroup4.model.Court
 import it.polito.madgroup4.model.LevelEnum
-import it.polito.madgroup4.model.PlayingCourt
-import it.polito.madgroup4.model.Reservation
-import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.model.Review
-import it.polito.madgroup4.utility.CourtWithSlots
+import it.polito.madgroup4.model.CourtWithSlots
 import it.polito.madgroup4.view.ui.theme.MADgroup4Theme
-import it.polito.madgroup4.viewmodel.CourtViewModel
 import it.polito.madgroup4.viewmodel.LoadingStateViewModel
 import it.polito.madgroup4.viewmodel.ReservationViewModel
-import it.polito.madgroup4.viewmodel.ReviewViewModel
 import it.polito.madgroup4.viewmodel.SplashViewModel
 import it.polito.madgroup4.viewmodel.UserViewModel
-import java.text.SimpleDateFormat
 import java.time.LocalDate
-import java.util.Date
 
 
 @AndroidEntryPoint
@@ -44,93 +38,35 @@ class ReservationActivityCompose : ComponentActivity() {
 
     val userVm by viewModels<UserViewModel>()
 
-    val reviewVm by viewModels<ReviewViewModel>()
-
     val loadingVm by viewModels<LoadingStateViewModel>()
 
     private val splashViewModel by viewModels<SplashViewModel>()
 
-    val courtVm by viewModels<CourtViewModel>()
-
-
-    val playingCourt = PlayingCourt(
-        1,
-        "Campo 1",
-        10.0,
-        "8:30",
-        "20:30",
-        "Tennis",
-        "Via Filippo Turati, 7",
-        "Torino",
-        "TO",
-        "3333333333",
-        "campo1@gmail.com"
-    )
-    val playingCourt2 = PlayingCourt(
-        2,
-        "Campo 2",
-        10.0,
-        "8:30",
-        "20:30",
-        "Football",
-        "Corso Francia",
-        "Torino",
-        "TO",
-        "3333333334",
-        "campo2@gmail.com"
-    )
-    val playingCourt3 = PlayingCourt(
-        3,
-        "Campo 3",
-        10.0,
-        "8:30",
-        "20:30",
-        "Tennis",
-        "Via Marconi",
-        "Torino",
-        "TO",
-        "3333333335",
-        "campo3@gmail.com"
-    )
-
-
-    val formatter = SimpleDateFormat("dd/MM/yyyy")
-    val reservation =
-        Reservation(1, 1, "francesco@gmail.com", 1, formatter.parse(formatter.format(Date())))
-    val reservation2 =
-        Reservation(2, 2, "francesco@gmail.com", 2, formatter.parse(formatter.format(Date())))
-    val reservation3 =
-        Reservation(3, 1, "marco@gmail.com", 2, formatter.parse(formatter.format(Date())))
-    val reservation4 = Reservation(4, 1, "francesco@gmail.com", 3, formatter.parse("11/05/2023"))
-    val reservation5 = Reservation(5, 2, "marco@gmail.com", 10, formatter.parse("21/05/2023"))
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
-        splashScreen.setKeepOnScreenCondition{splashViewModel.isLoading.value}
+        splashScreen.setKeepOnScreenCondition { splashViewModel.isLoading.value }
 
         super.onCreate(savedInstanceState)
         this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        reservationVm.savePlayingCourt(playingCourt)
-        reservationVm.savePlayingCourt(playingCourt2)
-        reservationVm.savePlayingCourt(playingCourt3)
-        reservationVm.saveReservationUtility(reservation)
-        reservationVm.saveReservationUtility(reservation2)
-        reservationVm.saveReservationUtility(reservation3)
-        reservationVm.saveReservationUtility(reservation4)
-        reservationVm.saveReservationUtility(reservation5)
+
 
         val connectivity = isNetworkAvailable(this)
 
         setContent {
-                MADgroup4Theme {
-                    Surface(
-                        modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface
-                    ) {
-                        MainScreen(reservationVm, userVm, reviewVm, loadingVm, courtVm, connectivity, this)
-                    }
+            MADgroup4Theme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface
+                ) {
+                    MainScreen(
+                        reservationVm,
+                        userVm,
+                        loadingVm,
+                        connectivity,
+                        this
+                    )
                 }
+            }
 
         }
     }
@@ -157,9 +93,7 @@ fun isNetworkAvailable(context: Context): Boolean {
 fun MainScreen(
     reservationVm: ReservationViewModel,
     userVm: UserViewModel,
-    reviewVm: ReviewViewModel,
     loadingVm: LoadingStateViewModel,
-    courtVm: CourtViewModel,
     connectivity: Boolean,
     activity: ReservationActivityCompose,
 ) {
@@ -167,8 +101,9 @@ fun MainScreen(
     var user = userVm.user.observeAsState()
 
     val (reservation, setReservation) = remember {
-        mutableStateOf(ReservationWithCourt(null, null))
+        mutableStateOf("")
     }
+
 
     val sports =
         listOf("Tennis", "Football", "Basketball", "Volleyball", "Baseball", "Rugby", "Hockey")
@@ -181,21 +116,23 @@ fun MainScreen(
     val (selectedDate, setSelectedDate) = remember { mutableStateOf(LocalDate.now()) }
     val (selectedCourt, setSelectedCourt) = remember { mutableStateOf(CourtWithSlots(null, null)) }
     val (selectedSlot, setSelectedSlot) = remember { mutableStateOf(-1) }
-    val (showedCourt, setShowedCourt) = remember { mutableStateOf(PlayingCourt()) }
+    val (showedCourt, setShowedCourt) = remember { mutableStateOf(Court()) }
     val (reviews, setReviews) = remember { mutableStateOf(listOf<Review>()) }
     val (favoriteSport, setFavoriteSport) = remember { mutableStateOf<Int?>(null) }
     val (selectedLevel, setSelectedLevel) = remember { mutableStateOf(LevelEnum.BEGINNER.name) }
 
+    var reservations = reservationVm.allRes.observeAsState(initial = null)
 
     //TODO: prendo l'id dalle preferences
     val userId: String = "francesco@gmail.com"
 
 
-    reservationVm.getAllReservations(userId)
+    /*
+        reservationVm.getAllReservations(userId)
+    */
 
     Navigation(
         reservationVm,
-        reviewVm,
         userVm,
         loadingVm,
         userId,
@@ -225,7 +162,7 @@ fun MainScreen(
         setSelectedDate,
         connectivity,
         activity,
-        courtVm
+        reservations
     )
 
 }

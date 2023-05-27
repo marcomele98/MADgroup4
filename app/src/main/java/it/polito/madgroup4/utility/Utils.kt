@@ -73,6 +73,10 @@ fun formatDateToTimestamp(date: LocalDate): Timestamp {
     return Timestamp(Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant()))
 }
 
+fun formatDateToTimestamp(date: Date): Timestamp {
+    return Timestamp(Date.from(date.toInstant()))
+}
+
 fun formatTimestampToString(timestamp: Timestamp): String {
     val milliseconds = timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000
     val date = Date(milliseconds)

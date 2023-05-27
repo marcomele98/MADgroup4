@@ -14,7 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -27,7 +27,6 @@ import it.polito.madgroup4.utility.formatDate
 import it.polito.madgroup4.view.components.ReservationDetails
 import it.polito.madgroup4.viewmodel.LoadingStateViewModel
 import it.polito.madgroup4.viewmodel.ReservationViewModel
-import it.polito.madgroup4.viewmodel.ReviewViewModel
 import it.polito.madgroup4.viewmodel.UserViewModel
 import java.time.LocalTime
 import java.util.Date
@@ -36,29 +35,20 @@ import java.util.Date
 @ExperimentalMaterial3Api
 @Composable
 fun ShowReservation(
-    reservationVm: ReservationViewModel,
-    reviewVm: ReviewViewModel,
-    userVm: UserViewModel,
-    reservation: ReservationWithCourt,
+    reservationId: String,
     navController: NavController,
-    loadingVm: LoadingStateViewModel
+    reservations: State<List<ReservationWithCourt>?>
 ) {
 
     val openDialog = remember { mutableStateOf(false) }
 
-    reservationVm.getSlotsByCourtIdAndDate(
-        reservation.playingCourt!!.id, reservation.reservation!!.date, userVm.user.value!!.email!!
-    )
+    val reservation = reservations.value?.find { it.reservation?.id == reservationId }
 
-    reviewVm.getReviewByReservationId(reservation.reservation.id)
-
-    val review = reviewVm.review.observeAsState(initial = null)
-
-    val isInThePast = reservation.reservation.date < formatDate(Date())
-            || (formatDate(Date()) == reservation.reservation.date
+    val isInThePast = reservation?.reservation?.date!!.toDate() < formatDate(Date())
+            || (formatDate(Date()) == formatDate(reservation.reservation.date.toDate())
             && LocalTime.parse(
         calculateStartEndTime(
-            reservation.playingCourt.openingTime!!,
+            reservation.playingCourt!!.openingTime!!,
             reservation.reservation.slotNumber
         ).split("-")[0].trim()
     ).isBefore(
@@ -77,7 +67,7 @@ fun ShowReservation(
                 openDialog.value = false
             }, confirmButton = {
                 TextButton(onClick = {
-                    reservationVm.deleteReservation(reservation.reservation, loadingVm, "Reservation deleted successfully", "Error while deleting the reservation")
+//                    reservationVm.deleteReservation(reservation.reservation, loadingVm, "Reservation deleted successfully", "Error while deleting the reservation")
                     openDialog.value = false
                     navController.navigate("Reservations")
                 }) {
@@ -102,15 +92,15 @@ fun ShowReservation(
         }
 
         ReservationDetails(
-            reservation.playingCourt,
-            reservation.reservation.date,
+            reservation.playingCourt!!,
+            reservation.reservation.date.toDate(),
             reservation.reservation.slotNumber,
             reservation.reservation.particularRequests
         )
 
-        if (review.value != null) {
+        if (reservation.reservation.review != null) {
             Spacer(modifier = Modifier.height(30.dp))
-            ReviewList(reviews = listOf(review.value!!))
+            ReviewList(reviews = listOf(reservation.reservation.review!!))
         }
 
         Spacer(modifier = Modifier.weight(1f))
@@ -125,7 +115,7 @@ fun ShowReservation(
             ) {
                 Text(text = "Delete")
             }
-        } else if (review.value == null) {
+        } else if (reservation.reservation.review == null) {
             Button(
                 onClick = { navController.navigate("Rate This Playing Court") }, //modificichiamo? in questo momento valutiamo il playing court ma associato alla prenotazione
                 modifier = Modifier

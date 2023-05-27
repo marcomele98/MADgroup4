@@ -2,7 +2,6 @@ package it.polito.madgroup4.view.components
 
 import android.content.Intent
 import android.net.Uri
-import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Call
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Euro
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Mail
@@ -36,14 +34,14 @@ import com.gowtham.ratingbar.RatingBar
 import com.gowtham.ratingbar.RatingBarConfig
 import com.gowtham.ratingbar.RatingBarStyle
 import com.gowtham.ratingbar.StepSize
-import it.polito.madgroup4.model.PlayingCourt
+import it.polito.madgroup4.model.Court
 import it.polito.madgroup4.model.Review
 import it.polito.madgroup4.utility.floatEquals
 import it.polito.madgroup4.utility.imageSelector
 
 @Composable
 fun CourtDetails(
-    playingCourt: PlayingCourt,
+    playingCourt: Court,
     reviews: List<Review>,
     onClick: () -> Unit,
 ) {

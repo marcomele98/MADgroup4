@@ -1,58 +1,15 @@
 package it.polito.madgroup4.model
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.PrimaryKey
-import java.util.Date
-
-@Entity(
-    tableName = "reviews",
-    foreignKeys = [
-        ForeignKey(
-            entity = PlayingCourt::class,
-            parentColumns = ["id"],
-            childColumns = ["court_id"],
-            onDelete = ForeignKey.CASCADE
-        ),
-        ForeignKey(
-            entity = Reservation::class,
-            parentColumns = ["id"],
-            childColumns = ["reservation_id"],
-            onDelete = ForeignKey.CASCADE
-        )
-    ]
-)
+import com.google.firebase.Timestamp
 
 data class Review(
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
-
-    @ColumnInfo(name = "court_id")
-    val courtId: Long,
-
-    @ColumnInfo(name = "user_id")
-    val userId: String,
-
-    @ColumnInfo(name = "title")
-    var title: String,
-
-    @ColumnInfo(name = "service_rating")
+    val courtName: String = "",
+    var userId: String = "",
+    var title: String = "",
     var serviceRating: Float? = null,
-
-    @ColumnInfo(name = "structure_rating")
     var structureRating: Float? = null,
-
-    @ColumnInfo(name = "cleaning_rating")
     var cleaningRating: Float? = null,
-
-    @ColumnInfo(name = "score")
     var score: Float = 0f,
-
-    @ColumnInfo(name = "reservation_id")
-    var reservationId: Long? = null,
-
-    val date: Date,
-
-    var text: String? = null,
+    val date: Timestamp = Timestamp.now(),
+    var text: String? = null
 )

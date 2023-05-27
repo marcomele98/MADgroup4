@@ -9,24 +9,24 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import it.polito.madgroup4.model.PlayingCourt
+import it.polito.madgroup4.model.Court
 import it.polito.madgroup4.model.Review
 import it.polito.madgroup4.view.components.CourtDetails
-import it.polito.madgroup4.viewmodel.ReviewViewModel
+import it.polito.madgroup4.viewmodel.ReservationViewModel
 
 
 @ExperimentalMaterial3Api
 @Composable
 fun ShowCourt(
-    reviewVm: ReviewViewModel,
-    playingCourt: PlayingCourt,
+    reservationVm: ReservationViewModel,
+    playingCourt: Court,
     setReviews: (List<Review>) -> Unit,
     navController: NavController,
 ) {
 
-    reviewVm.getAllReviewsByCourtId(playingCourt.id)
+    reservationVm.getAllReviewsByCourtName(playingCourt.name!!)
 
-    val reviews = reviewVm.reviews.observeAsState(initial = emptyList())
+    val reviews = reservationVm.reviews.observeAsState(initial = emptyList())
 
     Column(
         Modifier

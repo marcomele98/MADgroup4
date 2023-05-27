@@ -8,16 +8,16 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import it.polito.madgroup4.model.PlayingCourt
+import it.polito.madgroup4.model.Court
 import it.polito.madgroup4.view.components.SportCardSelector
-import it.polito.madgroup4.viewmodel.CourtViewModel
+import it.polito.madgroup4.viewmodel.ReservationViewModel
 
 @Composable
 fun Courts(
     selectedSport: String,
-    setShowedCourt: (PlayingCourt) -> Unit,
+    setShowedCourt: (Court) -> Unit,
     navController: NavController,
-    courtVm: CourtViewModel
+    courtVm: ReservationViewModel
 ) {
 
     val playingCourts = courtVm.allCourts.observeAsState(initial = emptyList())
@@ -40,5 +40,4 @@ fun Courts(
             messageIfNoCourts = "No courts available for this sport"
         )
     }
-
 }

@@ -40,12 +40,12 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import it.polito.madgroup4.model.Court
 import it.polito.madgroup4.model.LevelEnum
-import it.polito.madgroup4.model.PlayingCourt
 import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.model.Review
 import it.polito.madgroup4.model.User
-import it.polito.madgroup4.utility.CourtWithSlots
+import it.polito.madgroup4.model.CourtWithSlots
 import it.polito.madgroup4.view.components.BottomNavBar
 import it.polito.madgroup4.view.components.FloatingFab
 import it.polito.madgroup4.view.components.TopBar
@@ -70,10 +70,8 @@ import it.polito.madgroup4.view.screens.ShowFavouriteSport
 import it.polito.madgroup4.view.screens.ShowReservation
 import it.polito.madgroup4.view.screens.SlotSelectionReservation
 import it.polito.madgroup4.view.screens.SportSelector
-import it.polito.madgroup4.viewmodel.CourtViewModel
 import it.polito.madgroup4.viewmodel.LoadingStateViewModel
 import it.polito.madgroup4.viewmodel.ReservationViewModel
-import it.polito.madgroup4.viewmodel.ReviewViewModel
 import it.polito.madgroup4.viewmodel.Status
 import it.polito.madgroup4.viewmodel.UserViewModel
 import kotlinx.coroutines.launch
@@ -95,14 +93,13 @@ class SnackbarVisualsWithError(
 @Composable
 fun Navigation(
     reservationVm: ReservationViewModel,
-    reviewVm: ReviewViewModel,
     userVm: UserViewModel,
     loadingVm: LoadingStateViewModel,
 
     userId: String,
 
-    reservation: ReservationWithCourt,
-    setReservationWithCourt: (ReservationWithCourt) -> Unit,
+    reservation: String,
+    setReservationWithCourt: (String) -> Unit,
 
     sports: List<String>,
     remainingSports: List<String>,
@@ -120,9 +117,9 @@ fun Navigation(
     selectedSlot: Int,
 
     setSelectedSlot: (Int) -> Unit,
-    showedCourt: PlayingCourt,
+    showedCourt: Court,
 
-    setShowedCourt: (PlayingCourt) -> Unit,
+    setShowedCourt: (Court) -> Unit,
     reviews: List<Review>,
 
     setReviews: (List<Review>) -> Unit,
@@ -138,7 +135,7 @@ fun Navigation(
     setSelectedDate: (LocalDate) -> Unit,
     connectivity: Boolean,
     activity: ReservationActivityCompose,
-    courtVm: CourtViewModel,
+    reservations: State<List<ReservationWithCourt>?>,
 
     ) {
     val navController = rememberAnimatedNavController()
@@ -238,7 +235,8 @@ fun Navigation(
             topBar = {
                 if (navBackStackEntry?.destination?.route != "Loading" && navBackStackEntry?.destination?.route != "No Connectivity") TopBar(
                     title = navBackStackEntry?.destination?.route ?: "",
-                    reservation = reservation,
+                    reservations = reservations,
+                    reservationId = reservation,
                     navController = navController,
                     topBarAction = topBarAction,
                     user = user,
@@ -324,8 +322,7 @@ fun Navigation(
 
                     animatedComposable("Reservations") {
                         Reservations(
-                            reservationVm,
-                            userId,
+                            reservations,
                             selectedDate,
                             setSelectedDate,
                             setReservationWithCourt,
@@ -336,13 +333,15 @@ fun Navigation(
 
                     animatedComposable("Edit Reservation") {
                         EditReservation(
-                            reservationVm, reservation, selectedSlot, setSelectedSlot, navController
+                            reservationVm, reservation, selectedSlot, setSelectedSlot, navController, reservations
                         )
                     }
 
                     animatedComposable("Reservation Details") {
                         ShowReservation(
-                            reservationVm, reviewVm, userVm, reservation, navController, loadingVm
+                            reservation,
+                            navController,
+                            reservations
                         )
                     }
 
@@ -351,12 +350,12 @@ fun Navigation(
                             reservationVm = reservationVm,
                             userVm = userVm,
                             loadingVm = loadingVm,
-                            playingCourt = selectedCourt.playingCourt!!,
+                            playingCourt = selectedCourt.playingCourt,
                             reservationDate = creationDate,
                             reservationTimeSlot = selectedSlot,
                             setSelectedSlot = setSelectedSlot,
                             navController = navController,
-                            setTopBarAction = setTopBarAction,
+                            setTopBarAction = setTopBarAction
                         )
                     }
 
@@ -365,12 +364,12 @@ fun Navigation(
                             reservationVm = reservationVm,
                             userVm = userVm,
                             loadingVm = loadingVm,
-                            playingCourt = reservation.playingCourt!!,
                             reservationDate = creationDate,
                             reservationTimeSlot = selectedSlot,
                             setSelectedSlot = setSelectedSlot,
                             navController = navController,
-                            reservation = reservation.reservation!!,
+                            reservationId = reservation,
+                            reservations = reservations,
                             setTopBarAction = setTopBarAction
                         )
                     }
@@ -402,7 +401,7 @@ fun Navigation(
 
                     animatedComposable("Playing Courts") {
                         Courts(
-                            courtVm = courtVm,
+                            courtVm = reservationVm,
                             selectedSport = selectedSport,
                             setShowedCourt = setShowedCourt,
                             navController = navController
@@ -411,7 +410,7 @@ fun Navigation(
 
                     animatedComposable("Playing Court Details") {
                         ShowCourt(
-                            reviewVm = reviewVm,
+                            reservationVm = reservationVm,
                             playingCourt = showedCourt,
                             setReviews = setReviews,
                             navController = navController
@@ -420,12 +419,14 @@ fun Navigation(
 
                     animatedComposable("Rate This Playing Court") {
                         ReviewForm(
-                            reviewVm = reviewVm,
+                            reservationVm = reservationVm,
                             userId = userId,
-                            reservation = reservation,
+                            reservationId = reservation,
+                            reservations = reservations,
                             navController = navController,
                             loadingVm = loadingVm,
-                            setTopBarAction = setTopBarAction
+                            setTopBarAction = setTopBarAction,
+                            nickname = user.value?.nickname ?: ""
                         )
                     }
 

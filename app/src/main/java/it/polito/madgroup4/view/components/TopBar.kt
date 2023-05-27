@@ -1,6 +1,5 @@
 package it.polito.madgroup4.view.components
 
-import android.content.Context
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
@@ -16,20 +15,15 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import it.polito.madgroup4.model.Profile
 import it.polito.madgroup4.model.ReservationWithCourt
-import it.polito.madgroup4.model.Sport
 import it.polito.madgroup4.model.User
 import it.polito.madgroup4.utility.calculateStartEndTime
 import it.polito.madgroup4.utility.formatDate
 import it.polito.madgroup4.utility.imageSelector
-import it.polito.madgroup4.viewmodel.UserViewModel
 import java.time.LocalTime
 import java.util.Date
 
@@ -37,17 +31,20 @@ import java.util.Date
 @Composable
 fun TopBar(
     title: String,
-    reservation: ReservationWithCourt? = null,
     navController: NavController,
     user: State<User?>,
     topBarAction: () -> Unit = {},
     favoriteSport: Int? = null,
+    reservations: State<List<ReservationWithCourt>?>,
+    reservationId: String,
 ) {
 
+    val reservation = reservations.value?.find { it.reservation?.id == reservationId }
+
     var isInThePast = false
-    if (reservation!!.reservation != null) {
-        isInThePast = reservation.reservation!!.date < formatDate(Date())
-                || (formatDate(Date()) == reservation.reservation.date
+    if (reservation?.reservation != null) {
+        isInThePast = reservation?.reservation?.date!!.toDate() < formatDate(Date())
+                || (formatDate(Date()) == formatDate(reservation.reservation.date.toDate())
                 && LocalTime.parse(
             calculateStartEndTime(
                 reservation.playingCourt!!.openingTime!!,

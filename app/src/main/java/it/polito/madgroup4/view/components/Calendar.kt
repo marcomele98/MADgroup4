@@ -38,6 +38,7 @@ import io.github.boguszpawlowski.composecalendar.header.MonthState
 import io.github.boguszpawlowski.composecalendar.header.WeekState
 import io.github.boguszpawlowski.composecalendar.selection.DynamicSelectionState
 import it.polito.madgroup4.model.Reservation
+import it.polito.madgroup4.model.ReservationWithCourt
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.ZoneId
@@ -47,7 +48,7 @@ import java.util.Locale
 @Composable
 fun Calendar(
     calendarState: CalendarState<DynamicSelectionState>,
-    allReservations: List<Reservation>?,
+    allReservations: List<ReservationWithCourt>?,
 ) {
     SelectableCalendar(
         daysOfWeekHeader = {
@@ -61,10 +62,10 @@ fun Calendar(
             MyDay(
                 state = dayState,
                 reservations = allReservations?.firstOrNull() {
-                    it.date.toInstant()
-                        .atZone(ZoneId.systemDefault())
-                        .toLocalDate() == dayState.date
-                },
+                    it.reservation?.date?.toDate()?.toInstant()
+                        ?.atZone(ZoneId.systemDefault())
+                        ?.toLocalDate() == dayState.date
+                }?.reservation,
                 showReservations = true,
                 isOpacized = !dayState.date.isBefore(LocalDate.now()),
             )

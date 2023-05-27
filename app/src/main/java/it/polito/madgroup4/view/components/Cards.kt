@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
@@ -31,7 +30,7 @@ import com.gowtham.ratingbar.RatingBarConfig
 import com.gowtham.ratingbar.RatingBarStyle
 import com.gowtham.ratingbar.StepSize
 import it.polito.madgroup4.model.Achievement
-import it.polito.madgroup4.model.PlayingCourt
+import it.polito.madgroup4.model.Court
 import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.model.Review
 import it.polito.madgroup4.model.Sport
@@ -43,7 +42,7 @@ import it.polito.madgroup4.utility.imageSelector
 @Composable
 fun ReservationCard(
     reservation: ReservationWithCourt,
-    setReservation: (ReservationWithCourt) -> Unit,
+    setReservation: (String) -> Unit,
     navController: NavController
 ) {
 
@@ -55,7 +54,7 @@ fun ReservationCard(
         .padding(bottom = 10.dp)
         .fillMaxWidth()
         .clickable {
-            setReservation(reservation)
+            setReservation(reservation.reservation.id!!)
             navController.navigate("Reservation Details")
         }) {
         Column(
@@ -101,7 +100,7 @@ fun ReservationCard(
 
 @Composable
 fun PlayingCourtCard(
-    playingCourt: PlayingCourt,
+    playingCourt: Court,
     onClick: () -> Unit,
     enabled: Boolean = true
 ) {
@@ -229,6 +228,15 @@ fun ReviewCard(
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
+
+            Row( verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+                Text(
+                    text = "@" + review.userId,
+                    fontSize = 20.sp
+                )
+            }
+
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
@@ -245,8 +253,6 @@ fun ReviewCard(
                 )
             }
             Spacer(modifier = Modifier.height(10.dp))
-
-            //TODO: aggiungi l'autore della recensione
 
             if (review.structureRating ?: 0f > 0f) {
                 Evaluation(stars = review.structureRating ?: 0f, label = "structure ")

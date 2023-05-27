@@ -20,33 +20,24 @@ import com.gowtham.ratingbar.RatingBarConfig
 import com.gowtham.ratingbar.RatingBarStyle
 import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.model.Review
-import it.polito.madgroup4.utility.formatDate
+import it.polito.madgroup4.utility.formatDateToTimestamp
 import it.polito.madgroup4.utility.imageSelector
 import it.polito.madgroup4.viewmodel.LoadingStateViewModel
-import it.polito.madgroup4.viewmodel.ReviewViewModel
+import it.polito.madgroup4.viewmodel.ReservationViewModel
 import it.polito.madgroup4.viewmodel.Status
 import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun ReviewForm(
-    reviewVm: ReviewViewModel,
+    reservationVm: ReservationViewModel,
     userId: String,
-    reservation: ReservationWithCourt,
     navController: NavController,
     loadingVm: LoadingStateViewModel,
-    review: Review = Review(
-        courtId = reservation.playingCourt!!.id,
-        userId = userId,
-        title = "",
-        serviceRating = 0f,
-        structureRating = 0f,
-        cleaningRating = 0f,
-        text = "",
-        date = formatDate(Date()),
-        reservationId = reservation.reservation!!.id
-    ),
-    setTopBarAction: (() -> Unit) -> Unit
+    setTopBarAction: (() -> Unit) -> Unit,
+    reservationId: String,
+    reservations: State<List<ReservationWithCourt>?>,
+    nickname: String
 ) {
 
     val (service, setService) = remember { mutableStateOf(0.toFloat()) }
@@ -56,7 +47,22 @@ fun ReviewForm(
     var title by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    setTopBarAction{
+    val reservation = reservations.value?.find { it.reservation?.id == reservationId }
+
+
+    val review: Review = Review(
+        courtName = reservation?.playingCourt!!.name!!,
+        userId = nickname,
+        title = "",
+        serviceRating = 0f,
+        structureRating = 0f,
+        cleaningRating = 0f,
+        text = "",
+        date = formatDateToTimestamp(Date()),
+    )
+
+
+    setTopBarAction {
         // I voti sono tutti opzionali (ma almeno uno deve esserci), nel caso uno non venga inserito non deve essere conteggiato nella media della review
         keyboardController?.hide()
         val atLeastOnRating = structure != 0f || cleaning != 0f || service != 0f
@@ -67,17 +73,21 @@ fun ReviewForm(
         review.structureRating = structure
         review.cleaningRating = cleaning
 
-        if(title.trim() == ""){
+
+        if (title.trim() == "") {
             loadingVm.setStatus(Status.Error("You have to insert a title", null))
-        }else if(!atLeastOnRating){
+        } else if (!atLeastOnRating) {
             loadingVm.setStatus(Status.Error("You have to insert at least one rating", null))
         } else {
             review.title = title
-            reviewVm.saveReview(
-                review,
+            reservation.reservation?.review = review
+            loadingVm.setStatus(Status.Loading)
+            reservationVm.saveReservation(
+                reservation.reservation!!,
                 loadingVm,
                 "Review saved successfully",
-                "Error while saving review"
+                "Error while saving review",
+                "Reservation Details"
             )
             navController.popBackStack()
         }

@@ -10,7 +10,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -20,37 +19,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import it.polito.madgroup4.model.ReservationWithCourt
-import it.polito.madgroup4.viewmodel.ReservationViewModel
-import java.sql.Date
-import java.text.SimpleDateFormat
 
 @Composable
 fun ReservationList(
-    reservationVm: ReservationViewModel,
-    userId: String,
-    date: String,
-    setReservation: (ReservationWithCourt) -> Unit,
+    reservations: List<ReservationWithCourt>?,
+    setReservation: (String) -> Unit,
     navController: NavController
 ) {
 
-    val formatter = SimpleDateFormat("dd/MM/yyyy")
-
-    //TODO: change 1 to userVm.user.value!!.id
-    reservationVm.getReservationsByDate(
-        formatter.parse(formatter.format(Date.valueOf(date))),
-        userId
-    )
-    val reservations = reservationVm.reservations.observeAsState(initial = null)
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .clip(RoundedCornerShape(12.dp))
     ) {
-        if(reservations.value == null) {
+        if(reservations == null) {
             CircularProgressIndicator(Modifier.align(Alignment.Center))
         }
-        else if (reservations.value!!.isEmpty()) {
+        else if (reservations.isEmpty()) {
             Text(
                 text = "No reservations for the selected date",
                 modifier = Modifier
@@ -67,9 +53,9 @@ fun ReservationList(
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                items(reservations.value!!.size) { index ->
-                    ReservationCard(reservations.value!![index], setReservation, navController)
-                    if (index == reservations.value!!.size - 1) {
+                items(reservations.size) { index ->
+                    ReservationCard(reservations[index], setReservation, navController)
+                    if (index == reservations.size - 1) {
                         Spacer(modifier = Modifier.height(70.dp))
                     }
                 }

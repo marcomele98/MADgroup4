@@ -18,8 +18,7 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import javax.inject.Inject
 
-@HiltViewModel
-class UserViewModel @Inject constructor() : ViewModel() {
+class UserViewModel : ViewModel() {
 
     private var _user = MutableLiveData<User>().apply { value = null }
     val user: LiveData<User> = _user

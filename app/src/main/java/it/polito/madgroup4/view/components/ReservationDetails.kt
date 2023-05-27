@@ -13,10 +13,8 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Euro
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Schedule
-import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,7 +23,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import it.polito.madgroup4.model.PlayingCourt
+import it.polito.madgroup4.model.Court
 import it.polito.madgroup4.utility.calculateStartEndTime
 import it.polito.madgroup4.utility.imageSelector
 import java.text.SimpleDateFormat
@@ -33,7 +31,7 @@ import java.util.Date
 
 @Composable
 fun ReservationDetails(
-    playingCourt: PlayingCourt,
+    playingCourt: Court,
     reservationDate: Date,
     reservationTimeSlot: Int,
     particularRequests: String? = null

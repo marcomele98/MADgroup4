@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -28,8 +29,8 @@ import androidx.navigation.NavController
 import io.github.boguszpawlowski.composecalendar.SelectableWeekCalendar
 import io.github.boguszpawlowski.composecalendar.rememberSelectableWeekCalendarState
 import io.github.boguszpawlowski.composecalendar.week.Week
-import it.polito.madgroup4.model.PlayingCourt
-import it.polito.madgroup4.utility.CourtWithSlots
+import it.polito.madgroup4.model.Court
+import it.polito.madgroup4.model.CourtWithSlots
 import it.polito.madgroup4.utility.formatDate
 import it.polito.madgroup4.utility.getWeekdaysStartingOn
 import it.polito.madgroup4.view.components.DaysOfWeekHeader
@@ -77,9 +78,12 @@ fun CreateReservation(
 
     val formatter = SimpleDateFormat("dd/MM/yyyy")
 
-    reservationVm.getAllPlayingCourtsBySportAndDate(
-        formatter.parse(formatter.format(java.sql.Date.valueOf(date.toString()))), selectedSport
-    )
+
+    LaunchedEffect(Unit) {
+        reservationVm.getAllPlayingCourtsBySportAndDate(
+            formatter.parse(formatter.format(java.sql.Date.valueOf(date.toString()))), selectedSport
+        )
+    }
 
     val playingCourts = reservationVm.playingCourts.observeAsState(initial = emptyList())
 
@@ -124,9 +128,9 @@ fun CreateReservation(
                     isActive = !dayState.date.isBefore(LocalDate.now()),
                     state = dayState,
                     reservations = allReservations?.firstOrNull() {
-                        it.date.toInstant().atZone(ZoneId.systemDefault())
-                            .toLocalDate() == dayState.date
-                    },
+                        it.reservation?.date?.toDate()?.toInstant()?.atZone(ZoneId.systemDefault())
+                            ?.toLocalDate() == dayState.date
+                    }?.reservation,
                 )
             },
         )
@@ -134,7 +138,7 @@ fun CreateReservation(
         Spacer(modifier = Modifier.height(16.dp))
 
         PlayingCourtList(
-            playingCourts = filteredCourts.map { it.playingCourt!! },
+            playingCourts = filteredCourts.map { it.playingCourt!!},
             onClick = onClick,
             messageIfNoCourts = "No courts available for this sport on this day"
         )
@@ -145,7 +149,7 @@ fun CreateReservation(
 
 @Composable
 fun PlayingCourtList(
-    playingCourts: List<PlayingCourt>,
+    playingCourts: List<Court>,
     onClick: (Int) -> Unit,
     messageIfNoCourts: String
 ) {
