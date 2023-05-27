@@ -211,7 +211,6 @@ fun EditProfile(
     setTopBarAction {
 
         keyboardController?.hide()
-        loadingVm.setStatus(Status.Loading)
 
         if ((editedUser?.name?.trim() ?: "") == "") {
             loadingVm.setStatus(Status.Error("You have to insert a name", null))
