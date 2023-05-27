@@ -57,6 +57,7 @@ import it.polito.madgroup4.view.screens.CreateReservation
 import it.polito.madgroup4.view.screens.EditLevelSelector
 import it.polito.madgroup4.view.screens.EditProfile
 import it.polito.madgroup4.view.screens.EditReservation
+import it.polito.madgroup4.view.screens.FirstLogin
 import it.polito.madgroup4.view.screens.LevelSelector
 import it.polito.madgroup4.view.screens.NoConnectivity
 import it.polito.madgroup4.view.screens.Profile
@@ -224,7 +225,11 @@ fun Navigation(
     } else {
 
         Scaffold(bottomBar = {
-            if (navBackStackEntry?.destination?.route != "Loading" && navBackStackEntry?.destination?.route != "No Connectivity") BottomNavBar(
+            if (navBackStackEntry?.destination?.route != "Loading"
+                && navBackStackEntry?.destination?.route != "No Connectivity"
+                && navBackStackEntry?.destination?.route != "Welcome"
+                && navBackStackEntry?.destination?.route != "Complete Your Profile"
+            ) BottomNavBar(
                 navController = navController
             )
         },
@@ -249,7 +254,7 @@ fun Navigation(
             Box(Modifier.padding(it)) {
                 AnimatedNavHost(
                     navController = navController,
-                    startDestination = if (user.value?.email != null) "Reservations" else "Sign up"
+                    startDestination = if (user.value?.email != null) "Reservations" else "Welcome"
                 ) {
 
                     fun animatedComposable(
@@ -258,27 +263,23 @@ fun Navigation(
                     ) {
                         composable(route, content = content, enterTransition = {
                             slideIntoContainer(
-                                AnimatedContentScope.SlideDirection.Up,
-                                animationSpec = tween(300)
+                                AnimatedContentScope.SlideDirection.Up, animationSpec = tween(300)
                             )
                         }, exitTransition = {
 
                             slideOutOfContainer(
-                                AnimatedContentScope.SlideDirection.Up,
-                                animationSpec = tween(300)
+                                AnimatedContentScope.SlideDirection.Up, animationSpec = tween(300)
                             )
                         }, popEnterTransition = {
 
                             slideIntoContainer(
-                                AnimatedContentScope.SlideDirection.Up,
-                                animationSpec = tween(300)
+                                AnimatedContentScope.SlideDirection.Up, animationSpec = tween(300)
                             )
 
                         }, popExitTransition = {
 
                             slideOutOfContainer(
-                                AnimatedContentScope.SlideDirection.Up,
-                                animationSpec = tween(300)
+                                AnimatedContentScope.SlideDirection.Up, animationSpec = tween(300)
                             )
 
                         })
@@ -299,7 +300,7 @@ fun Navigation(
                     }
 
                     animatedComposable("Edit Profile") {
-                        EditProfile(setTopBarAction, user, userVm, navController, loadingVm, true)
+                        EditProfile(setTopBarAction, user, userVm, loadingVm, true)
                     }
 
                     animatedComposable("Camera") {
@@ -500,14 +501,15 @@ fun Navigation(
                         LoadingScreen()
                     }
 
-                    animatedComposable("Sign Up") {
+                    animatedComposable("Complete Your Profile") {
                         EditProfile(
-                            setTopBarAction,
-                            user,
-                            userVm,
+                            setTopBarAction, user, userVm, loadingVm, signUp = true
+                        )
+                    }
+
+                    animatedComposable("Welcome") {
+                        FirstLogin(
                             navController,
-                            loadingVm,
-                            signUp = true
                         )
                     }
 

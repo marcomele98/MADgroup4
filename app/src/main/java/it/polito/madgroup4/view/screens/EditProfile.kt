@@ -30,12 +30,14 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -46,6 +48,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import it.polito.madgroup4.R
 import it.polito.madgroup4.model.User
+import it.polito.madgroup4.utility.isValidEmail
 import it.polito.madgroup4.utility.rotateBitmap
 import it.polito.madgroup4.utility.uriToBitmap
 import it.polito.madgroup4.view.LoadingScreen
@@ -54,13 +57,12 @@ import it.polito.madgroup4.viewmodel.Status
 import it.polito.madgroup4.viewmodel.UserViewModel
 
 
-@OptIn(ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalPermissionsApi::class, ExperimentalComposeUiApi::class)
 @Composable
 fun EditProfile(
     setTopBarAction: (() -> Unit) -> Unit,
     user: State<User?>,
     userVm: UserViewModel,
-    navController: NavController,
     loadingVm: LoadingStateViewModel,
     signUp: Boolean = false,
 ) {
@@ -205,27 +207,27 @@ fun EditProfile(
             launchGallery()
     }
 
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     setTopBarAction {
+
+        keyboardController?.hide()
         loadingVm.setStatus(Status.Loading)
-        if(signUp) {
-            userVm.signUpAnonymously(
-                editedUser!!,
-                loadingVm,
-                "Profile created successfully",
-                "Error while creating profile",
-                if (editImageUri != null) rotateBitmap(
-                    uriToBitmap(editImageUri!!, context)!!,
-                    context,
-                    editImageUri!!
-                ) else null,
-                "Profile"
-            )
+
+        if ((editedUser?.name?.trim() ?: "") == "") {
+            loadingVm.setStatus(Status.Error("You have to insert a name", null))
+        } else if ((editedUser?.surname?.trim() ?: "") == "") {
+            loadingVm.setStatus(Status.Error("You have to insert a surname", null))
+        } else if ((editedUser?.nickname?.trim() ?: "") == "") {
+            loadingVm.setStatus(Status.Error("You have to insert a nickname", null))
+        } else if (!isValidEmail(editedUser?.email?.trim() ?: "")) {
+            loadingVm.setStatus(Status.Error("You have to insert a valid academic email", null))
         } else {
             userVm.saveUser(
                 editedUser!!,
                 loadingVm,
-                "Profile edited successfully",
-                "Error while editing profile",
+                "Profile ${if(signUp) "created" else "edited"} successfully",
+                "Error while ${if(signUp) "creating" else "editing"} profile",
                 if (editImageUri != null) rotateBitmap(
                     uriToBitmap(editImageUri!!, context)!!,
                     context,
@@ -234,9 +236,8 @@ fun EditProfile(
                 "Profile"
             )
         }
-        //navController.navigate("Profile")
     }
-
+    //navController.navigate("Profile")
 
 
     if (openDialog.value) {

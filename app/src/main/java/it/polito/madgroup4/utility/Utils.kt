@@ -7,14 +7,25 @@ import android.content.pm.PackageManager
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
 import android.graphics.Matrix
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.SystemClock
 import android.provider.MediaStore
+import android.text.TextUtils
+import android.util.Base64
 import android.util.Log
+import android.util.Patterns
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.SportsBaseball
+import androidx.compose.material.icons.filled.SportsBasketball
+import androidx.compose.material.icons.filled.SportsHockey
+import androidx.compose.material.icons.filled.SportsRugby
 import androidx.compose.material.icons.filled.SportsSoccer
 import androidx.compose.material.icons.filled.SportsTennis
+import androidx.compose.material.icons.filled.SportsVolleyball
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.core.content.ContextCompat
 import com.google.firebase.Timestamp
@@ -29,15 +40,6 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.util.Date
 import java.util.Locale
-import android.graphics.Canvas
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
-import android.util.Base64
-import androidx.compose.material.icons.filled.SportsBaseball
-import androidx.compose.material.icons.filled.SportsBasketball
-import androidx.compose.material.icons.filled.SportsHockey
-import androidx.compose.material.icons.filled.SportsRugby
-import androidx.compose.material.icons.filled.SportsVolleyball
 
 
 fun calculateStartEndTime(startTime: String, slotId: Int): String {
@@ -270,4 +272,19 @@ fun bitmapToString(bitmap: Bitmap): String {
     val byteArray = outputStream.toByteArray()
     val encodedString = Base64.encodeToString(byteArray, Base64.DEFAULT)
     return encodedString
+}
+
+
+fun isValidEmail(target: CharSequence): Boolean {
+    return if (TextUtils.isEmpty(target)) {
+        false
+    } else {
+        val control : Boolean = Patterns.EMAIL_ADDRESS.matcher(target).matches()
+        if(control){
+            val domain = target.toString().substring(target.toString().indexOf("@") + 1)
+            return domain.endsWith("unito.it") || domain.endsWith("polito.it")
+        } else {
+            false
+        }
+    }
 }

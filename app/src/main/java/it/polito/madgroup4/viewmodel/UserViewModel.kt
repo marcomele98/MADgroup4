@@ -13,19 +13,14 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import dagger.hilt.android.lifecycle.HiltViewModel
-import it.polito.madgroup4.model.Repository
 import it.polito.madgroup4.model.User
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import java.io.ByteArrayOutputStream
 import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
-class UserViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
-
-    private val viewModelScope = CoroutineScope(Dispatchers.Main)/*    private var _user = MutableLiveData<User>().apply { value = null }
-        val user: LiveData<User> = _user*/
+class UserViewModel @Inject constructor() : ViewModel() {
 
     private var _user = MutableLiveData<User>().apply { value = null }
     val user: LiveData<User> = _user
@@ -40,7 +35,7 @@ class UserViewModel @Inject constructor(private val repository: Repository) : Vi
 
 
     private var storage = Firebase.storage("gs://madgroup4-5de93.appspot.com")
-    var storageRef = storage.reference
+    private var storageRef = storage.reference
 
     init {
         val currentUser = auth.currentUser
@@ -49,7 +44,7 @@ class UserViewModel @Inject constructor(private val repository: Repository) : Vi
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         val currentUserId = auth.currentUser!!.uid
-                        db.collection("users2").document(currentUserId).set(User())
+                        db.collection("users2").document(currentUserId).set(User(currentUserId))
                             .addOnSuccessListener {
                                 createUserListener(currentUserId)
                             }
@@ -82,74 +77,6 @@ class UserViewModel @Inject constructor(private val repository: Repository) : Vi
         }
     }
 
-    fun signUpAnonymously(
-        editedUser: User,
-        loadingVm: LoadingStateViewModel,
-        message: String,
-        error: String,
-        bitmap: Bitmap?,
-        nextRoute: String
-    ) {
-        auth.signInAnonymously()
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val currentUserId = auth.currentUser!!.uid
-                    saveUser(
-                        editedUser.copy(id = currentUserId),
-                        loadingVm,
-                        message,
-                        error,
-                        bitmap,
-                        nextRoute
-                    )
-                    userListener =
-                        db.collection("users2").document(currentUserId)
-                            .addSnapshotListener { r, e ->
-                                _user.value = if (e != null) throw e
-                                else r?.toObject(User::class.java)
-                            }
-                    val pathReference = storageRef
-                        .child("images")
-                        .child("${currentUserId}.jpg")
-                    val localFile = File.createTempFile("images", "jpg")
-                    pathReference.getFile(localFile).addOnSuccessListener {
-                        // Local temp file has been created
-                        _userPhoto.value =
-                            (BitmapFactory.decodeFile(localFile.absolutePath))
-                    }.addOnFailureListener {
-                        // Handle any errors
-                        Log.i("test", "error", it)
-                    }
-                } else {
-                    // Gestisci l'errore durante il login.
-                }
-            }
-    }
-
-    /*    fun saveUsername(username: String, completion: (Boolean) -> Unit) {
-            val user = auth.currentUser
-            val userId = user?.uid
-
-            if (userId != null) {
-                val userRef = db.collection("users").document(userId)
-                val userData = hashMapOf(
-                    "username" to username,
-                    // Add any other user information you want to collect
-                )
-
-                userRef.set(userData)
-                    .addOnSuccessListener {
-                        completion(true)
-                    }
-                    .addOnFailureListener { exception ->
-                        // Handle the error during saving the user data
-                        completion(false)
-                    }
-            } else {
-                completion(false)
-            }
-        }*/
-
 
     override fun onCleared() {
         super.onCleared();
@@ -167,7 +94,7 @@ class UserViewModel @Inject constructor(private val repository: Repository) : Vi
     ) {
 
         fun saveUserDetails() {
-            db.collection("users2").document(editedUser.id!!)
+            db.collection("users2").document(auth.currentUser!!.uid)
                 .set(editedUser, SetOptions.merge())
                 .addOnSuccessListener {
                     Log.i("test", "User updated successfully")
@@ -179,7 +106,7 @@ class UserViewModel @Inject constructor(private val repository: Repository) : Vi
         }
         stateViewModel.setStatus(Status.Loading)
         if (imageBitmap != null) {
-            uploadImage(imageBitmap, editedUser.id!!) {
+            uploadImage(imageBitmap, auth.currentUser!!.uid) {
                 saveUserDetails()
             }
         } else {
@@ -245,20 +172,4 @@ class UserViewModel @Inject constructor(private val repository: Repository) : Vi
         }
         Log.i("test_vm", "after ref ${ref.downloadUrl}")
     }
-
-
-
-
-    //TODO: metto l'id dell'utente loggato in preferences o lo hardcodato
-    /*    fun getUser(id: String) {
-            repository.getById(id).observeForever { user ->
-                _user.value = user
-            }
-        }*/
-
-    /*    fun saveUser(user: User) {
-            viewModelScope.launch {
-                repository.saveUser(user)
-            }
-        }*/
 }

@@ -79,7 +79,7 @@ fun TopBar(
                 }
         },
         navigationIcon = {
-            if (title != "Reservations" && title != "Profile") {
+            if (title != "Reservations" && title != "Profile" && title != "Welcome") {
                 IconButton(onClick = { navController.popBackStack() }) {
                     Icon(
                         Icons.Default.KeyboardArrowLeft,
@@ -112,7 +112,7 @@ fun TopBar(
                 title == "Confirm Changes" ||
                 title == "Edit Your Level" ||
                 title == "Create Achievement" ||
-                title == "Sign Up"
+                title == "Complete Your Profile"
             ) {
                 IconButton(onClick = {
                     topBarAction()

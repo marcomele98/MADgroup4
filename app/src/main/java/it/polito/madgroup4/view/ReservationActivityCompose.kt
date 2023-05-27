@@ -17,9 +17,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.AndroidEntryPoint
 import it.polito.madgroup4.model.LevelEnum
 import it.polito.madgroup4.model.PlayingCourt
@@ -28,11 +26,11 @@ import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.model.Review
 import it.polito.madgroup4.utility.CourtWithSlots
 import it.polito.madgroup4.view.ui.theme.MADgroup4Theme
+import it.polito.madgroup4.viewmodel.LoadingStateViewModel
 import it.polito.madgroup4.viewmodel.ReservationViewModel
 import it.polito.madgroup4.viewmodel.ReviewViewModel
-import it.polito.madgroup4.viewmodel.UserViewModel
-import it.polito.madgroup4.viewmodel.LoadingStateViewModel
 import it.polito.madgroup4.viewmodel.SplashViewModel
+import it.polito.madgroup4.viewmodel.UserViewModel
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.Date
@@ -45,11 +43,11 @@ class ReservationActivityCompose : ComponentActivity() {
 
     val userVm by viewModels<UserViewModel>()
 
-    val reviewVm by viewModels<ReviewViewModel>()
+    private val reviewVm by viewModels<ReviewViewModel>()
 
     val loadingVm by viewModels<LoadingStateViewModel>()
 
-    val splashViewModel by viewModels<SplashViewModel>()
+    private val splashViewModel by viewModels<SplashViewModel>()
 
 
     val playingCourt = PlayingCourt(
@@ -91,12 +89,7 @@ class ReservationActivityCompose : ComponentActivity() {
         "3333333335",
         "campo3@gmail.com"
     )
-    /*    val u1 =
-            User(1, "Mario", "Rossi", "mariorossi98", "mario@gmail.com" )
-        val u2 =
-            User(2, "Luca", "Bianchi", "lucabianchi97", "bianchi@gmail.com", )
-        val u3 =
-            User(3, "Giuseppe", "Verdi", "giuseppeverdi96", "verdi@gmail.com")*/
+
 
     val formatter = SimpleDateFormat("dd/MM/yyyy")
     val reservation =
