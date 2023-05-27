@@ -41,11 +41,11 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import it.polito.madgroup4.model.Court
+import it.polito.madgroup4.model.CourtWithSlots
 import it.polito.madgroup4.model.LevelEnum
 import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.model.Review
 import it.polito.madgroup4.model.User
-import it.polito.madgroup4.model.CourtWithSlots
 import it.polito.madgroup4.view.components.BottomNavBar
 import it.polito.madgroup4.view.components.FloatingFab
 import it.polito.madgroup4.view.components.TopBar
@@ -111,9 +111,9 @@ fun Navigation(
     creationDate: LocalDate,
 
     setCreationDate: (LocalDate) -> Unit,
-    selectedCourt: CourtWithSlots,
+    selectedCourt: String,
 
-    setSelectedCourt: (CourtWithSlots) -> Unit,
+    setSelectedCourt: (String) -> Unit,
     selectedSlot: Int,
 
     setSelectedSlot: (Int) -> Unit,
@@ -136,6 +136,7 @@ fun Navigation(
     connectivity: Boolean,
     activity: ReservationActivityCompose,
     reservations: State<List<ReservationWithCourt>?>,
+    courtsWithSlots: State<List<CourtWithSlots>?>,
 
     ) {
     val navController = rememberAnimatedNavController()
@@ -350,12 +351,12 @@ fun Navigation(
                             reservationVm = reservationVm,
                             userVm = userVm,
                             loadingVm = loadingVm,
-                            playingCourt = selectedCourt.playingCourt,
+                            playingCourt = selectedCourt,
+                            courtsWithSlots = courtsWithSlots,
                             reservationDate = creationDate,
                             reservationTimeSlot = selectedSlot,
                             setSelectedSlot = setSelectedSlot,
-                            navController = navController,
-                            setTopBarAction = setTopBarAction
+                            setTopBarAction = setTopBarAction,
                         )
                     }
 
@@ -367,10 +368,10 @@ fun Navigation(
                             reservationDate = creationDate,
                             reservationTimeSlot = selectedSlot,
                             setSelectedSlot = setSelectedSlot,
-                            navController = navController,
+                            setTopBarAction = setTopBarAction,
                             reservationId = reservation,
                             reservations = reservations,
-                            setTopBarAction = setTopBarAction
+                            courtsWithSlots = courtsWithSlots
                         )
                     }
 
@@ -392,7 +393,8 @@ fun Navigation(
                     animatedComposable("Select A Time Slot") {
                         SlotSelectionReservation(
                             date = creationDate,
-                            selectedCourt = selectedCourt,
+                            selectedCourtName = selectedCourt,
+                            courtsWithSlots = courtsWithSlots,
                             selectedSlot = selectedSlot,
                             setSelectedSlot = setSelectedSlot,
                             navController = navController

@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -54,7 +55,7 @@ fun CreateReservation(
     selectedSport: String,
     setDate: (LocalDate) -> Unit,
     setSelectedSlot: (Int) -> Unit,
-    setSelectedCourt: (CourtWithSlots) -> Unit,
+    setSelectedCourt: (String) -> Unit,
     navController: NavController,
     setSelectedDate: (LocalDate) -> Unit,
 ) {
@@ -104,7 +105,7 @@ fun CreateReservation(
     })
 
     val onClick = { index: Int ->
-        setSelectedCourt(filteredCourts[index])
+        filteredCourts[index].playingCourt?.name?.let { setSelectedCourt(it) }
         navController.navigate("Select A Time SLot")
     }
 
@@ -187,14 +188,17 @@ fun PlayingCourtList(
 @Composable
 fun SlotSelectionReservation(
     date: LocalDate,
-    selectedCourt: CourtWithSlots,
+    selectedCourtName: String,
+    courtsWithSlots: State<List<CourtWithSlots>?>,
     selectedSlot: Int,
     setSelectedSlot: (Int) -> Unit,
     navController: NavController
 ) {
 
+    val selectedCourt = courtsWithSlots.value?.find { it.playingCourt?.name == selectedCourtName }
+
     SlotSelector(selectedSlot = selectedSlot,
-        slots = selectedCourt.slots!!,
+        slots = selectedCourt?.slots!!,
         date = Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant()),
         onClick = {
             if (!selectedCourt.slots!![it].isBooked) {

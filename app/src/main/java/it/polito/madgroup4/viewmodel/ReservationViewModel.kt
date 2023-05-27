@@ -51,6 +51,8 @@ class ReservationViewModel : ViewModel() {
         MutableLiveData<List<Review>>().apply { value = emptyList() }
     val reviews: LiveData<List<Review>> = _reviews
 
+    private var courtWithSlotsListener: ListenerRegistration? = null
+
     init {
         db.collection("courts")
             .get()
@@ -100,8 +102,8 @@ class ReservationViewModel : ViewModel() {
             .whereEqualTo("courtName", name)
             .get()
             .addOnSuccessListener { documents ->
-                var res = documents.map { it.toObject(Reservation::class.java)}.map { it.review }
-                if(res.isNotEmpty()) {
+                var res = documents.map { it.toObject(Reservation::class.java) }.map { it.review }
+                if (res.isNotEmpty()) {
                     _reviews.value = res.filterNotNull()
                 }
 
@@ -126,6 +128,33 @@ class ReservationViewModel : ViewModel() {
       } */
 
     fun getAllPlayingCourtsBySportAndDate(date: Date, sport: String) {
+
+        db.collection("courts").whereEqualTo("sport", sport)
+            .get()
+            .addOnSuccessListener { documents ->
+                courtWithSlotsListener = db.collection("reservations")
+                    .whereEqualTo("date", formatDateToTimestamp(date))
+                    .addSnapshotListener() { r, e ->
+                        val reservations = r?.map { it.toObject(Reservation::class.java) }
+                        val courts = documents.map { it.toObject(Court::class.java) }
+                        _playingCourts.value = courts.map { c ->
+                            val res = reservations?.filter { res -> res.courtName == c.name }
+                            val slotsNotAvailable =
+                                res?.filter { it.date.toDate() == date }?.map { it.slotNumber }
+                            val totSlot =
+                                slotsNotAvailable?.let {
+                                    getAllSlots(
+                                        it,
+                                        c.openingTime!!,
+                                        c.closingTime!!
+                                    )
+                                }
+                            CourtWithSlots(c, totSlot)
+                        }
+                    }
+
+            }
+
         db.collection("reservations")
             .whereEqualTo("date", formatDateToTimestamp(date))
             .get()

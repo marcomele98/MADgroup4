@@ -22,7 +22,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import it.polito.madgroup4.model.Court
 import it.polito.madgroup4.model.LevelEnum
 import it.polito.madgroup4.model.Review
-import it.polito.madgroup4.model.CourtWithSlots
 import it.polito.madgroup4.view.ui.theme.MADgroup4Theme
 import it.polito.madgroup4.viewmodel.LoadingStateViewModel
 import it.polito.madgroup4.viewmodel.ReservationViewModel
@@ -105,6 +104,7 @@ fun MainScreen(
     }
 
 
+
     val sports =
         listOf("Tennis", "Football", "Basketball", "Volleyball", "Baseball", "Rugby", "Hockey")
     val (remainingSports, setRemainingSports) = remember {
@@ -114,7 +114,7 @@ fun MainScreen(
     val (selectedSport, setSelectedSport) = remember { mutableStateOf(sports[0]) }
     val (creationDate, setCreationDate) = remember { mutableStateOf(LocalDate.now()) }
     val (selectedDate, setSelectedDate) = remember { mutableStateOf(LocalDate.now()) }
-    val (selectedCourt, setSelectedCourt) = remember { mutableStateOf(CourtWithSlots(null, null)) }
+    val (selectedCourt, setSelectedCourt) = remember { mutableStateOf("") }
     val (selectedSlot, setSelectedSlot) = remember { mutableStateOf(-1) }
     val (showedCourt, setShowedCourt) = remember { mutableStateOf(Court()) }
     val (reviews, setReviews) = remember { mutableStateOf(listOf<Review>()) }
@@ -122,6 +122,8 @@ fun MainScreen(
     val (selectedLevel, setSelectedLevel) = remember { mutableStateOf(LevelEnum.BEGINNER.name) }
 
     var reservations = reservationVm.allRes.observeAsState(initial = null)
+
+    val courtsWithSlots = reservationVm.playingCourts.observeAsState(initial = null)
 
     //TODO: prendo l'id dalle preferences
     val userId: String = "francesco@gmail.com"
@@ -162,7 +164,8 @@ fun MainScreen(
         setSelectedDate,
         connectivity,
         activity,
-        reservations
+        reservations,
+        courtsWithSlots
     )
 
 }
