@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -66,12 +67,7 @@ fun ShowReservation(
         )
     }
 
-    Column(
-        Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
-            .padding(bottom = 16.dp)
-    ) {
+    Column( modifier = Modifier.fillMaxWidth()) {
 
         if (openDialog.value) {
             AlertDialog(onDismissRequest = {
@@ -102,17 +98,33 @@ fun ShowReservation(
             )
         }
 
-        ReservationDetails(
-            reservation.playingCourt!!,
-            reservation.reservation.date.toDate(),
-            reservation.reservation.slotNumber,
-            reservation.reservation.particularRequests,
-            reservation.reservation.price,
-        )
+        LazyColumn(
+            Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 16.dp)
+        ) {
 
-        if (reservation.reservation.review != null) {
-            Spacer(modifier = Modifier.height(30.dp))
-            ReviewList(reviews = listOf(reservation.reservation.review!!), showNickname = false)
+            item {
+
+                ReservationDetails(
+                    reservation.playingCourt!!,
+                    reservation.reservation.date.toDate(),
+                    reservation.reservation.slotNumber,
+                    reservation.reservation.particularRequests,
+                    reservation.reservation.price,
+                    reservation.reservation.stuff,
+                )
+
+                if (reservation.reservation.review != null) {
+                    Spacer(modifier = Modifier.height(30.dp))
+                    ReviewList(
+                        reviews = listOf(reservation.reservation.review!!),
+                        showNickname = false
+                    )
+                }
+
+            }
         }
 
         Spacer(modifier = Modifier.weight(1f))
@@ -139,6 +151,5 @@ fun ShowReservation(
                 Text(text = "Rate This Playing Court")
             }
         }
-
     }
 }

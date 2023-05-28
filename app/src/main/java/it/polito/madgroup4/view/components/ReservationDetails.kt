@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Euro
@@ -24,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import it.polito.madgroup4.model.Court
+import it.polito.madgroup4.model.Stuff
 import it.polito.madgroup4.utility.calculateStartEndTime
 import it.polito.madgroup4.utility.imageSelector
 import java.text.SimpleDateFormat
@@ -35,7 +37,8 @@ fun ReservationDetails(
     reservationDate: Date,
     reservationTimeSlot: Int,
     particularRequests: String? = null,
-    price: Double
+    price: Double,
+    stuff: List<Stuff>? = null
 ) {
 
     val startEndTime = calculateStartEndTime(
@@ -96,6 +99,23 @@ fun ReservationDetails(
             text = startEndTime
             , description = "Schedule"
         )
+
+        if(stuff != null){
+            val filteredStuff = stuff.filter { it.quantity!! > 0 }
+            if (filteredStuff.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(text = "Stuff: ", fontSize = 20.sp)
+            }
+                filteredStuff.forEach{ stuff ->
+                    Text(
+                        text = "${stuff.name} x${stuff.quantity}",
+                        fontSize = 18.sp,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    )
+
+            }
+        }
 
         if (particularRequests != null && particularRequests.trim() != "") {
             Spacer(modifier = Modifier.height(20.dp))
