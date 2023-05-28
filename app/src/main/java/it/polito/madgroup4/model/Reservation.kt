@@ -21,4 +21,8 @@ data class Reservation (
 
     var stuff: MutableList<Stuff> = mutableListOf(),
 
-    var price: Double = 0.0,)
+    var price: Double = 0.0,
+
+    var sport: String = "",
+
+    var reservationInfo: ReservationInfo? = null)

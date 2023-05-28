@@ -62,6 +62,7 @@ class ReservationViewModel : ViewModel() {
         reservationListener?.remove()
         reservationListener = db.collection("reservations")
             .whereEqualTo("userId", userId)
+            //.whereArrayContains("reservationInfo.confirmedUsers", userId) //integrando le condivise si dovrà mettere questo filtro e non quello di prima
             .addSnapshotListener { r, e ->
                 _allRes.value = if (e != null) throw e
                 else r?.map {
@@ -161,5 +162,33 @@ class ReservationViewModel : ViewModel() {
                 stateViewModel.setStatus(Status.Error(error, null))
             }
     }
+
+    //TODO query che dovrebbe prendere tutte le prenotazioni della nuova sezione con gli inviti ricevuti
+    fun getPendingReservationsBySportAndUser(userId: String, sport: String) {
+        db.collection("reservations")
+            .whereArrayContains("reservationInfo.pendingUsers", userId)
+            .whereEqualTo("sport", sport)
+            .get()
+            .addOnSuccessListener { documents ->
+               documents.map { it.toObject(Reservation::class.java) }
+
+            }
+    }
+
+    //TODO query che dovrebbe prendere tutte le prenotazioni della nuova sezione 'Scopri' con le partite pubbliche a cui ci si può unire
+    fun getAllPublicReservationsBySportAndDate(date: Date, sport: String) {
+        db.collection("reservations")
+            .whereEqualTo("sport", sport)
+            .whereEqualTo("date", date)
+            .whereEqualTo("reservationInfo.privateReservation", false)
+            .whereGreaterThan("reservationInfo.totalNumber","reservationInfo.totalAvailable")
+            .get()
+            .addOnSuccessListener { documents ->
+                documents.map { it.toObject(Reservation::class.java) }
+            }
+            .addOnFailureListener { exception ->
+                println("Error getting documents: $exception")
+            }
+}
 
 }

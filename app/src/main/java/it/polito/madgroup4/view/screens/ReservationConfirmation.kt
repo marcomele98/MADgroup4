@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import it.polito.madgroup4.model.CourtWithSlots
 import it.polito.madgroup4.model.Reservation
+import it.polito.madgroup4.model.ReservationInfo
 import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.model.Stuff
 import it.polito.madgroup4.utility.formatDateToTimestamp
@@ -80,12 +81,31 @@ fun ReservationConfirmation(
                             )
                         )
                     )
-                )
+                ),
+                sport = courtWithSlots?.playingCourt?.sport!! //TODO aggiunto per fare agilmente le queries su reservations
             ), courtWithSlots?.playingCourt
         )
     } else {
         reservations?.value?.find { it.reservation?.id == reservationId }!!.copy()
     }
+
+    /*
+    //TODO giusto per provare
+    var tot = if ("Tennis" == courtWithSlots?.playingCourt?.sport)  4 else 10
+    val res = ReservationInfo(
+        tot,
+        tot-1,
+        false //TODO per ora provo con prenotazioni senza invito, tutti si possono aggiungere
+    )
+
+    //TODO se la reservation non ha id, lui è owner e va messo nella reservation come user id,
+    //TODO inoltre va aggiunto in confirmedUsers
+    //TODO quando faremo gli inviti, li metteremo in pending
+    //TODO se è invece update lo userId (l'owner) non va modificato
+    res.confirmedUsers.add(reservation!!.reservation!!.userId)
+
+    reservation.reservation!!.reservationInfo = res;
+     */
 
     val initialSlot = reservation?.reservation?.slotNumber
 
