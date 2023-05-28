@@ -17,5 +17,8 @@ data class Reservation (
 
     var particularRequests: String? = null,
 
-    var review: Review? = null
-)
+    var review: Review? = null,
+
+    var stuff: MutableList<Stuff> = mutableListOf(),
+
+    var price: Double = 0.0,)

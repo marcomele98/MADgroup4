@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,6 +25,7 @@ import androidx.navigation.NavController
 import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.utility.calculateStartEndTime
 import it.polito.madgroup4.utility.formatDate
+import it.polito.madgroup4.utility.formatTimestampToString
 import it.polito.madgroup4.view.components.ReservationDetails
 import it.polito.madgroup4.viewmodel.LoadingStateViewModel
 import it.polito.madgroup4.viewmodel.ReservationViewModel
@@ -37,7 +39,9 @@ import java.util.Date
 fun ShowReservation(
     reservationId: String,
     navController: NavController,
-    reservations: State<List<ReservationWithCourt>?>
+    reservations: State<List<ReservationWithCourt>?>,
+    reservationVm: ReservationViewModel,
+    setSelectedCourt: (String) -> Unit,
 ) {
 
     val openDialog = remember { mutableStateOf(false) }
@@ -54,6 +58,13 @@ fun ShowReservation(
     ).isBefore(
         LocalTime.now()
     ))
+
+    LaunchedEffect(Unit){
+        setSelectedCourt(reservation.playingCourt!!.name!!)
+        reservationVm.getAllPlayingCourtsBySportAndDate(
+            formatDate(formatTimestampToString(reservation.reservation.date)), reservation.playingCourt!!.sport!!
+        )
+    }
 
     Column(
         Modifier
@@ -95,7 +106,8 @@ fun ShowReservation(
             reservation.playingCourt!!,
             reservation.reservation.date.toDate(),
             reservation.reservation.slotNumber,
-            reservation.reservation.particularRequests
+            reservation.reservation.particularRequests,
+            reservation.reservation.price,
         )
 
         if (reservation.reservation.review != null) {

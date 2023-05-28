@@ -1,20 +1,28 @@
 package it.polito.madgroup4.view.screens
 
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -23,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import it.polito.madgroup4.model.CourtWithSlots
 import it.polito.madgroup4.model.Reservation
 import it.polito.madgroup4.model.ReservationWithCourt
+import it.polito.madgroup4.model.Stuff
 import it.polito.madgroup4.utility.formatDateToTimestamp
 import it.polito.madgroup4.view.components.ReservationDetails
 import it.polito.madgroup4.viewmodel.LoadingStateViewModel
@@ -51,12 +60,15 @@ fun ReservationConfirmation(
 
     val courtWithSlots = courtsWithSlots.value?.find { it -> it.playingCourt?.name == playingCourt }
 
-    val reservation: ReservationWithCourt? = if (reservationId == null) {
+
+    var reservation: ReservationWithCourt? = if (reservationId == null) {
         ReservationWithCourt(
             Reservation(
                 courtName = playingCourt!!,
                 slotNumber = reservationTimeSlot,
                 userId = userVm.user.value!!.id!!,
+                price = courtWithSlots?.playingCourt?.price!!,
+                stuff = courtWithSlots.playingCourt?.stuff as MutableList<Stuff>,
                 date = formatDateToTimestamp(
                     SimpleDateFormat("dd/MM/yyyy").parse(
                         SimpleDateFormat("dd/MM/yyyy").format(
@@ -73,18 +85,22 @@ fun ReservationConfirmation(
         reservations?.value?.find { it.reservation?.id == reservationId }!!.copy()
     }
 
+    val initialSlot = reservation?.reservation?.slotNumber ?: -1
+
+    var price by remember { mutableStateOf(reservation?.reservation?.price!!) }
+
 
     var text by remember { mutableStateOf(reservation?.reservation?.particularRequests ?: "") }
-
 
     setTopBarAction {
         loadingVm.setStatus(Status.Loading)
         reservation?.reservation?.slotNumber = reservationTimeSlot
+        reservation?.reservation?.price = price
         if (text.trim() != "")
             reservation?.reservation?.particularRequests = text
         if (courtWithSlots?.slots?.get(
                 reservationTimeSlot
-            )?.isBooked == false
+            )?.isBooked == false || reservation!!.reservation!!.slotNumber == initialSlot
         ) {
             reservationVm.saveReservation(
                 reservation?.reservation!!,
@@ -111,8 +127,28 @@ fun ReservationConfirmation(
                 playingCourt = reservation?.playingCourt!!,
                 reservationDate = reservation.reservation?.date!!.toDate(),
                 reservationTimeSlot = reservationTimeSlot,
-                particularRequests = null
+                particularRequests = null,
+                price = price,
             )
+        }
+
+        item { Spacer(modifier = Modifier.height(20.dp)) }
+
+        items(reservation?.reservation?.stuff?.size ?: 0) {
+            val name = reservation?.reservation?.stuff?.get(it)?.name
+            var itemPrice = reservation?.reservation?.stuff?.get(it)?.price
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "${name!!}  ${itemPrice!!}€")
+                Spacer(modifier = Modifier.weight(1f))
+                NumberButton(
+                    initialQuantity = reservation?.reservation?.stuff?.get(it)?.quantity!!,
+                    onNumberChange = { n ->
+                    reservation!!.reservation!!.stuff[it].quantity = n
+                    price =
+                        reservation.playingCourt?.price!! +
+                                (0 + reservation!!.reservation!!.stuff.sumOf { item -> item.price!! * item.quantity!!.toDouble() })
+                })
+            }
         }
 
         item { Spacer(modifier = Modifier.height(20.dp)) }
@@ -138,4 +174,22 @@ fun ReservationConfirmation(
             )
         }
     }
+}
+
+@Composable
+fun NumberButton(initialQuantity: Int, onNumberChange: (Int) -> Unit) {
+    var number by remember { mutableStateOf(initialQuantity) }
+
+    IconButton(onClick = { if (number != 0) number-- }) {
+        Icon(Icons.Filled.Remove, contentDescription = "Decrement")
+    }
+
+    Text(text = number.toString(), modifier = Modifier.padding(horizontal = 8.dp))
+
+    IconButton(onClick = { number++ }) {
+        Icon(Icons.Filled.Add, contentDescription = "Increment")
+    }
+
+
+    onNumberChange(number)
 }

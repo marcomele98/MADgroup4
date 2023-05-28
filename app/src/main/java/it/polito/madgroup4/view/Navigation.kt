@@ -332,7 +332,7 @@ fun Navigation(
 
                     animatedComposable("Edit Reservation") {
                         EditReservation(
-                            reservationVm, reservation, selectedSlot, setSelectedSlot, navController, reservations
+                            reservation, selectedSlot, setSelectedSlot, navController, reservations, selectedCourt, courtsWithSlots
                         )
                     }
 
@@ -340,7 +340,9 @@ fun Navigation(
                         ShowReservation(
                             reservation,
                             navController,
-                            reservations
+                            reservations,
+                            reservationVm,
+                            setSelectedCourt
                         )
                     }
 
@@ -369,7 +371,8 @@ fun Navigation(
                             setTopBarAction = setTopBarAction,
                             reservationId = reservation,
                             reservations = reservations,
-                            courtsWithSlots = courtsWithSlots
+                            courtsWithSlots = courtsWithSlots,
+                            playingCourt = selectedCourt
                         )
                     }
 

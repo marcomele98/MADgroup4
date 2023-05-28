@@ -34,7 +34,8 @@ fun ReservationDetails(
     playingCourt: Court,
     reservationDate: Date,
     reservationTimeSlot: Int,
-    particularRequests: String? = null
+    particularRequests: String? = null,
+    price: Double
 ) {
 
     val startEndTime = calculateStartEndTime(
@@ -76,7 +77,7 @@ fun ReservationDetails(
 
         ReservationElement(
             icon = Icons.Default.Euro,
-            text = playingCourt.price.toString(),
+            text = price.toString(),
             description = "Price"
         )
 

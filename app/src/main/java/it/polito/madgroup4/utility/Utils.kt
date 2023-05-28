@@ -114,15 +114,13 @@ fun formatDate(date: Date): Date {
 }
 
 fun calculateAvailableSlot(
-    vm: ReservationViewModel,
+    listOfReservation: List<Int>,
     reservation: ReservationWithCourt
 ): List<Slot> {
 
     /*
         vm.getSlotsByCourtIdAndDate(reservation.reservation!!.courtId, reservation.reservation!!.date)
     */
-
-    var listOfReservation = vm.slots.value!!
 
     return getAllSlots(
         listOfReservation,

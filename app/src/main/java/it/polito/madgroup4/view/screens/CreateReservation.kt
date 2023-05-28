@@ -80,7 +80,7 @@ fun CreateReservation(
     val formatter = SimpleDateFormat("dd/MM/yyyy")
 
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(selectedSport, date) {
         reservationVm.getAllPlayingCourtsBySportAndDate(
             formatter.parse(formatter.format(java.sql.Date.valueOf(date.toString()))), selectedSport
         )
