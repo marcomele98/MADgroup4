@@ -42,25 +42,25 @@ class UserViewModel(reservationVm: ReservationViewModel) : ViewModel() {
                         val currentUserId = auth.currentUser!!.uid
                         db.collection("users2").document(currentUserId).set(User(currentUserId))
                             .addOnSuccessListener {
-                                createUserListener(currentUserId)
-                                reservationVm.aggiornaSnapshotListener(currentUserId)
+                                createUserListener(currentUserId, reservationVm )
                             }
                     } else {
                         Log.i("test", "error", task.exception)
                     }
                 }
         } else {
-            createUserListener(currentUser.uid)
+            createUserListener(currentUser.uid, reservationVm)
         }
     }
 
-    private fun createUserListener(uid: String) {
+    private fun createUserListener(uid: String, reservationVm: ReservationViewModel) {
         userListener =
             db.collection("users2").document(uid)
                 .addSnapshotListener { r, e ->
                     _user.value = if (e != null) throw e
                     else r?.toObject(User::class.java)
                 }
+        reservationVm.createReservationsListener(uid)
         val pathReference = storageRef
             .child("images")
             .child("${uid}.jpg")

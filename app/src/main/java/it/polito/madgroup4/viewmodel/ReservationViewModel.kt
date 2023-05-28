@@ -56,26 +56,13 @@ class ReservationViewModel : ViewModel() {
             .get()
             .addOnSuccessListener { documents ->
                 _allCourts.value = documents.map { it.toObject(Court::class.java) }
-                reservationListener =
-                    db.collection("reservations")
-                        .whereEqualTo("userId", auth.currentUser?.uid)
-                        .addSnapshotListener { r, e ->
-                            _allRes.value = if (e != null) throw e
-                            else r?.map {
-                                val res = it.toObject(Reservation::class.java)
-                                val court = _allCourts.value?.find { it.name == res.courtName }
-                                ReservationWithCourt(res, court)
-                            }
-                        }
             }
             .addOnFailureListener { exception ->
                 println("Error getting documents: $exception")
             }
     }
 
-    fun aggiornaSnapshotListener(userId: String) {
-        reservationListener?.remove()
-
+    fun createReservationsListener(userId: String) {
         reservationListener = db.collection("reservations")
             .whereEqualTo("userId", userId)
             .addSnapshotListener { r, e ->
