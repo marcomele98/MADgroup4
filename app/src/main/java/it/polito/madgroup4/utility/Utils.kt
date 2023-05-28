@@ -1,21 +1,14 @@
 package it.polito.madgroup4.utility
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.pm.PackageManager
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Canvas
 import android.graphics.Matrix
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.os.SystemClock
 import android.provider.MediaStore
 import android.text.TextUtils
-import android.util.Base64
 import android.util.Log
 import android.util.Patterns
 import androidx.compose.material.icons.Icons
@@ -27,11 +20,8 @@ import androidx.compose.material.icons.filled.SportsSoccer
 import androidx.compose.material.icons.filled.SportsTennis
 import androidx.compose.material.icons.filled.SportsVolleyball
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.core.content.ContextCompat
 import com.google.firebase.Timestamp
-import it.polito.madgroup4.model.ReservationWithCourt
-import it.polito.madgroup4.viewmodel.ReservationViewModel
-import java.io.ByteArrayOutputStream
+import it.polito.madgroup4.model.Slot
 import java.io.FileDescriptor
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -113,21 +103,6 @@ fun formatDate(date: Date): Date {
     return formatter.parse(formatter.format(date))
 }
 
-fun calculateAvailableSlot(
-    listOfReservation: List<Int>,
-    reservation: ReservationWithCourt
-): List<Slot> {
-
-    /*
-        vm.getSlotsByCourtIdAndDate(reservation.reservation!!.courtId, reservation.reservation!!.date)
-    */
-
-    return getAllSlots(
-        listOfReservation,
-        reservation.playingCourt!!.openingTime!!,
-        reservation.playingCourt!!.closingTime!!
-    )
-}
 
 fun getAllSlots(
     listOfReservation: List<Int>,
@@ -188,32 +163,6 @@ fun uriToBitmap(selectedFileUri: Uri, context: Context): Bitmap? {
 }
 
 
-fun saveProPicInternally(image: Bitmap, context: Context): Uri? {
-    // Check for permission
-    if (ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.READ_EXTERNAL_STORAGE
-        ) != PackageManager.PERMISSION_GRANTED ||
-        ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        ) != PackageManager.PERMISSION_GRANTED
-    ) {
-        // Request permission if not granted
-        println("Permission not granted")
-        return null
-    } else {
-        val filename = "img_${SystemClock.uptimeMillis()}" + ".jpeg"
-        val outputStream = context.openFileOutput(filename, Context.MODE_PRIVATE)
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        image.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
-        val byteArray = byteArrayOutputStream.toByteArray()
-        outputStream.write(byteArray)
-        outputStream.close()
-        return Uri.fromFile(context.getFileStreamPath(filename))
-
-    }
-}
 
 
 @SuppressLint("Range")
@@ -232,49 +181,7 @@ fun rotateBitmap(input: Bitmap, context: Context, editImageUri: Uri): Bitmap? {
     return Bitmap.createBitmap(input, 0, 0, input.width, input.height, rotationMatrix, true)
 }
 
-fun drawableToBitmap(drawable: Drawable): Bitmap? {
-    if (drawable is BitmapDrawable) {
-        // Se il Drawable è già una BitmapDrawable, restituisci direttamente la Bitmap
-        return drawable.bitmap
-    }
 
-    // Ottieni le dimensioni del Drawable
-    val width = drawable.intrinsicWidth
-    val height = drawable.intrinsicHeight
-
-    // Crea una Bitmap vuota con le dimensioni del Drawable
-    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-
-    // Crea un oggetto Canvas per disegnare sulla Bitmap
-    val canvas = Canvas(bitmap)
-
-    // Imposta il limite del disegno sulla dimensione del Drawable
-    drawable.setBounds(0, 0, canvas.width, canvas.height)
-
-    // Disegna il Drawable sulla Bitmap utilizzando il Canvas
-    drawable.draw(canvas)
-
-    // Restituisci la Bitmap creata
-    return bitmap
-}
-
-fun stringToBitmap(encodedString: String): Bitmap? {
-    try {
-        val decodedBytes = Base64.decode(encodedString, Base64.DEFAULT)
-        return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
-    } catch (e: Exception) {
-        e.printStackTrace()
-    }
-    return null
-}
-
-fun bitmapToString(bitmap: Bitmap): String {
-    val outputStream = ByteArrayOutputStream()
-    bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-    val byteArray = outputStream.toByteArray()
-    val encodedString = Base64.encodeToString(byteArray, Base64.DEFAULT)
-    return encodedString
-}
 
 
 fun isValidEmail(target: CharSequence): Boolean {

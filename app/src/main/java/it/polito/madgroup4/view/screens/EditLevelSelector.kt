@@ -11,7 +11,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,7 +51,6 @@ fun EditLevelSelector(
             null,
             "Your Sport"
         )
-//        navController.popBackStack()
     }
 
 

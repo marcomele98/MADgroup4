@@ -1,6 +1,5 @@
 package it.polito.madgroup4.view.components
 
-import android.provider.ContactsContract.CommonDataKinds.Nickname
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material3.ElevatedCard

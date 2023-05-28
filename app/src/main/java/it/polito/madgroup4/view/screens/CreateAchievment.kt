@@ -46,7 +46,6 @@ fun CreateAchievement(
     sport: Int,
     userState: State<User?>,
     loadingVm: LoadingStateViewModel,
-    navController: NavController,
     setTopBarAction: (() -> Unit) -> Unit,
 ) {
 
@@ -59,8 +58,6 @@ fun CreateAchievement(
         initialWeek = Week(getWeekdaysStartingOn(date, DayOfWeek.MONDAY)),
         firstDayOfWeek = DayOfWeek.MONDAY,
     )
-
-    //val allReservations = reservationVm.allRes.observeAsState().value
 
     if (date.isAfter(LocalDate.now()))
         date = LocalDate.now()
@@ -79,7 +76,6 @@ fun CreateAchievement(
             date = formatDateToTimestamp(date)
         )
         val user = userVm.user.value!!
-        //TODO: legacy needed refactor
         user.sports = user.sports.map { it ->
             if (it.name == userState.value!!.sports[sport].name) {
                 it.achievements = it.achievements + achievement

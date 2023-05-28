@@ -146,7 +146,7 @@ fun ReservationConfirmation(
 
         items(reservation?.reservation?.stuff?.size ?: 0) {
             val name = reservation?.reservation?.stuff?.get(it)?.name
-            var itemPrice = reservation?.reservation?.stuff?.get(it)?.price
+            val itemPrice = reservation?.reservation?.stuff?.get(it)?.price
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "${name!!}  ${itemPrice!!}€", fontSize = 22.sp)
                 Spacer(modifier = Modifier.weight(1f))
@@ -198,7 +198,6 @@ fun NumberButton(initialQuantity: Int, onNumberChange: (Int) -> Unit) {
     IconButton(onClick = { number++ }, Modifier.size(25.dp)) {
         Icon(Icons.Filled.Add, contentDescription = "Increment")
     }
-
 
     onNumberChange(number)
 }

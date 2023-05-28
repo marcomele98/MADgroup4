@@ -1,4 +1,5 @@
 package it.polito.madgroup4.view.screens
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

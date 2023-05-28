@@ -1,25 +1,20 @@
 package it.polito.madgroup4.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.google.android.gms.tasks.Tasks.await
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import it.polito.madgroup4.model.Court
+import it.polito.madgroup4.model.CourtWithSlots
 import it.polito.madgroup4.model.Reservation
 import it.polito.madgroup4.model.ReservationWithCourt
-import it.polito.madgroup4.model.CourtWithSlots
 import it.polito.madgroup4.model.Review
 import it.polito.madgroup4.utility.formatDateToTimestamp
 import it.polito.madgroup4.utility.getAllSlots
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import java.lang.Thread.sleep
 import java.util.Date
 
 class ReservationViewModel : ViewModel() {
@@ -37,7 +32,6 @@ class ReservationViewModel : ViewModel() {
     val allRes: LiveData<List<ReservationWithCourt>> = _allRes
 
     private val db = Firebase.firestore
-    private val auth = Firebase.auth
 
     private var reservationListener: ListenerRegistration? = null
 
@@ -56,6 +50,8 @@ class ReservationViewModel : ViewModel() {
             .get()
             .addOnSuccessListener { documents ->
                 _allCourts.value = documents.map { it.toObject(Court::class.java) }
+                if(Firebase.auth.currentUser != null)
+                    createReservationsListener(Firebase.auth.currentUser!!.uid)
             }
             .addOnFailureListener { exception ->
                 println("Error getting documents: $exception")
@@ -63,6 +59,7 @@ class ReservationViewModel : ViewModel() {
     }
 
     fun createReservationsListener(userId: String) {
+        reservationListener?.remove()
         reservationListener = db.collection("reservations")
             .whereEqualTo("userId", userId)
             .addSnapshotListener { r, e ->
@@ -154,7 +151,7 @@ class ReservationViewModel : ViewModel() {
         stateViewModel: LoadingStateViewModel,
         message: String,
         error: String,
-        nextRoute: String ? = null
+        nextRoute: String? = null
     ) {
         db.collection("reservations").document(reservation.id!!)
             .delete()

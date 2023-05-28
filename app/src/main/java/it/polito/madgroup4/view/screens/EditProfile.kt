@@ -43,7 +43,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
-import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import it.polito.madgroup4.R
@@ -51,7 +50,6 @@ import it.polito.madgroup4.model.User
 import it.polito.madgroup4.utility.isValidEmail
 import it.polito.madgroup4.utility.rotateBitmap
 import it.polito.madgroup4.utility.uriToBitmap
-import it.polito.madgroup4.view.LoadingScreen
 import it.polito.madgroup4.viewmodel.LoadingStateViewModel
 import it.polito.madgroup4.viewmodel.Status
 import it.polito.madgroup4.viewmodel.UserViewModel
@@ -111,7 +109,6 @@ fun EditProfile(
             { it: String -> setEditUser(editedUser?.copy(nickname = it)) },
             KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
         ),
-//        Pair(Icons.Default.Phone, editedUser.phone),
         listOf(
             Icons.Default.Email,
             editedUser?.email ?: "",
@@ -119,8 +116,7 @@ fun EditProfile(
             { it: String -> setEditUser(editedUser?.copy(email = it)) },
             KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Email)
         ),
-//        Pair(Icons.Default.Cake, formatter.format(editedUser.birthday)),
-//        Pair(Icons.Default.Transgender, editedUser.gender)
+
     )
 
 
@@ -152,11 +148,7 @@ fun EditProfile(
                 editImageUri = result.data?.data
                 val imageBitmap = uriToBitmap(editImageUri!!, context)
                 editImageBitmap = rotateBitmap(imageBitmap!!, context, editImageUri!!)
-//                userVm.uploadImage(rotatedBitmap!!)
-                //imageUri = saveProPicInternally(rotatedBitmap!!, context)
-//                val reducedBitmap = ThumbnailUtils.extractThumbnail(rotatedBitmap, 240, 240)
                 setEditUser(editedUser?.copy(photo = true))
-                //setEditedUser( editedUser.copy(photo = uri.toString()))
             }
         }
     )
@@ -168,12 +160,7 @@ fun EditProfile(
                 editImageUri = imageUri
                 val imageBitmap = uriToBitmap(editImageUri!!, context)
                 editImageBitmap = rotateBitmap(imageBitmap!!, context, editImageUri!!)
-//            val uri = userVm.uploadImage(imageBitmap!!)
-                //imageUri = saveProPicInternally(rotatedBitmap!!, context)
-                //val reducedBitmap = ThumbnailUtils.extractThumbnail(rotatedBitmap, 240, 240)
                 setEditUser(editedUser?.copy(photo = true))
-
-                //setEditedUser( editedUser.copy(photo = uri.toString()))
             }
         }
     )
@@ -236,7 +223,6 @@ fun EditProfile(
             )
         }
     }
-    //navController.navigate("Profile")
 
 
     if (openDialog.value) {

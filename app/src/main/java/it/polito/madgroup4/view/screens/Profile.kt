@@ -45,7 +45,6 @@ import androidx.navigation.NavController
 import it.polito.madgroup4.R
 import it.polito.madgroup4.model.LevelEnum
 import it.polito.madgroup4.model.User
-import it.polito.madgroup4.view.LoadingScreen
 import it.polito.madgroup4.view.components.SportCard
 import it.polito.madgroup4.viewmodel.UserViewModel
 

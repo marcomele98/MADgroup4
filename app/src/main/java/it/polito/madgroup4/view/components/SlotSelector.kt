@@ -20,7 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import it.polito.madgroup4.model.Reservation
-import it.polito.madgroup4.utility.Slot
+import it.polito.madgroup4.model.Slot
 import it.polito.madgroup4.utility.formatDate
 import java.time.LocalTime
 import java.util.Date

@@ -33,13 +33,11 @@ import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.utility.calculateStartEndTime
 import it.polito.madgroup4.utility.formatDate
 import it.polito.madgroup4.utility.formatTimestampToString
-import it.polito.madgroup4.view.LoadingScreen
 import it.polito.madgroup4.view.components.ReservationDetails
 import it.polito.madgroup4.view.components.ReviewCard
 import it.polito.madgroup4.viewmodel.LoadingStateViewModel
 import it.polito.madgroup4.viewmodel.ReservationViewModel
 import it.polito.madgroup4.viewmodel.Status
-import it.polito.madgroup4.viewmodel.UserViewModel
 import java.time.LocalTime
 import java.util.Date
 

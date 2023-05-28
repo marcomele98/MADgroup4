@@ -54,13 +54,13 @@ class UserViewModel(reservationVm: ReservationViewModel) : ViewModel() {
     }
 
     private fun createUserListener(uid: String, reservationVm: ReservationViewModel) {
+        reservationVm.createReservationsListener(uid)
         userListener =
             db.collection("users2").document(uid)
                 .addSnapshotListener { r, e ->
                     _user.value = if (e != null) throw e
                     else r?.toObject(User::class.java)
                 }
-        reservationVm.createReservationsListener(uid)
         val pathReference = storageRef
             .child("images")
             .child("${uid}.jpg")

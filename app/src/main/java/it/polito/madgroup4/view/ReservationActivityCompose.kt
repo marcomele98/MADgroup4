@@ -96,7 +96,7 @@ fun MainScreen(
     activity: ReservationActivityCompose,
 ) {
 
-    var user = userVm.user.observeAsState()
+    val user = userVm.user.observeAsState()
 
     val (reservation, setReservation) = remember {
         mutableStateOf("")

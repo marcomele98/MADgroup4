@@ -1,18 +1,11 @@
 package it.polito.madgroup4.view.screens
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.navigation.NavController
 import it.polito.madgroup4.model.CourtWithSlots
 import it.polito.madgroup4.model.ReservationWithCourt
-import it.polito.madgroup4.utility.calculateAvailableSlot
-import it.polito.madgroup4.utility.formatDate
-import it.polito.madgroup4.utility.formatTimestampToString
 import it.polito.madgroup4.view.components.SlotSelector
-import it.polito.madgroup4.viewmodel.ReservationViewModel
-import java.sql.Date
-import java.text.SimpleDateFormat
 
 @Composable
 fun EditReservation(

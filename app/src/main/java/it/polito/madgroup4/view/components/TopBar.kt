@@ -63,7 +63,6 @@ fun TopBar(
                 Row(
                     verticalAlignment = CenterVertically,
                 ) {
-                    //Spacer(modifier = Modifier.weight(1f))
                     Icon(
                         imageSelector(user?.value?.sports?.get(favoriteSport!!)?.name!!),
                         contentDescription = null
@@ -72,7 +71,6 @@ fun TopBar(
                     Text(
                         text = user?.value?.sports?.get(favoriteSport!!)?.name!!
                     )
-                    //Spacer(modifier = Modifier.weight(1f))
                 }
         },
         navigationIcon = {

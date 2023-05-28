@@ -58,7 +58,7 @@ fun ShowFavouriteSport(
 ) {
 
     val openDialog = remember { mutableStateOf(false) }
-    //val openDialogCard = remember { mutableStateOf(false) }
+
     var deletedAchievement by remember { mutableStateOf<Int?>(null) }
 
     if (openDialog.value) {

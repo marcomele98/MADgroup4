@@ -49,7 +49,6 @@ fun ReservationList(
         }
         else {
             LazyColumn(
-                //columns = GridCells.Fixed(2),
                 modifier = Modifier
                     .fillMaxSize()
             ) {
