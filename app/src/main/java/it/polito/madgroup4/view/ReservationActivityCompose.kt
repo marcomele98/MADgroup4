@@ -35,8 +35,6 @@ class ReservationActivityCompose : ComponentActivity() {
 
     val reservationVm by viewModels<ReservationViewModel>()
 
-    val userVm by viewModels<UserViewModel>()
-
     val loadingVm by viewModels<LoadingStateViewModel>()
 
     private val splashViewModel by viewModels<SplashViewModel>()
@@ -49,6 +47,7 @@ class ReservationActivityCompose : ComponentActivity() {
         super.onCreate(savedInstanceState)
         this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
+        val userVm = UserViewModel(reservationVm)
 
         val connectivity = isNetworkAvailable(this)
 
@@ -119,7 +118,7 @@ fun MainScreen(
     val (favoriteSport, setFavoriteSport) = remember { mutableStateOf<Int?>(null) }
     val (selectedLevel, setSelectedLevel) = remember { mutableStateOf(LevelEnum.BEGINNER.name) }
 
-    var reservations = reservationVm.allRes.observeAsState(initial = null)
+    val reservations = reservationVm.allRes.observeAsState(initial = null)
 
     val courtsWithSlots = reservationVm.playingCourts.observeAsState(initial = null)
 

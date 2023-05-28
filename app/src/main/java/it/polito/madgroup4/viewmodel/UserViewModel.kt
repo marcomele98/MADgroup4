@@ -12,13 +12,11 @@ import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
-import dagger.hilt.android.lifecycle.HiltViewModel
 import it.polito.madgroup4.model.User
 import java.io.ByteArrayOutputStream
 import java.io.File
-import javax.inject.Inject
 
-class UserViewModel : ViewModel() {
+class UserViewModel(reservationVm: ReservationViewModel) : ViewModel() {
 
     private var _user = MutableLiveData<User>().apply { value = null }
     val user: LiveData<User> = _user
@@ -45,6 +43,7 @@ class UserViewModel : ViewModel() {
                         db.collection("users2").document(currentUserId).set(User(currentUserId))
                             .addOnSuccessListener {
                                 createUserListener(currentUserId)
+                                reservationVm.aggiornaSnapshotListener(currentUserId)
                             }
                     } else {
                         Log.i("test", "error", task.exception)

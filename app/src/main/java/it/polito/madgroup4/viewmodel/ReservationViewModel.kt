@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.android.gms.tasks.Tasks.await
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.SetOptions
@@ -18,6 +19,7 @@ import it.polito.madgroup4.utility.formatDateToTimestamp
 import it.polito.madgroup4.utility.getAllSlots
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import java.lang.Thread.sleep
 import java.util.Date
 
 class ReservationViewModel : ViewModel() {
@@ -69,6 +71,28 @@ class ReservationViewModel : ViewModel() {
             .addOnFailureListener { exception ->
                 println("Error getting documents: $exception")
             }
+    }
+
+    fun aggiornaSnapshotListener(userId: String) {
+        reservationListener?.remove()
+
+        reservationListener = db.collection("reservations")
+            .whereEqualTo("userId", userId)
+            .addSnapshotListener { r, e ->
+                _allRes.value = if (e != null) throw e
+                else r?.map {
+                    val res = it.toObject(Reservation::class.java)
+                    val court = _allCourts.value?.find { it.name == res.courtName }
+                    ReservationWithCourt(res, court)
+                }
+            }
+
+    }
+
+    override fun onCleared() {
+        super.onCleared();
+        reservationListener?.remove();
+        courtWithSlotsListener?.remove();
     }
 
     fun saveReservation(
