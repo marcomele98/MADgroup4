@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -180,6 +182,9 @@ fun SportCardSelector(
                 Spacer(
                     modifier = Modifier.weight(1f)
                 )
+                Icon(
+                    Icons.Outlined.KeyboardArrowDown, contentDescription = "DownArrow"
+                )
             }
         }
     }
@@ -209,6 +214,9 @@ fun LevelCardSelector(
                 )
                 Spacer(
                     modifier = Modifier.weight(1f)
+                )
+                Icon(
+                    Icons.Outlined.KeyboardArrowDown, contentDescription = "DownArrow"
                 )
             }
         }

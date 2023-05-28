@@ -22,6 +22,8 @@ fun Courts(
 
     val playingCourts = courtVm.allCourts.observeAsState(initial = emptyList())
 
+    val filteredPlayingCourts = playingCourts.value.filter { it.sport == selectedSport }
+
     println(playingCourts.value)
 
     Column(
@@ -35,8 +37,8 @@ fun Courts(
                 onClick = { navController.navigate("Select Sport") })
         }
         PlayingCourtList(
-            playingCourts = playingCourts.value.filter { it.sport == selectedSport },
-            onClick = { setShowedCourt(playingCourts.value[it]); navController.navigate("Playing Court Details") },
+            playingCourts = filteredPlayingCourts,
+            onClick = { setShowedCourt(filteredPlayingCourts[it]); navController.navigate("Playing Court Details") },
             messageIfNoCourts = "No courts available for this sport"
         )
     }

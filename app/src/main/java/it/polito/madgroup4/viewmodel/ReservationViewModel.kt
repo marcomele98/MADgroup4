@@ -103,9 +103,8 @@ class ReservationViewModel : ViewModel() {
             .get()
             .addOnSuccessListener { documents ->
                 var res = documents.map { it.toObject(Reservation::class.java) }.map { it.review }
-                if (res.isNotEmpty()) {
-                    _reviews.value = res.filterNotNull()
-                }
+                _reviews.value = res.filterNotNull()
+
 
             }
             .addOnFailureListener { exception ->

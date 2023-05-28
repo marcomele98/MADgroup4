@@ -221,6 +221,7 @@ fun EditProfile(
         } else if (!isValidEmail(editedUser?.email?.trim() ?: "")) {
             loadingVm.setStatus(Status.Error("You have to insert a valid academic email", null))
         } else {
+            loadingVm.setStatus(Status.Loading)
             userVm.saveUser(
                 editedUser!!,
                 loadingVm,
@@ -275,7 +276,7 @@ fun EditProfile(
         )
     }
 
-    if (editImageBitmap != null || signUp) {
+    if ((editImageBitmap != null && editedUser?.photo == true) || signUp || editedUser?.photo == null) {
 
         Column(
             Modifier

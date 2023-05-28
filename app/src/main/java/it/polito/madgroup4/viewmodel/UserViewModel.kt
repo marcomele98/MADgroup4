@@ -102,7 +102,6 @@ class UserViewModel : ViewModel() {
                     stateViewModel.setStatus(Status.Error(error, nextRoute))
                 }
         }
-        stateViewModel.setStatus(Status.Loading)
         if (imageBitmap != null) {
             uploadImage(imageBitmap, auth.currentUser!!.uid) {
                 saveUserDetails()
