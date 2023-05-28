@@ -342,7 +342,9 @@ fun Navigation(
                             navController,
                             reservations,
                             reservationVm,
-                            setSelectedCourt
+                            setSelectedCourt,
+                            setSelectedSlot,
+                            loadingVm
                         )
                     }
 

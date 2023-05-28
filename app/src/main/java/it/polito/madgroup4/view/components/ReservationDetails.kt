@@ -16,11 +16,13 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -104,22 +106,39 @@ fun ReservationDetails(
             val filteredStuff = stuff.filter { it.quantity!! > 0 }
             if (filteredStuff.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(20.dp))
-                Text(text = "Stuff: ", fontSize = 20.sp)
+                Text(
+                    text = "Rented equipment", fontSize = 23.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontStyle = FontStyle.Italic
+                )
+                Spacer(modifier = Modifier.height(8.dp))
             }
                 filteredStuff.forEach{ stuff ->
-                    Text(
-                        text = "${stuff.name} x${stuff.quantity}",
-                        fontSize = 18.sp,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = "${stuff.name} x${stuff.quantity}",
+                            fontSize = 22.sp,
 
+                        )
+                        Spacer(modifier = Modifier.weight(1f))
+                        Text(
+                            text = "${stuff.quantity?.let { stuff.price?.times(it) }}€",
+                            fontSize = 22.sp,
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(4.dp))
             }
         }
 
         if (particularRequests != null && particularRequests.trim() != "") {
             Spacer(modifier = Modifier.height(20.dp))
-            Text(text = "Particular requests:", fontSize = 20.sp)
+            Text(
+                text = "Particular requests", fontSize = 23.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary,
+                fontStyle = FontStyle.Italic
+            )
             Spacer(modifier = Modifier.height(8.dp))
             ElevatedCard {
                 Text(

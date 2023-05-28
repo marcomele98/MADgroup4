@@ -29,8 +29,6 @@ fun EditReservation(
 
     val selectedCourt = courtsWithSlots.value?.find { it.playingCourt?.name == selectedCourtName }
 
-    if(selectedSlot == -1)
-        setSelectedSlot(reservation!!.reservation!!.slotNumber)
 
     SlotSelector(
         reservation = reservation!!.reservation,
