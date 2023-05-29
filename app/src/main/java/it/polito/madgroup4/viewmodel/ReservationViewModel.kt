@@ -93,13 +93,7 @@ class ReservationViewModel : ViewModel() {
         } else {
             id = db.collection("reservations").document().id
         }
-        db.collection("reservations").document(id)
-            .set(reservation.copy(id = id), SetOptions.merge())
-            .addOnSuccessListener {
-                stateViewModel.setStatus(Status.Success(message, nextRoute))
-            }.addOnFailureListener {
-                stateViewModel.setStatus(Status.Error(error, null))
-            }
+        saveReservationOnDB(id, reservation, stateViewModel, message, nextRoute, error)
     }
 
     fun getAllReviewsByCourtName(name: String) {
@@ -189,6 +183,104 @@ class ReservationViewModel : ViewModel() {
             .addOnFailureListener { exception ->
                 println("Error getting documents: $exception")
             }
-}
+    }
+
+    fun addInAPublicReservationAndSaveReservation(
+        reservation: Reservation,
+        stateViewModel: LoadingStateViewModel,
+        message: String,
+        error: String,
+        nextRoute: String? = "Reservations"
+    ) {
+        var id = reservation.id!!
+        var reservationInfo = reservation.reservationInfo
+        if (true) { //Todo come quando salviamo una prenotazione e vediamo se quello slot è ancora libero, dovremmo
+            //Todo vedere se c'è ancora posto prima di salvare. quindi magari bisognerebbe fare una query e vedere se il posto sia ancora libero
+            reservationInfo!!.totalAvailable = (reservationInfo.totalAvailable ?: 0) + 1
+            reservationInfo!!.confirmedUsers.add(id)
+        } else {
+            throw IllegalStateException("Reservation no longer available")
+        }
+        saveReservationOnDB(id, reservation, stateViewModel, message, nextRoute, error)
+    }
+
+    fun acceptAndSaveReservationInvitation(
+        reservation: Reservation,
+        stateViewModel: LoadingStateViewModel,
+        message: String,
+        error: String,
+        nextRoute: String? = "Reservations"
+    ) {
+        var id = reservation.id!!
+        var reservationInfo = reservation.reservationInfo
+        if (reservationInfo!!.pendingUsers.contains(id)) {
+            //rimuovi l'utente dalla lista degli inviti da accettare e settalo come utente confermato
+            reservationInfo!!.pendingUsers.remove(id)
+            reservationInfo!!.confirmedUsers.add(id)
+        } else {
+            throw IllegalStateException("User $id is not invited in this reservation")
+        }
+        saveReservationOnDB(id, reservation, stateViewModel, message, nextRoute, error)
+    }
+
+    fun rejectAndSaveReservationInvitation(
+        reservation: Reservation,
+        stateViewModel: LoadingStateViewModel,
+        message: String,
+        error: String,
+        nextRoute: String? = "Reservations"
+    ) {
+        var id = reservation.id!!
+        var reservationInfo = reservation.reservationInfo
+        if (reservationInfo!!.pendingUsers.contains(id)) {
+            //rimuovi l'utente dalla lista degli inviti da accettare
+            reservationInfo!!.pendingUsers.remove(id)
+            //poiché ha rifiutato, aumentiamo di 1 il numero di posti disponibili
+            reservationInfo.totalAvailable = (reservationInfo.totalAvailable ?: 0) + 1
+
+        } else {
+            throw IllegalStateException("User $id is not invited in this reservation")
+        }
+        saveReservationOnDB(id, reservation, stateViewModel, message, nextRoute, error)
+    }
+
+
+    //prima di chiamare le funzioni faremo un check. se chi vuole cancellare la prenotazione è l'owner (il suo id è quello userId salvato nella prenotazione)
+    //altrimenti uno semplicemente abbandona la partita, che sarà disponibile per altri, quindi si chiamerà questa funzione
+    fun cancelPartecipationToReservation(
+        reservation: Reservation,
+        stateViewModel: LoadingStateViewModel,
+        message: String,
+        error: String,
+        nextRoute: String? = "Reservations"
+    ) {
+        var id = reservation.id!!
+        var reservationInfo = reservation.reservationInfo
+        if (reservationInfo!!.confirmedUsers.contains(id)) {
+            //rimuovi l'utente dalla lista degli utenti confermati
+            reservationInfo.totalAvailable = (reservationInfo.totalAvailable ?: 0) + 1
+            reservationInfo!!.confirmedUsers.remove(id)
+        } else {
+            throw IllegalStateException("User $id is not a partecipant of this reservation")
+        }
+        saveReservationOnDB(id, reservation, stateViewModel, message, nextRoute, error)
+    }
+
+    private fun saveReservationOnDB(
+        id: String,
+        reservation: Reservation,
+        stateViewModel: LoadingStateViewModel,
+        message: String,
+        nextRoute: String?,
+        error: String
+    ) {
+        db.collection("reservations").document(id)
+            .set(reservation.copy(id = id), SetOptions.merge())
+            .addOnSuccessListener {
+                stateViewModel.setStatus(Status.Success(message, nextRoute))
+            }.addOnFailureListener {
+                stateViewModel.setStatus(Status.Error(error, null))
+            }
+    }
 
 }
