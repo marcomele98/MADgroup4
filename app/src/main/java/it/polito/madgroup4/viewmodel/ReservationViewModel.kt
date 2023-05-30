@@ -144,7 +144,7 @@ class ReservationViewModel : ViewModel() {
                                 val court = courts.find { it.name == res.courtName }
                                 val resCourt = ReservationWithCourt(res, court)
                                 resCourt.reservation!!.reservationInfo?.status =
-                                    if (isInThePast(resCourt) && userId == resCourt.reservation?.userId) {
+                                    if (isInThePast(resCourt) && userId == resCourt.reservation?.userId && (resCourt.reservation.review == null)) {
                                         "Reviewable"
                                     } else {
                                         "Confirmed"
