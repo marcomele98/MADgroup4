@@ -33,6 +33,14 @@ fun LevelSelector(
             ElevatedCard(
                 modifier = Modifier
                     .padding(bottom = 10.dp)
+                    .clickable(enabled = !unselectable.contains(levels[index])) {
+                        setSelectedLevel(levels[index])
+                        navController.popBackStack()
+                    }
+                    .alpha(
+                        if (unselectable.contains(levels[index])
+                        ) 0.5f else 1f
+                    ),
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp)
@@ -40,15 +48,6 @@ fun LevelSelector(
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .clickable(enabled = !unselectable.contains(levels[index])) {
-                                setSelectedLevel(levels[index])
-                                navController.popBackStack()
-                            }
-                            .alpha(
-                                if (unselectable.contains(levels[index])
-                                ) 0.5f else 1f
-                            ),
                     ) {
                         Text(
                             text = levels[index],

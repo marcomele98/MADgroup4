@@ -63,8 +63,12 @@ fun EditLevelSelector(
         items(levels.size) { index ->
             ElevatedCard(
                 modifier = Modifier
-                    .padding(bottom = 10.dp),
-                colors = if (levels[index] == selectedLev) {
+                    .padding(bottom = 10.dp)
+                    .clickable {
+                        setSelectedLev(levels[index])
+                    },
+                colors =
+                if (levels[index] == selectedLev) {
                     CardDefaults.cardColors()
                 } else {
                     CardDefaults.outlinedCardColors()
@@ -76,10 +80,6 @@ fun EditLevelSelector(
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .clickable {
-                                setSelectedLev(levels[index])
-                            }
                     ) {
                         Spacer(modifier = Modifier.width(16.dp))
                         Text(

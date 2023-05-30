@@ -37,6 +37,14 @@ fun SportSelector(
             ElevatedCard(
                 modifier = Modifier
                     .padding(bottom = 10.dp)
+                    .clickable(enabled = !unselectable.contains(sports[index])) {
+                        setSelectedSport(sports[index])
+                        navController.popBackStack()
+                    }
+                    .alpha(
+                        if (unselectable.contains(sports[index])
+                        ) 0.5f else 1f
+                    ),
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp)
@@ -44,15 +52,6 @@ fun SportSelector(
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .clickable(enabled = !unselectable.contains(sports[index])) {
-                                setSelectedSport(sports[index])
-                                navController.popBackStack()
-                            }
-                            .alpha(
-                                if (unselectable.contains(sports[index])
-                                ) 0.5f else 1f
-                            ),
                     ) {
                         Icon(
                             imageSelector(sports[index]),
