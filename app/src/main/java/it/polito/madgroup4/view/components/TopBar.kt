@@ -37,6 +37,7 @@ fun TopBar(
     favoriteSport: Int? = null,
     reservations: State<List<ReservationWithCourt>?>,
     reservationId: String,
+    setSelectedLevel: (String) -> Unit,
 ) {
 
     val reservation = reservations.value?.find { it.reservation?.id == reservationId }
@@ -73,9 +74,12 @@ fun TopBar(
                     )
                 }
         },
+
         navigationIcon = {
             if (title != "Reservations" && title != "Profile" && title != "Welcome") {
-                IconButton(onClick = { navController.popBackStack() }) {
+                IconButton(onClick = {
+                        navController.popBackStack();
+                }) {
                     Icon(
                         Icons.Default.KeyboardArrowLeft,
                         contentDescription = "Back",

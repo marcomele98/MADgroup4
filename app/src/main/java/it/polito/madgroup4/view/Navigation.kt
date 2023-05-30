@@ -233,6 +233,7 @@ fun Navigation(
                     topBarAction = topBarAction,
                     user = user,
                     favoriteSport = favouriteSport,
+                    setSelectedLevel = setSelectedLevel
                 )
             },
 
@@ -437,7 +438,8 @@ fun Navigation(
                             userVm,
                             navController,
                             loadingVm,
-                            setSelectedLevel
+                            setSelectedLevel,
+                            selectedLevel
                         )
                     }
 
@@ -462,9 +464,6 @@ fun Navigation(
                     animatedComposable("Edit Your Level") {
                         EditLevelSelector(
                             favouriteSport!!,
-                            navController,
-                            selectedLevel,
-                            setSelectedLevel,
                             setTopBarAction,
                             userVm,
                             user,

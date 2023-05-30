@@ -28,23 +28,23 @@ import it.polito.madgroup4.viewmodel.UserViewModel
 @Composable
 fun EditLevelSelector(
     sport: Int,
-    navController: NavController,
-    selectedLevel: String,
-    setSelectedLevel: (String) -> Unit,
     setTopBarAction: (() -> Unit) -> Unit,
     userVm: UserViewModel,
     user: State<User?>,
     loadingVm: LoadingStateViewModel,
 ) {
 
-    val (editedUser, setEditUser) = remember { mutableStateOf(user.value) }
 
     val levels = LevelEnum.values().map { it.name }
 
+    val (selectedLev, setSelectedLev) = remember { mutableStateOf(user.value!!.sports[sport].level) }
+
 
     setTopBarAction {
+        val newSports = user.value!!.sports.toMutableList()
+        newSports[sport].level = selectedLev
         userVm.saveUser(
-            editedUser!!,
+            user.value!!.copy(sports = newSports),
             loadingVm,
             "Level changed successfully",
             "Error while changing level",
@@ -64,7 +64,7 @@ fun EditLevelSelector(
             ElevatedCard(
                 modifier = Modifier
                     .padding(bottom = 10.dp),
-                colors = if (levels[index] == selectedLevel) {
+                colors = if (levels[index] == selectedLev) {
                     CardDefaults.cardColors()
                 } else {
                     CardDefaults.outlinedCardColors()
@@ -78,11 +78,7 @@ fun EditLevelSelector(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .clickable {
-                                if (editedUser != null) {
-                                    editedUser.sports[sport].level = levels[index]
-                                    setEditUser(editedUser)
-                                }
-                                setSelectedLevel(levels[index])
+                                setSelectedLev(levels[index])
                             }
                     ) {
                         Spacer(modifier = Modifier.width(16.dp))

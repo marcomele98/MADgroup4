@@ -18,14 +18,13 @@ import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,12 +35,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
-import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
-import it.polito.madgroup4.model.Sport
 import it.polito.madgroup4.model.User
 import it.polito.madgroup4.view.components.AchievementCard
 import it.polito.madgroup4.viewmodel.LoadingStateViewModel
@@ -54,12 +52,17 @@ fun ShowFavouriteSport(
     userVm: UserViewModel,
     navController: NavController,
     loadingVm: LoadingStateViewModel,
-    setSelectedLevel: (String) -> Unit
+    setSelectedLevel: (String) -> Unit,
+    selectedLevel: String
 ) {
 
     val openDialog = remember { mutableStateOf(false) }
 
     var deletedAchievement by remember { mutableStateOf<Int?>(null) }
+
+
+    println(user.value!!.sports[sport].level)
+
 
     if (openDialog.value) {
         AlertDialog(onDismissRequest = {
@@ -131,7 +134,8 @@ fun ShowFavouriteSport(
         )
     }
 
-    if(user.value?.sports!!.filter { it.name == user.value?.sports?.getOrNull(sport)?.name }.isNotEmpty()) {
+    if (user.value?.sports!!.filter { it.name == user.value?.sports?.getOrNull(sport)?.name }
+            .isNotEmpty()) {
 
         Column(
             modifier = Modifier
@@ -143,7 +147,7 @@ fun ShowFavouriteSport(
                 Text(
                     text = "Your Level",
                     fontSize = 23.sp,
-                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                    fontWeight = Bold,
                     color = MaterialTheme.colorScheme.primary,
                     fontStyle = FontStyle.Italic
                 )
