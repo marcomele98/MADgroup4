@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -18,7 +17,7 @@ import java.time.LocalDate
 
 @Composable
 fun Reservations(
-    reservations: State<List<ReservationWithCourt>?>,
+    reservations: List<ReservationWithCourt>?,
     selectedDate: LocalDate,
     setSelectedDate: (LocalDate) -> Unit,
     setReservation: (String) -> Unit,
@@ -41,17 +40,17 @@ fun Reservations(
         setCreationDate(LocalDate.now())
     }
 
-    println(reservations.value)
+    println(reservations)
 
 
     Column(
         Modifier.padding(start = 16.dp, end = 16.dp)
     ) {
-        Calendar(calendarState, reservations.value)
+        Calendar(calendarState, reservations)
         Spacer(modifier = Modifier.size(10.dp))
 
         ReservationList(
-            reservations = reservations.value?.filter {
+            reservations = reservations?.filter {
                 it.reservation?.date?.toDate()
                     ?.let { it1 -> formatDate(it1) } == formatDate(selectedDate)
             },

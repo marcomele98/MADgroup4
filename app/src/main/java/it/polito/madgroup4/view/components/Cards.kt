@@ -35,6 +35,7 @@ import it.polito.madgroup4.model.Court
 import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.model.Review
 import it.polito.madgroup4.model.Sport
+import it.polito.madgroup4.model.User
 import it.polito.madgroup4.utility.calculateStartEndTime
 import it.polito.madgroup4.utility.formatTimestampToString
 import it.polito.madgroup4.utility.imageSelector
@@ -44,7 +45,7 @@ import it.polito.madgroup4.utility.imageSelector
 fun ReservationCard(
     reservation: ReservationWithCourt,
     setReservation: (String) -> Unit,
-    navController: NavController
+    navController: NavController,
 ) {
 
     val startEndTime = calculateStartEndTime(
@@ -80,7 +81,25 @@ fun ReservationCard(
                         .weight(1f)
                         .fillMaxHeight()
                 )
+
+                val status = reservation.reservation.reservationInfo?.status
+
+                if (status != "Confirmed") {
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    status?.let {
+                        Text(
+                            text = it, fontSize = 18.sp,
+                            color = if (status == "Invited") MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                            fontStyle = FontStyle.Italic,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
             }
+
+
+
 
             Spacer(modifier = Modifier.height(10.dp))
 
@@ -101,9 +120,7 @@ fun ReservationCard(
 
 @Composable
 fun PlayingCourtCard(
-    playingCourt: Court,
-    onClick: () -> Unit,
-    enabled: Boolean = true
+    playingCourt: Court, onClick: () -> Unit, enabled: Boolean = true
 ) {
 
     ElevatedCard(modifier = Modifier
@@ -154,16 +171,14 @@ fun PlayingCourtCard(
 
 @Composable
 fun SportCardSelector(
-    sport: String,
-    onClick: () -> Unit
+    sport: String, onClick: () -> Unit
 ) {
 
     OutlinedCard(modifier = Modifier
         .padding(bottom = 10.dp)
         .clickable {
             onClick()
-        }
-    ) {
+        }) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
@@ -191,16 +206,14 @@ fun SportCardSelector(
 
 @Composable
 fun LevelCardSelector(
-    level: String,
-    onClick: () -> Unit
+    level: String, onClick: () -> Unit
 ) {
 
     OutlinedCard(modifier = Modifier
         .padding(bottom = 10.dp)
         .clickable {
             onClick()
-        }
-    ) {
+        }) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
@@ -224,8 +237,7 @@ fun LevelCardSelector(
 
 @Composable
 fun ReviewCard(
-    review: Review,
-    showNickname: Boolean
+    review: Review, showNickname: Boolean
 ) {
 
     ElevatedCard(
@@ -244,20 +256,16 @@ fun ReviewCard(
                         .padding(bottom = 8.dp)
                 ) {
                     Text(
-                        text = "@" + review.userId,
-                        fontSize = 20.sp
+                        text = "@" + review.userId, fontSize = 20.sp
                     )
                 }
             }
 
             Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
+                verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = review.title,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 22.sp
+                    text = review.title, fontWeight = FontWeight.Bold, fontSize = 22.sp
                 )
                 Spacer(
                     modifier = Modifier
@@ -279,9 +287,7 @@ fun ReviewCard(
             Spacer(modifier = Modifier.height(5.dp))
             if (review.text?.trim() ?: "" != "") {
                 Text(
-                    text = "\"${review.text!!}\"",
-                    fontSize = 18.sp,
-                    fontStyle = FontStyle.Italic
+                    text = "\"${review.text!!}\"", fontSize = 18.sp, fontStyle = FontStyle.Italic
                 )
             }
 
@@ -291,13 +297,11 @@ fun ReviewCard(
 
 @Composable
 fun Evaluation(
-    stars: Float,
-    label: String
+    stars: Float, label: String
 ) {
 
     Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
+        verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()
     ) {
         Text(
             text = label,
@@ -309,8 +313,8 @@ fun Evaluation(
             onValueChange = {},
             config = RatingBarConfig().style(RatingBarStyle.Normal)
                 .activeColor(MaterialTheme.colorScheme.primary)
-                .inactiveColor(MaterialTheme.colorScheme.surfaceVariant)
-                .stepSize(StepSize.HALF).numStars(5).size(20.dp).padding(0.dp),
+                .inactiveColor(MaterialTheme.colorScheme.surfaceVariant).stepSize(StepSize.HALF)
+                .numStars(5).size(20.dp).padding(0.dp),
             onRatingChanged = {})
     }
 
@@ -352,11 +356,8 @@ fun SportCard(sport: Sport, onClick: () -> Unit) {
             )
             Spacer(modifier = Modifier.height(10.dp))
             Text(
-                text =
-                if (sport.achievements.isEmpty())
-                    "No achievements reached"
-                else
-                    "Achievements reached: ${sport.achievements.size}",
+                text = if (sport.achievements.isEmpty()) "No achievements reached"
+                else "Achievements reached: ${sport.achievements.size}",
                 fontSize = 18.sp,
             )
         }
@@ -377,13 +378,10 @@ fun AchievementCard(
             modifier = Modifier.padding(16.dp)
         ) {
             Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
+                verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = achievement.title!!,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 22.sp
+                    text = achievement.title!!, fontWeight = FontWeight.Bold, fontSize = 22.sp
                 )
                 Spacer(
                     modifier = Modifier
@@ -396,8 +394,7 @@ fun AchievementCard(
             }
             Spacer(modifier = Modifier.height(10.dp))
             Text(
-                text = formatTimestampToString(achievement?.date!!),
-                fontSize = 18.sp
+                text = formatTimestampToString(achievement?.date!!), fontSize = 18.sp
             )
             Spacer(modifier = Modifier.height(5.dp))
             if (achievement.description?.trim() ?: "" != "") {

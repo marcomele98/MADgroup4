@@ -27,45 +27,36 @@ fun BottomNavBar(
         modifier = Modifier.height(75.dp),
     ) {
 
-        NavigationBarItem(
-            selected = navBackStackEntry?.destination?.route == "Playing Courts",
+        NavigationBarItem(selected = navBackStackEntry?.destination?.route == "Playing Courts",
             icon = {
                 Icon(
-                    Icons.Default.LocationOn,
-                    contentDescription = "Playing Courts"
+                    Icons.Default.LocationOn, contentDescription = "Playing Courts"
                 )
             },
             label = { Text("Playing Courts") },
             onClick = {
                 navController.navigate("Playing Courts")
-            }
-        )
+            })
 
         NavigationBarItem(
-            selected = navBackStackEntry?.destination?.route == "Reservations",
+            selected = (navBackStackEntry?.destination?.route == "Reservations"
+                    || navBackStackEntry?.destination?.route == "Reviewable"
+                    || navBackStackEntry?.destination?.route == "Invites"),
             icon = {
                 Icon(
-                    Icons.Default.DateRange,
-                    contentDescription = "Reservations"
+                    Icons.Default.DateRange, contentDescription = "Reservations"
                 )
             },
             label = { Text("Reservations") },
             onClick = {
                 navController.navigate("Reservations")
-            }
-        )
+            })
 
-        NavigationBarItem(
-            selected = navBackStackEntry?.destination?.route == "Profile",
-            icon = {
-                Icon(
-                    Icons.Default.Person,
-                    contentDescription = "Profile"
-                )
-            },
-            label = { Text("Profile") },
-            onClick = { navController.navigate("Profile") }
-        )
+        NavigationBarItem(selected = navBackStackEntry?.destination?.route == "Profile", icon = {
+            Icon(
+                Icons.Default.Person, contentDescription = "Profile"
+            )
+        }, label = { Text("Profile") }, onClick = { navController.navigate("Profile") })
 
     }
 

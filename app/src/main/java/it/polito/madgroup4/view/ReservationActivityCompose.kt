@@ -18,7 +18,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import dagger.hilt.android.AndroidEntryPoint
 import it.polito.madgroup4.model.Court
 import it.polito.madgroup4.model.LevelEnum
 import it.polito.madgroup4.model.Review
@@ -30,7 +29,6 @@ import it.polito.madgroup4.viewmodel.UserViewModel
 import java.time.LocalDate
 
 
-@AndroidEntryPoint
 class ReservationActivityCompose : ComponentActivity() {
 
     val reservationVm by viewModels<ReservationViewModel>()

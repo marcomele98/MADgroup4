@@ -13,8 +13,11 @@ import it.polito.madgroup4.model.CourtWithSlots
 import it.polito.madgroup4.model.Reservation
 import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.model.Review
+import it.polito.madgroup4.utility.calculateStartEndTime
+import it.polito.madgroup4.utility.formatDate
 import it.polito.madgroup4.utility.formatDateToTimestamp
 import it.polito.madgroup4.utility.getAllSlots
+import java.time.LocalTime
 import java.util.Date
 
 class ReservationViewModel : ViewModel() {
@@ -34,6 +37,7 @@ class ReservationViewModel : ViewModel() {
     private val db = Firebase.firestore
 
     private var reservationListener: ListenerRegistration? = null
+    private var pendingReservationListener: ListenerRegistration? = null
 
     private var _allCourts =
         MutableLiveData<List<Court>>().apply { value = emptyList() }
@@ -50,7 +54,7 @@ class ReservationViewModel : ViewModel() {
             .get()
             .addOnSuccessListener { documents ->
                 _allCourts.value = documents.map { it.toObject(Court::class.java) }
-                if(Firebase.auth.currentUser != null)
+                if (Firebase.auth.currentUser != null)
                     createReservationsListener(Firebase.auth.currentUser!!.uid)
             }
             .addOnFailureListener { exception ->
@@ -60,15 +64,100 @@ class ReservationViewModel : ViewModel() {
 
     fun createReservationsListener(userId: String) {
         reservationListener?.remove()
-        reservationListener = db.collection("reservations")
-            .whereEqualTo("userId", userId)
-            //.whereArrayContains("reservationInfo.confirmedUsers", userId) //integrando le condivise si dovrà mettere questo filtro e non quello di prima
+        pendingReservationListener?.remove()
+        val confirmedUsersQuery = db.collection("reservations")
+            .whereArrayContains("reservationInfo.confirmedUsers", userId)
+        val pendingUsersQuery = db.collection("reservations")
+            .whereArrayContains("reservationInfo.pendingUsers", userId)
+
+        fun isInThePast(it: ReservationWithCourt): Boolean {
+            return it.reservation!!.date.toDate() < formatDate(Date())
+                    || (formatDate(Date()) == formatDate(it.reservation.date.toDate())
+                    && LocalTime.parse(
+                calculateStartEndTime(
+                    it.playingCourt?.openingTime!!,
+                    it.reservation.slotNumber
+                ).split("-")[0].trim()
+            ).isBefore(
+                LocalTime.now()
+            ))
+        }
+
+        reservationListener = confirmedUsersQuery
             .addSnapshotListener { r, e ->
-                _allRes.value = if (e != null) throw e
-                else r?.map {
-                    val res = it.toObject(Reservation::class.java)
-                    val court = _allCourts.value?.find { it.name == res.courtName }
-                    ReservationWithCourt(res, court)
+                pendingUsersQuery.get().addOnSuccessListener {
+                    db.collection("courts")
+                        .get()
+                        .addOnSuccessListener { documents ->
+                            val courts = documents.map { it.toObject(Court::class.java) }
+                            val confirmed = if (e != null) throw e
+                            else r?.map {
+                                val res = it.toObject(Reservation::class.java)
+                                val court = courts.find { it.name == res.courtName }
+                                val resCourt = ReservationWithCourt(res, court)
+                                resCourt.reservation!!.reservationInfo?.status =
+                                    if (isInThePast(resCourt) && (userId == resCourt.reservation.userId) && (resCourt.reservation.review == null)) {
+                                        "Reviewable"
+                                    } else {
+                                        "Confirmed"
+                                    }
+                                resCourt
+                            }
+                            val pending = it.map {
+                                val res = it.toObject(Reservation::class.java)
+                                res.reservationInfo?.status = "Invited"
+                                val court = courts.find { it.name == res.courtName }
+                                ReservationWithCourt(res, court)
+                            }.filter {
+                                !isInThePast(it)
+                            }
+
+                            if (confirmed != null) {
+                                _allRes.value =
+                                    (confirmed + pending).sortedBy { it.reservation?.date }
+                            }
+
+                            println(allRes.value)
+                        }
+                }
+            }
+
+        pendingReservationListener = pendingUsersQuery
+            .addSnapshotListener { r, e ->
+                confirmedUsersQuery.get().addOnSuccessListener {
+                    db.collection("courts")
+                        .get()
+                        .addOnSuccessListener { documents ->
+                            val courts = documents.map { it.toObject(Court::class.java) }
+                            val pending = if (e != null) throw e
+                            else r?.map {
+                                val res = it.toObject(Reservation::class.java)
+                                res.reservationInfo?.status = "Invited"
+                                val court = courts.find { it.name == res.courtName }
+                                ReservationWithCourt(res, court)
+                            }?.filter {
+                                !isInThePast(it)
+                            }
+                            val confirmed = it.map {
+                                val res = it.toObject(Reservation::class.java)
+                                res.reservationInfo?.status = "Confirmed"
+                                val court = courts.find { it.name == res.courtName }
+                                val resCourt = ReservationWithCourt(res, court)
+                                resCourt.reservation!!.reservationInfo?.status =
+                                    if (isInThePast(resCourt) && userId == resCourt.reservation?.userId) {
+                                        "Reviewable"
+                                    } else {
+                                        "Confirmed"
+                                    }
+                                resCourt
+                            }
+
+                            if (pending != null) {
+                                _allRes.value =
+                                    (confirmed + pending).sortedBy { it.reservation?.date }
+                            }
+                            println(allRes.value)
+                        }
                 }
             }
 
@@ -164,7 +253,7 @@ class ReservationViewModel : ViewModel() {
             .whereEqualTo("sport", sport)
             .get()
             .addOnSuccessListener { documents ->
-               documents.map { it.toObject(Reservation::class.java) }
+                documents.map { it.toObject(Reservation::class.java) }
 
             }
     }
@@ -175,7 +264,7 @@ class ReservationViewModel : ViewModel() {
             .whereEqualTo("sport", sport)
             .whereEqualTo("date", date)
             .whereEqualTo("reservationInfo.privateReservation", false)
-            .whereGreaterThan("reservationInfo.totalNumber","reservationInfo.totalAvailable")
+            .whereGreaterThan("reservationInfo.totalNumber", "reservationInfo.totalAvailable")
             .get()
             .addOnSuccessListener { documents ->
                 documents.map { it.toObject(Reservation::class.java) }
@@ -206,6 +295,7 @@ class ReservationViewModel : ViewModel() {
 
     fun acceptAndSaveReservationInvitation(
         reservation: Reservation,
+        userId: String,
         stateViewModel: LoadingStateViewModel,
         message: String,
         error: String,
@@ -213,18 +303,19 @@ class ReservationViewModel : ViewModel() {
     ) {
         var id = reservation.id!!
         var reservationInfo = reservation.reservationInfo
-        if (reservationInfo!!.pendingUsers.contains(id)) {
+        if (reservationInfo!!.pendingUsers.contains(userId)) {
             //rimuovi l'utente dalla lista degli inviti da accettare e settalo come utente confermato
-            reservationInfo!!.pendingUsers.remove(id)
-            reservationInfo!!.confirmedUsers.add(id)
+            reservationInfo!!.pendingUsers.remove(userId)
+            reservationInfo!!.confirmedUsers.add(userId)
         } else {
-            throw IllegalStateException("User $id is not invited in this reservation")
+            throw IllegalStateException("User $userId is not invited in this reservation")
         }
         saveReservationOnDB(id, reservation, stateViewModel, message, nextRoute, error)
     }
 
     fun rejectAndSaveReservationInvitation(
         reservation: Reservation,
+        userId: String,
         stateViewModel: LoadingStateViewModel,
         message: String,
         error: String,
@@ -232,14 +323,14 @@ class ReservationViewModel : ViewModel() {
     ) {
         var id = reservation.id!!
         var reservationInfo = reservation.reservationInfo
-        if (reservationInfo!!.pendingUsers.contains(id)) {
+        if (reservationInfo!!.pendingUsers.contains(userId)) {
             //rimuovi l'utente dalla lista degli inviti da accettare
-            reservationInfo!!.pendingUsers.remove(id)
+            reservationInfo!!.pendingUsers.remove(userId)
             //poiché ha rifiutato, aumentiamo di 1 il numero di posti disponibili
             reservationInfo.totalAvailable = (reservationInfo.totalAvailable ?: 0) + 1
 
         } else {
-            throw IllegalStateException("User $id is not invited in this reservation")
+            throw IllegalStateException("User $userId is not invited in this reservation")
         }
         saveReservationOnDB(id, reservation, stateViewModel, message, nextRoute, error)
     }

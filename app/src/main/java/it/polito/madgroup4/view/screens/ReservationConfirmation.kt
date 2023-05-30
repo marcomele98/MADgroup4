@@ -82,6 +82,11 @@ fun ReservationConfirmation(
                         )
                     )
                 ),
+                reservationInfo = ReservationInfo(
+                    totalNumber = 0,
+                    totalAvailable = 0,
+                    confirmedUsers = mutableListOf(userVm.user.value!!.id!!),
+                ),
                 sport = courtWithSlots?.playingCourt?.sport!! //TODO aggiunto per fare agilmente le queries su reservations
             ), courtWithSlots?.playingCourt
         )

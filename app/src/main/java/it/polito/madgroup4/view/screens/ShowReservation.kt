@@ -2,6 +2,7 @@ package it.polito.madgroup4.view.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,6 +22,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontStyle
@@ -30,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import it.polito.madgroup4.model.ReservationWithCourt
+import it.polito.madgroup4.model.User
 import it.polito.madgroup4.utility.calculateStartEndTime
 import it.polito.madgroup4.utility.formatDate
 import it.polito.madgroup4.utility.formatTimestampToString
@@ -51,7 +54,8 @@ fun ShowReservation(
     reservationVm: ReservationViewModel,
     setSelectedCourt: (String) -> Unit,
     setSelectedSlot: (Int) -> Unit,
-    loadingVm: LoadingStateViewModel
+    loadingVm: LoadingStateViewModel,
+    user: State<User?>
 ) {
 
     val openDialog = remember { mutableStateOf(false) }
@@ -172,7 +176,7 @@ fun ShowReservation(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            if (!isInThePast) {
+            if (!isInThePast && reservation.reservation.userId == user.value?.id) {
                 Button(
                     onClick = {
                         openDialog.value = !openDialog.value
@@ -180,9 +184,9 @@ fun ShowReservation(
                         containerColor = MaterialTheme.colorScheme.error
                     ), modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(text = "Delete")
+                    Text(text = "Delete", color = MaterialTheme.colorScheme.onError)
                 }
-            } else if (reservation.reservation.review == null) {
+            } else if (reservation.reservation.review == null && reservation.reservation.userId == user.value?.id) {
                 Button(
                     onClick = { navController.navigate("Rate This Playing Court") }, //modificichiamo? in questo momento valutiamo il playing court ma associato alla prenotazione
                     modifier = Modifier
@@ -192,6 +196,60 @@ fun ShowReservation(
                     )
                 ) {
                     Text(text = "Rate This Playing Court")
+                }
+            } else if (reservation.reservation.reservationInfo?.status == "Invited") {
+
+                Column() {
+                    Text(
+                        text = "You have been invited to play",
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.align(CenterHorizontally),
+                        fontSize = 22.sp,
+                        fontStyle = FontStyle.Italic
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Row() {
+                        Button(
+                            onClick = {
+                                loadingVm.setStatus(Status.Loading)
+                                reservationVm.rejectAndSaveReservationInvitation(
+                                    reservation.reservation,
+                                    user.value?.id!!,
+                                    loadingVm,
+                                    "Invite rejected successfully",
+                                    "Error while rejecting the invite",
+                                    "Reservations"
+                                )
+                            }, modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.error
+                            )
+                        )
+                        {
+                            Text(text = "Decline", color = MaterialTheme.colorScheme.onError)
+                        }
+
+                        Spacer(modifier = Modifier.padding(8.dp))
+                        Button(
+                            onClick = {
+                                loadingVm.setStatus(Status.Loading)
+                                reservationVm.acceptAndSaveReservationInvitation(
+                                    reservation.reservation,
+                                    user.value?.id!!,
+                                    loadingVm,
+                                    "Invite accepted successfully",
+                                    "Error while accepting the invite",
+                                    "Reservations",
+                                )
+                            }, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.tertiary
+                            )
+                        ) {
+                            Text(text = "Accept", color = MaterialTheme.colorScheme.onTertiary)
+                        }
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))

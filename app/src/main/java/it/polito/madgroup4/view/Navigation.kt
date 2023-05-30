@@ -43,6 +43,7 @@ import it.polito.madgroup4.model.Review
 import it.polito.madgroup4.model.User
 import it.polito.madgroup4.view.components.BottomNavBar
 import it.polito.madgroup4.view.components.FloatingFab
+import it.polito.madgroup4.view.components.ReservationList
 import it.polito.madgroup4.view.components.TopBar
 import it.polito.madgroup4.view.screens.AddSport
 import it.polito.madgroup4.view.screens.Courts
@@ -233,7 +234,6 @@ fun Navigation(
                     topBarAction = topBarAction,
                     user = user,
                     favoriteSport = favouriteSport,
-                    setSelectedLevel = setSelectedLevel
                 )
             },
 
@@ -312,7 +312,7 @@ fun Navigation(
 
                     animatedComposable("Reservations") {
                         Reservations(
-                            reservations,
+                            reservations.value,
                             selectedDate,
                             setSelectedDate,
                             setReservationWithCourt,
@@ -323,7 +323,13 @@ fun Navigation(
 
                     animatedComposable("Edit Reservation") {
                         EditReservation(
-                            reservation, selectedSlot, setSelectedSlot, navController, reservations, selectedCourt, courtsWithSlots
+                            reservation,
+                            selectedSlot,
+                            setSelectedSlot,
+                            navController,
+                            reservations,
+                            selectedCourt,
+                            courtsWithSlots
                         )
                     }
 
@@ -335,7 +341,8 @@ fun Navigation(
                             reservationVm,
                             setSelectedCourt,
                             setSelectedSlot,
-                            loadingVm
+                            loadingVm,
+                            user
                         )
                     }
 
@@ -503,6 +510,26 @@ fun Navigation(
                     animatedComposable("Welcome") {
                         FirstLogin(
                             navController,
+                        )
+                    }
+
+                    animatedComposable("Invites") {
+                        ReservationList(
+                            reservations = reservations.value?.filter { it.reservation?.reservationInfo?.status == "Invited" },
+                            setReservation = setReservationWithCourt,
+                            navController = navController,
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            text = "No invites yet"
+                        )
+                    }
+
+                    animatedComposable("Reviewable") {
+                        ReservationList(
+                            reservations = reservations.value?.filter { it.reservation?.reservationInfo?.status == "Reviewable" },
+                            setReservation = setReservationWithCourt,
+                            navController = navController,
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            text = "No reviewable reservations"
                         )
                     }
 

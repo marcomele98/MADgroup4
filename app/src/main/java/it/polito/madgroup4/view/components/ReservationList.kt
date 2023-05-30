@@ -19,12 +19,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import it.polito.madgroup4.model.ReservationWithCourt
+import it.polito.madgroup4.model.User
 
 @Composable
 fun ReservationList(
     reservations: List<ReservationWithCourt>?,
     setReservation: (String) -> Unit,
-    navController: NavController
+    navController: NavController,
+    modifier: Modifier = Modifier,
+    text: String = "No reservations for the selected date"
 ) {
 
 
@@ -32,13 +35,14 @@ fun ReservationList(
         modifier = Modifier
             .fillMaxSize()
             .clip(RoundedCornerShape(12.dp))
+            .then(modifier)
     ) {
         if(reservations == null) {
             CircularProgressIndicator(Modifier.align(Alignment.Center))
         }
         else if (reservations.isEmpty()) {
             Text(
-                text = "No reservations for the selected date",
+                text = text,
                 modifier = Modifier
                     .align(Alignment.Center),
                 textAlign = TextAlign.Center,
