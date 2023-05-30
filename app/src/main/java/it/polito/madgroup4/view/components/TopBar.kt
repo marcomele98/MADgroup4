@@ -1,15 +1,18 @@
 package it.polito.madgroup4.view.components
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,7 +22,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -46,6 +52,20 @@ fun TopBar(
 ) {
 
     val reservation = reservations.value?.find { it.reservation?.id == reservationId }
+
+    val (invited, setInvited) = remember {
+        mutableStateOf(reservations.value?.filter { it.reservation?.reservationInfo?.status == "Invited" })
+    }
+
+    val (reviewable, setReviewable) = remember {
+        mutableStateOf(reservations.value?.filter { it.reservation?.reservationInfo?.status == "Reviewable" })
+    }
+
+    LaunchedEffect(reservations.value) {
+        setInvited(reservations.value?.filter { it.reservation?.reservationInfo?.status == "Invited" })
+        setReviewable(reservations.value?.filter { it.reservation?.reservationInfo?.status == "Reviewable" })
+    }
+
 
     var isInThePast = false
     if (reservation?.reservation != null) {
@@ -90,7 +110,8 @@ fun TopBar(
 
                     TextButton(
                         onClick = { navController.navigate("Reviewable") },
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier
+                            .padding(0.dp)
                     ) {
                         Text(
                             text = "Reviewable",
@@ -98,6 +119,14 @@ fun TopBar(
                             else MaterialTheme.colorScheme.onSurface,
                             fontSize = 18.sp
                         )
+                        if (reviewable?.isEmpty() == false) {
+                            Text(
+                                text = "${reviewable.size}",
+                                color = MaterialTheme.colorScheme.error,
+                                fontSize = 18.sp,
+                                modifier = Modifier.padding(start = 8.dp)
+                            )
+                        }
                     }
 
                     Divider(
@@ -109,14 +138,24 @@ fun TopBar(
 
                     TextButton(
                         onClick = { navController.navigate("Invites") },
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth(),
                     ) {
                         Text(
                             text = "Invites",
                             color = if (title == "Invites") MaterialTheme.colorScheme.primary
                             else MaterialTheme.colorScheme.onSurface,
-                            fontSize = 18.sp
+                            fontSize = 18.sp,
                         )
+                        if (invited?.isEmpty() == false) {
+                            Text(
+                                modifier = Modifier.padding(start = 8.dp),
+                                text = "${invited.size}",
+                                color = MaterialTheme.colorScheme.error,
+                                fontSize = 18.sp
+                            )
+                        }
                     }
 
                 }

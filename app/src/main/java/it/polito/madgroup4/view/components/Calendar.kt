@@ -97,8 +97,8 @@ fun MonthHeader(
             text = monthState.currentMonth.month
                 .getDisplayName(TextStyle.FULL, Locale.ENGLISH)
                 .lowercase()
-                .replaceFirstChar { it.titlecase() }
-        )
+                .replaceFirstChar { it.titlecase() },
+            )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = monthState.currentMonth.year.toString()
@@ -127,7 +127,8 @@ fun DaysOfWeekHeader(
                 text = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.ENGLISH),
                 modifier = modifier
                     .weight(1f)
-                    .wrapContentHeight()
+                    .wrapContentHeight(),
+                color = contentColorFor(MaterialTheme.colorScheme.surface),
             )
         }
     }
