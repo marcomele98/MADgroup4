@@ -109,14 +109,6 @@ fun EditProfile(
             { it: String -> setEditUser(editedUser?.copy(nickname = it)) },
             KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
         ),
-        listOf(
-            Icons.Default.Email,
-            editedUser?.email ?: "",
-            "Email",
-            { it: String -> setEditUser(editedUser?.copy(email = it)) },
-            KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Email)
-        ),
-
     )
 
 
@@ -206,8 +198,6 @@ fun EditProfile(
                 loadingVm.setStatus(Status.Error("You have to insert a surname", null))
             } else if ((editedUser?.nickname?.trim() ?: "") == "") {
                 loadingVm.setStatus(Status.Error("You have to insert a nickname", null))
-            } else if (!isValidEmail(editedUser?.email?.trim() ?: "")) {
-                loadingVm.setStatus(Status.Error("You have to insert a valid academic email", null))
             } else {
                 loadingVm.setStatus(Status.Loading)
                 userVm.saveUser(

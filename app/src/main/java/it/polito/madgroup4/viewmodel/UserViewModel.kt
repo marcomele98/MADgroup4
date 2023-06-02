@@ -38,25 +38,25 @@ class UserViewModel(reservationVm: ReservationViewModel) : ViewModel() {
         val currentUser = auth.currentUser
         if (currentUser == null) {
             auth.signInAnonymously().addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        val currentUserId = auth.currentUser!!.uid
-                        FirebaseMessaging.getInstance().token.addOnCompleteListener { task2 ->
-                            if (task2.isSuccessful) {
-                                val token = task2.result
-                                // Salva il token nel documento utente nel database Firebase
-                                db.collection("users2").document(currentUserId)
-                                    .set(User(currentUserId, token)).addOnSuccessListener {
-                                        createUserListener(currentUserId, reservationVm)
-                                    }
-                            } else {
-                                Log.i("test", "error", task2.exception)
-                                // Gestisci il fallimento nel recupero del token
-                            }
+                if (task.isSuccessful) {
+                    val currentUserId = auth.currentUser!!.uid
+                    FirebaseMessaging.getInstance().token.addOnCompleteListener { task2 ->
+                        if (task2.isSuccessful) {
+                            val token = task2.result
+                            // Salva il token nel documento utente nel database Firebase
+                            db.collection("users2").document(currentUserId)
+                                .set(User(currentUserId, token)).addOnSuccessListener {
+                                    createUserListener(currentUserId, reservationVm)
+                                }
+                        } else {
+                            Log.i("test", "error", task2.exception)
+                            // Gestisci il fallimento nel recupero del token
                         }
-                    } else {
-                        Log.i("test", "error", task.exception)
                     }
+                } else {
+                    Log.i("test", "error", task.exception)
                 }
+            }
         } else {
             createUserListener(currentUser.uid, reservationVm)
         }
@@ -65,9 +65,9 @@ class UserViewModel(reservationVm: ReservationViewModel) : ViewModel() {
     private fun createUserListener(uid: String, reservationVm: ReservationViewModel) {
         reservationVm.createReservationsListener(uid)
         userListener = db.collection("users2").document(uid).addSnapshotListener { r, e ->
-                _user.value = if (e != null) throw e
-                else r?.toObject(User::class.java)
-            }
+            _user.value = if (e != null) throw e
+            else r?.toObject(User::class.java)
+        }
         val pathReference = storageRef.child("images").child("${uid}.jpg")
         val localFile = File.createTempFile("images", "jpg")
         pathReference.getFile(localFile).addOnSuccessListener {
@@ -96,13 +96,31 @@ class UserViewModel(reservationVm: ReservationViewModel) : ViewModel() {
     ) {
 
         fun saveUserDetails() {
-            db.collection("users2").document(auth.currentUser!!.uid)
-                .set(editedUser, SetOptions.merge()).addOnSuccessListener {
-                    Log.i("test", "User updated successfully")
-                    stateViewModel.setStatus(Status.Success(message, nextRoute))
-                }.addOnFailureListener {
-                    Log.i("test", "$it")
-                    stateViewModel.setStatus(Status.Error(error, nextRoute))
+            db.collection("users2")
+                .whereEqualTo("nickname", "${editedUser.nickname}")
+                .get()
+                .addOnSuccessListener {
+                    if (it.isEmpty || it.documents[0].id == auth.currentUser!!.uid) {
+                        db.collection("users2").document(auth.currentUser!!.uid)
+                            .set(editedUser, SetOptions.merge()).addOnSuccessListener {
+                                Log.i("test", "User updated successfully")
+                                stateViewModel.setStatus(Status.Success(message, nextRoute))
+                            }.addOnFailureListener {
+                                Log.i("test", "$it")
+                                stateViewModel.setStatus(Status.Error(error, "Edit Profile"))
+                            }
+                    } else {
+                        stateViewModel.setStatus(Status.Error("Nickname already in use", "Edit Profile"))
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    stateViewModel.setStatus(
+                        Status.Error(
+                            error,
+                            nextRoute
+                        )
+                    )
+                    Log.i("test", "Error getting documents: ", exception)
                 }
         }
         if (imageBitmap != null) {

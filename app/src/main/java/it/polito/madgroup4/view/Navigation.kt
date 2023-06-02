@@ -257,7 +257,7 @@ fun Navigation(
             Box(Modifier.padding(it)) {
                 AnimatedNavHost(
                     navController = navController,
-                    startDestination = if (user.value?.email != null) screen else "Welcome"
+                    startDestination = if (user.value?.nickname != null) screen else "Welcome"
                 ) {
 
                     fun animatedComposable(

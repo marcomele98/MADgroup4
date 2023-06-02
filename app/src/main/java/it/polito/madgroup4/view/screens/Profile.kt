@@ -72,10 +72,7 @@ fun Profile(
     val userPic = userVm.userPhoto.observeAsState()
 
     if (user.value != null) {
-        val contactItems = listOf(
-            Pair(Icons.Default.Email, user.value?.email!!),
-//        Pair(Icons.Default.Transgender, user.gender)
-        )
+
         Column(
             Modifier
                 .padding(horizontal = 16.dp)
@@ -139,12 +136,6 @@ fun Profile(
 
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
-
-            ContactItem(
-                icon = contactItems[0].first,
-                text = contactItems[0].second
-            )
 
             Spacer(modifier = Modifier.height(20.dp))
 
@@ -213,19 +204,3 @@ fun Profile(
 
 }
 
-@Composable
-fun ContactItem(icon: ImageVector, text: String) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Icon(icon, contentDescription = null)
-
-        Spacer(modifier = Modifier.width(10.dp))
-
-        Text(
-            text = text,
-            fontSize = 22.sp
-        )
-    }
-}

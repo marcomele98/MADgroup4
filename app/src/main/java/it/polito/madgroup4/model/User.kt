@@ -9,7 +9,6 @@ data class User(
     val name: String? = null,
     val surname: String? = null,
     val nickname: String? = null,
-    val email: String? = null,
     val photo: Boolean? = null,
     var sports: List<Sport> = listOf()
 )
