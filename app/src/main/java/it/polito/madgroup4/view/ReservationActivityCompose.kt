@@ -1,7 +1,6 @@
 package it.polito.madgroup4.view
 
 import android.Manifest
-import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
@@ -25,13 +24,15 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import it.polito.madgroup4.R
 import it.polito.madgroup4.model.Court
 import it.polito.madgroup4.model.LevelEnum
+import it.polito.madgroup4.model.ReservationInfo
+import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.model.Review
+import it.polito.madgroup4.model.Stuff
 import it.polito.madgroup4.view.ui.theme.MADgroup4Theme
 import it.polito.madgroup4.viewmodel.LoadingStateViewModel
 import it.polito.madgroup4.viewmodel.ReservationViewModel
@@ -177,6 +178,18 @@ fun MainScreen(
 
     val courtsWithSlots = reservationVm.playingCourts.observeAsState(initial = null)
 
+    val (stuff, setStuff) = remember {
+        mutableStateOf(
+            listOf<Stuff>()
+        )
+    }
+
+    val (reservationInfo, setReservationInfo) = remember {
+        mutableStateOf(
+            ReservationInfo()
+        )
+    }
+
     Navigation(
         reservationVm,
         userVm,
@@ -209,6 +222,10 @@ fun MainScreen(
         activity,
         reservations,
         courtsWithSlots,
+        stuff,
+        setStuff,
+        reservationInfo,
+        setReservationInfo,
     )
 
 }

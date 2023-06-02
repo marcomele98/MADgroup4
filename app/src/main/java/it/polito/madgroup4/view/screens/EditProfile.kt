@@ -138,7 +138,6 @@ fun EditProfile(
         if (userPic.value != null) {
             editImageBitmap = userPic.value
         }
-        println(userPic.value)
     }
 
     val galleryLauncher = rememberLauncherForActivityResult(
@@ -195,32 +194,35 @@ fun EditProfile(
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    setTopBarAction {
 
-        keyboardController?.hide()
+    LaunchedEffect(editedUser) {
+        setTopBarAction {
 
-        if ((editedUser?.name?.trim() ?: "") == "") {
-            loadingVm.setStatus(Status.Error("You have to insert a name", null))
-        } else if ((editedUser?.surname?.trim() ?: "") == "") {
-            loadingVm.setStatus(Status.Error("You have to insert a surname", null))
-        } else if ((editedUser?.nickname?.trim() ?: "") == "") {
-            loadingVm.setStatus(Status.Error("You have to insert a nickname", null))
-        } else if (!isValidEmail(editedUser?.email?.trim() ?: "")) {
-            loadingVm.setStatus(Status.Error("You have to insert a valid academic email", null))
-        } else {
-            loadingVm.setStatus(Status.Loading)
-            userVm.saveUser(
-                editedUser!!,
-                loadingVm,
-                "Profile ${if(signUp) "created" else "edited"} successfully",
-                "Error while ${if(signUp) "creating" else "editing"} profile",
-                if (editImageUri != null) rotateBitmap(
-                    uriToBitmap(editImageUri!!, context)!!,
-                    context,
-                    editImageUri!!
-                ) else null,
-                "Profile"
-            )
+            keyboardController?.hide()
+
+            if ((editedUser?.name?.trim() ?: "") == "") {
+                loadingVm.setStatus(Status.Error("You have to insert a name", null))
+            } else if ((editedUser?.surname?.trim() ?: "") == "") {
+                loadingVm.setStatus(Status.Error("You have to insert a surname", null))
+            } else if ((editedUser?.nickname?.trim() ?: "") == "") {
+                loadingVm.setStatus(Status.Error("You have to insert a nickname", null))
+            } else if (!isValidEmail(editedUser?.email?.trim() ?: "")) {
+                loadingVm.setStatus(Status.Error("You have to insert a valid academic email", null))
+            } else {
+                loadingVm.setStatus(Status.Loading)
+                userVm.saveUser(
+                    editedUser!!,
+                    loadingVm,
+                    "Profile ${if (signUp) "created" else "edited"} successfully",
+                    "Error while ${if (signUp) "creating" else "editing"} profile",
+                    if (editImageUri != null) rotateBitmap(
+                        uriToBitmap(editImageUri!!, context)!!,
+                        context,
+                        editImageUri!!
+                    ) else null,
+                    "Profile"
+                )
+            }
         }
     }
 

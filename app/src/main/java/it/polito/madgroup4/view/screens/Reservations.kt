@@ -40,7 +40,6 @@ fun Reservations(
         setCreationDate(LocalDate.now())
     }
 
-    println(reservations)
 
 
     Column(

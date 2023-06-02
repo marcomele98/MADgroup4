@@ -24,7 +24,6 @@ fun Courts(
 
     val filteredPlayingCourts = playingCourts.value.filter { it.sport == selectedSport }
 
-    println(playingCourts.value)
 
     Column(
         Modifier.padding(horizontal = 16.dp)

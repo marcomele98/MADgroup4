@@ -33,7 +33,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         // messages. For more see: https://firebase.google.com/docs/cloud-messaging/concept-options
         // [END_EXCLUDE]
 
-        println("Remote message " + remoteMessage)
 
         // create notification intent and put extras
         val notificationIntent = Intent(this, ReservationActivityCompose::class.java).apply {

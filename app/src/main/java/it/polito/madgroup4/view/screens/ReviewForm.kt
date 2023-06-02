@@ -61,36 +61,38 @@ fun ReviewForm(
     )
 
 
-    setTopBarAction {
-        // I voti sono tutti opzionali (ma almeno uno deve esserci), nel caso uno non venga inserito non deve essere conteggiato nella media della review
-        keyboardController?.hide()
-        val atLeastOnRating = structure != 0f || cleaning != 0f || service != 0f
-        if (comment.trim() != "")
-            review.text = comment
+    LaunchedEffect(service, structure, cleaning, comment, title) {
+        setTopBarAction {
+            // I voti sono tutti opzionali (ma almeno uno deve esserci), nel caso uno non venga inserito non deve essere conteggiato nella media della review
+            keyboardController?.hide()
+            val atLeastOnRating = structure != 0f || cleaning != 0f || service != 0f
+            if (comment.trim() != "")
+                review.text = comment
 
-        review.serviceRating = service
-        review.structureRating = structure
-        review.cleaningRating = cleaning
+            review.serviceRating = service
+            review.structureRating = structure
+            review.cleaningRating = cleaning
 
 
-        if (title.trim() == "") {
-            loadingVm.setStatus(Status.Error("You have to insert a title", null))
-        } else if (!atLeastOnRating) {
-            loadingVm.setStatus(Status.Error("You have to insert at least one rating", null))
-        } else {
-            review.title = title
-            reservation.reservation?.review = review
-            loadingVm.setStatus(Status.Loading)
-            reservationVm.saveReservation(
-                reservation.reservation!!,
-                loadingVm,
-                "Review saved successfully",
-                "Error while saving review",
-                "Reservation Details"
-            )
-            navController.popBackStack()
+            if (title.trim() == "") {
+                loadingVm.setStatus(Status.Error("You have to insert a title", null))
+            } else if (!atLeastOnRating) {
+                loadingVm.setStatus(Status.Error("You have to insert at least one rating", null))
+            } else {
+                review.title = title
+                reservation.reservation?.review = review
+                loadingVm.setStatus(Status.Loading)
+                reservationVm.saveReservation(
+                    reservation.reservation!!,
+                    loadingVm,
+                    "Review saved successfully",
+                    "Error while saving review",
+                    "Reservation Details"
+                )
+                navController.popBackStack()
+            }
+            //setReview(review)
         }
-        //setReview(review)
     }
 
     Column(

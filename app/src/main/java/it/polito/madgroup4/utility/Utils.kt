@@ -94,7 +94,6 @@ fun getWeekdaysStartingOn(localDate: LocalDate, firstDayOfWeek: DayOfWeek): List
         weekdays.add(currentDay)
         currentDay = currentDay.plusDays(1)
     }
-    println(weekdays)
     return weekdays
 }
 

@@ -68,7 +68,6 @@ class ReservationViewModel : ViewModel() {
                     createReservationsListener(Firebase.auth.currentUser!!.uid)
             }
             .addOnFailureListener { exception ->
-                println("Error getting documents: $exception")
             }
     }
 
@@ -127,7 +126,6 @@ class ReservationViewModel : ViewModel() {
                                     (confirmed + pending).sortedBy { it.reservation?.date }
                             }
 
-                            println(allRes.value)
                         }
                 }
             }
@@ -166,7 +164,6 @@ class ReservationViewModel : ViewModel() {
                                 _allRes.value =
                                     (confirmed + pending).sortedBy { it.reservation?.date }
                             }
-                            println(allRes.value)
                         }
                 }
             }
@@ -202,8 +199,6 @@ class ReservationViewModel : ViewModel() {
             .addOnSuccessListener { documents ->
                 var res = documents.map { it.toObject(Reservation::class.java) }.map { it.review }
                 _reviews.value = res.filterNotNull()
-
-
             }
             .addOnFailureListener { exception ->
                 println("Error getting documents: $exception")

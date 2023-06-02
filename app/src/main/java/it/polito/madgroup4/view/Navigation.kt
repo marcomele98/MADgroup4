@@ -1,6 +1,5 @@
 package it.polito.madgroup4.view
 
-import android.app.Activity
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
@@ -30,27 +29,26 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavType
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.navArgument
-import androidx.navigation.navDeepLink
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import it.polito.madgroup4.model.Court
 import it.polito.madgroup4.model.CourtWithSlots
 import it.polito.madgroup4.model.LevelEnum
+import it.polito.madgroup4.model.ReservationInfo
 import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.model.Review
+import it.polito.madgroup4.model.Stuff
 import it.polito.madgroup4.model.User
 import it.polito.madgroup4.view.components.BottomNavBar
 import it.polito.madgroup4.view.components.FloatingFab
 import it.polito.madgroup4.view.components.ReservationList
 import it.polito.madgroup4.view.components.TopBar
 import it.polito.madgroup4.view.screens.AddSport
+import it.polito.madgroup4.view.screens.AdditionalInfo
 import it.polito.madgroup4.view.screens.Courts
 import it.polito.madgroup4.view.screens.CreateAchievement
 import it.polito.madgroup4.view.screens.CreateReservation
@@ -136,6 +134,10 @@ fun Navigation(
     activity: ReservationActivityCompose,
     reservations: State<List<ReservationWithCourt>?>,
     courtsWithSlots: State<List<CourtWithSlots>?>,
+    stuff: List<Stuff>,
+    setStuff: (List<Stuff>) -> Unit,
+    reservationInfo: ReservationInfo,
+    setReservationInfo: (ReservationInfo) -> Unit,
 
     ) {
 
@@ -360,11 +362,13 @@ fun Navigation(
                             userVm = userVm,
                             loadingVm = loadingVm,
                             playingCourt = selectedCourt,
-                            courtsWithSlots = courtsWithSlots,
                             reservationDate = creationDate,
                             reservationTimeSlot = selectedSlot,
                             setSelectedSlot = setSelectedSlot,
                             setTopBarAction = setTopBarAction,
+                            courtsWithSlots = courtsWithSlots,
+                            stuff = stuff,
+                            reservationInfo = reservationInfo,
                         )
                     }
 
@@ -380,7 +384,7 @@ fun Navigation(
                             reservationId = reservation,
                             reservations = reservations,
                             courtsWithSlots = courtsWithSlots,
-                            playingCourt = selectedCourt
+                            playingCourt = selectedCourt,
                         )
                     }
 
@@ -532,6 +536,18 @@ fun Navigation(
                             navController = navController,
                             modifier = Modifier.padding(16.dp),
                             text = "No reviewable reservations"
+                        )
+                    }
+
+                    animatedComposable("Additional Info") {
+                        AdditionalInfo(
+                            playingCourt = selectedCourt,
+                            courtsWithSlots = courtsWithSlots,
+                            navController = navController,
+                            stuff = stuff,
+                            setStuff = setStuff,
+                            reservationInfo = reservationInfo,
+                            setReservationInfo = setReservationInfo
                         )
                     }
 

@@ -12,6 +12,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -69,30 +70,33 @@ fun CreateAchievement(
         date = calendarState.selectionState.selection[0]
 
 
-    setTopBarAction {
-        val achievement = Achievement(
-            title = title,
-            description = description,
-            date = formatDateToTimestamp(date)
-        )
-        val user = userVm.user.value!!
-        user.sports = user.sports.map { it ->
-            if (it.name == userState.value!!.sports[sport].name) {
-                it.achievements = it.achievements + achievement
-                it.achievements = it.achievements.sortedByDescending { it.date }
-                it
-            } else {
-                it
+
+    LaunchedEffect(description, title, date) {
+        setTopBarAction {
+            val achievement = Achievement(
+                title = title,
+                description = description,
+                date = formatDateToTimestamp(date)
+            )
+            val user = userVm.user.value!!
+            user.sports = user.sports.map { it ->
+                if (it.name == userState.value!!.sports[sport].name) {
+                    it.achievements = it.achievements + achievement
+                    it.achievements = it.achievements.sortedByDescending { it.date }
+                    it
+                } else {
+                    it
+                }
             }
+            userVm.saveUser(
+                user,
+                loadingVm,
+                "Achievement created successfully",
+                "Error while creating achievement",
+                null,
+                "Your Sport"
+            )
         }
-        userVm.saveUser(
-            user,
-            loadingVm,
-            "Achievement created successfully",
-            "Error while creating achievement",
-            null,
-            "Your Sport"
-        )
     }
 
     Column(

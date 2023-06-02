@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,18 +30,20 @@ fun AddSport(
 ) {
 
 
-    setTopBarAction {
-        val user = userVm.user.value!!
-        user.sports = user.sports.plus(Sport(selectedSport, selectedLevel))
-        user.sports = user.sports.sortedBy { it.name }
-        userVm.saveUser(
-            user,
-            loadingVm,
-            "New favorite sport added successfully",
-            "Error while adding new favorite sport",
-            null,
-            "Profile"
-        )
+    LaunchedEffect(selectedSport, selectedLevel) {
+        setTopBarAction {
+            val user = userVm.user.value!!
+            user.sports = user.sports.plus(Sport(selectedSport, selectedLevel))
+            user.sports = user.sports.sortedBy { it.name }
+            userVm.saveUser(
+                user,
+                loadingVm,
+                "New favorite sport added successfully",
+                "Error while adding new favorite sport",
+                null,
+                "Profile"
+            )
+        }
     }
 
     Column(

@@ -61,7 +61,6 @@ fun ShowFavouriteSport(
     var deletedAchievement by remember { mutableStateOf<Int?>(null) }
 
 
-    println(user.value!!.sports[sport].level)
 
 
     if (openDialog.value) {

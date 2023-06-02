@@ -119,7 +119,6 @@ fun DaysOfWeekHeader(
     modifier: Modifier = Modifier,
 ) {
 
-    println("a" + daysOfWeek)
     Row(modifier = modifier) {
         daysOfWeek.forEach { dayOfWeek ->
             androidx.compose.material.Text(

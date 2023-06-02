@@ -203,7 +203,7 @@ fun SlotSelectionReservation(
         onClick = {
             if (!selectedCourt.slots!![it].isBooked) {
                 setSelectedSlot(selectedCourt.slots!![it].slotNumber)
-                navController.navigate("Confirm Reservation")
+                navController.navigate("Additional Info")
             }
         }
     )
