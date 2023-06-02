@@ -458,7 +458,6 @@ fun Navigation(
                             navController,
                             loadingVm,
                             setSelectedLevel,
-                            selectedLevel
                         )
                     }
 

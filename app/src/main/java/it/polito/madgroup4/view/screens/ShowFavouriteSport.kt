@@ -24,7 +24,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,14 +52,11 @@ fun ShowFavouriteSport(
     navController: NavController,
     loadingVm: LoadingStateViewModel,
     setSelectedLevel: (String) -> Unit,
-    selectedLevel: String
 ) {
 
     val openDialog = remember { mutableStateOf(false) }
 
     var deletedAchievement by remember { mutableStateOf<Int?>(null) }
-
-
 
 
     if (openDialog.value) {

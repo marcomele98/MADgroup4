@@ -33,6 +33,11 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         // messages. For more see: https://firebase.google.com/docs/cloud-messaging/concept-options
         // [END_EXCLUDE]
 
+        /**
+         * Create and show a simple notification containing the received FCM message.
+         *
+         * @param messageBody FCM message body received.
+         */
 
         // create notification intent and put extras
         val notificationIntent = Intent(this, ReservationActivityCompose::class.java).apply {
@@ -65,27 +70,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         val notificationId = 0
         notificationManager.notify(notificationId, notificationBuilder.build())
-       /* // TODO(developer): Handle FCM messages here.
-        // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
-        Log.d(TAG, "From: ${remoteMessage.from}")
 
-        // Check if message contains a data payload.
-        if (remoteMessage.data.isNotEmpty()) {
-            Log.d(TAG, "Message data payload: ${remoteMessage.data}")
-
-            // Check if data needs to be processed by long running job
-
-            handleNow()
-        }
-
-        // Check if message contains a notification payload.
-        remoteMessage.notification?.let {
-            Log.d(TAG, "Message Notification Body: ${it.body}")
-            it.body?.let { body -> sendNotification(body) }
-        }
-
-        // Also if you intend on generating your own notifications as a result of a received FCM
-        // message, here is where that should be initiated. See sendNotification method below.*/
     }
     // [END receive_message]
 
@@ -107,12 +92,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     // [END on_new_token]
 
 
-    /**
-     * Handle time allotted to BroadcastReceivers.
-     */
-    private fun handleNow() {
-        Log.d(TAG, "Short lived task is done.")
-    }
+
 
     /**
      * Persist token to third-party servers.
@@ -127,48 +107,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         Log.d(TAG, "sendRegistrationTokenToServer($token)")
     }
 
-    /**
-     * Create and show a simple notification containing the received FCM message.
-     *
-     * @param messageBody FCM message body received.
-     */
-    private fun sendNotification(messageBody: String) {
-        val requestCode = 0
-        val intent = Intent(this, ReservationActivityCompose::class.java)
-        intent.putExtra("notification", "Invites")
-        val pendingIntent = PendingIntent.getActivity(
-            this,
-            requestCode,
-            intent,
-            PendingIntent.FLAG_IMMUTABLE,
-        )
 
-
-        val channelId = getString(R.string.default_notification_channel_id)
-        val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-        val notificationBuilder = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.drawable.logo)
-            .setContentTitle(messageBody)
-            .setAutoCancel(true)
-            .setSound(defaultSoundUri)
-            .setContentIntent(pendingIntent)
-
-        val notificationManager =
-            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-        // Since android Oreo notification channel is needed.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                channelId,
-                "Channel human readable title",
-                NotificationManager.IMPORTANCE_DEFAULT,
-            )
-            notificationManager.createNotificationChannel(channel)
-        }
-
-        val notificationId = 0
-        notificationManager.notify(notificationId, notificationBuilder.build())
-    }
 
     companion object {
 

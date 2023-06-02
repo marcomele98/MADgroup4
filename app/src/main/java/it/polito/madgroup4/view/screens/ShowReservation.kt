@@ -220,7 +220,8 @@ fun ShowReservation(
                                     loadingVm,
                                     "Invite rejected successfully",
                                     "Error while rejecting the invite",
-                                    "Reservations"
+                                    "Reservations",
+                                    "User ${user.value!!.name} ${user.value!!.surname} has rejected your invite"
                                 )
                             }, modifier = Modifier.weight(1f),
                             colors = ButtonDefaults.buttonColors(
@@ -242,6 +243,7 @@ fun ShowReservation(
                                     "Invite accepted successfully",
                                     "Error while accepting the invite",
                                     "Reservations",
+                                    "User ${user.value!!.name} ${user.value!!.surname} has accepted your invite"
                                 )
                             }, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.tertiary

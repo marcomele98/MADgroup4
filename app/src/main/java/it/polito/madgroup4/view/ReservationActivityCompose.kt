@@ -30,7 +30,6 @@ import it.polito.madgroup4.R
 import it.polito.madgroup4.model.Court
 import it.polito.madgroup4.model.LevelEnum
 import it.polito.madgroup4.model.ReservationInfo
-import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.model.Review
 import it.polito.madgroup4.model.Stuff
 import it.polito.madgroup4.view.ui.theme.MADgroup4Theme

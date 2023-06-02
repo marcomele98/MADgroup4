@@ -1,6 +1,5 @@
 package it.polito.madgroup4.model
 
-import android.graphics.Bitmap
 import com.google.firebase.Timestamp
 
 data class User(

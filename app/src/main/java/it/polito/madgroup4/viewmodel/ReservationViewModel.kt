@@ -24,7 +24,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
-import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.time.LocalTime
@@ -280,6 +279,7 @@ class ReservationViewModel : ViewModel() {
     }
 
     fun addInAPublicReservationAndSaveReservation(
+        userId: String,
         reservation: Reservation,
         stateViewModel: LoadingStateViewModel,
         message: String,
@@ -290,8 +290,8 @@ class ReservationViewModel : ViewModel() {
         var reservationInfo = reservation.reservationInfo
         if (true) { //Todo come quando salviamo una prenotazione e vediamo se quello slot è ancora libero, dovremmo
             //Todo vedere se c'è ancora posto prima di salvare. quindi magari bisognerebbe fare una query e vedere se il posto sia ancora libero
-            reservationInfo!!.totalAvailable = (reservationInfo.totalAvailable ?: 0) + 1
-            reservationInfo!!.confirmedUsers.add(id)
+            reservationInfo!!.totalAvailable = (reservationInfo.totalAvailable ?: 0) - 1
+            reservationInfo!!.confirmedUsers.add(userId)
         } else {
             throw IllegalStateException("Reservation no longer available")
         }
@@ -304,7 +304,8 @@ class ReservationViewModel : ViewModel() {
         stateViewModel: LoadingStateViewModel,
         message: String,
         error: String,
-        nextRoute: String? = "Reservations"
+        nextRoute: String? = "Reservations",
+        notificationMessage: String? = ""
     ) {
         var id = reservation.id!!
         var reservationInfo = reservation.reservationInfo
@@ -315,7 +316,15 @@ class ReservationViewModel : ViewModel() {
         } else {
             throw IllegalStateException("User $userId is not invited in this reservation")
         }
-        saveReservationOnDB(id, reservation, stateViewModel, message, nextRoute, error)
+        saveReservationOnDB(
+            id,
+            reservation,
+            stateViewModel,
+            message,
+            nextRoute,
+            error,
+            notificationMessage
+        )
     }
 
     fun rejectAndSaveReservationInvitation(
@@ -324,20 +333,26 @@ class ReservationViewModel : ViewModel() {
         stateViewModel: LoadingStateViewModel,
         message: String,
         error: String,
-        nextRoute: String? = "Reservations"
+        nextRoute: String? = "Reservations",
+        notificationMessage: String? = ""
     ) {
         var id = reservation.id!!
         var reservationInfo = reservation.reservationInfo
         if (reservationInfo!!.pendingUsers.contains(userId)) {
             //rimuovi l'utente dalla lista degli inviti da accettare
             reservationInfo!!.pendingUsers.remove(userId)
-            //poiché ha rifiutato, aumentiamo di 1 il numero di posti disponibili
-            reservationInfo.totalAvailable = (reservationInfo.totalAvailable ?: 0) + 1
-
         } else {
             throw IllegalStateException("User $userId is not invited in this reservation")
         }
-        saveReservationOnDB(id, reservation, stateViewModel, message, nextRoute, error)
+        saveReservationOnDB(
+            id,
+            reservation,
+            stateViewModel,
+            message,
+            nextRoute,
+            error,
+            notificationMessage
+        )
     }
 
 
@@ -345,21 +360,32 @@ class ReservationViewModel : ViewModel() {
     //altrimenti uno semplicemente abbandona la partita, che sarà disponibile per altri, quindi si chiamerà questa funzione
     fun cancelPartecipationToReservation(
         reservation: Reservation,
+        userId: String,
         stateViewModel: LoadingStateViewModel,
         message: String,
         error: String,
-        nextRoute: String? = "Reservations"
+        nextRoute: String? = "Reservations",
+        notificationMessage: String? = ""
     ) {
         var id = reservation.id!!
         var reservationInfo = reservation.reservationInfo
-        if (reservationInfo!!.confirmedUsers.contains(id)) {
+        if (reservationInfo!!.confirmedUsers.contains(userId)) {
             //rimuovi l'utente dalla lista degli utenti confermati
+            reservationInfo!!.confirmedUsers.remove(userId)
+            // dobbiamo farlo solo se l'utente è esterno
             reservationInfo.totalAvailable = (reservationInfo.totalAvailable ?: 0) + 1
-            reservationInfo!!.confirmedUsers.remove(id)
         } else {
             throw IllegalStateException("User $id is not a partecipant of this reservation")
         }
-        saveReservationOnDB(id, reservation, stateViewModel, message, nextRoute, error)
+        saveReservationOnDB(
+            id,
+            reservation,
+            stateViewModel,
+            message,
+            nextRoute,
+            error,
+            notificationMessage
+        )
     }
 
     private fun saveReservationOnDB(
@@ -368,13 +394,26 @@ class ReservationViewModel : ViewModel() {
         stateViewModel: LoadingStateViewModel,
         message: String,
         nextRoute: String?,
-        error: String
+        error: String,
+        notificationMessage: String? = "",
+        edit: Boolean? = false,
     ) {
         db.collection("reservations").document(id)
             .set(reservation.copy(id = id), SetOptions.merge())
             .addOnSuccessListener {
                 reservation.reservationInfo?.pendingUsers?.forEach {
-                    inviaNotifica(it, "You've been invited to play!", id)
+                    inviaNotifica(it, notificationMessage!!, id)
+                }
+                if (edit == true) {
+                    reservation.reservationInfo?.pendingUsers?.forEach {
+                        inviaNotifica(it, notificationMessage!!, id)
+                    }
+                    reservation.reservationInfo?.confirmedUsers?.forEach {
+                        if (it != reservation.userId)
+                            inviaNotifica(it, notificationMessage!!, id)
+                    }
+                } else {
+                    inviaNotifica(reservation.userId, notificationMessage!!, id)
                 }
                 stateViewModel.setStatus(Status.Success(message, nextRoute))
             }.addOnFailureListener {
@@ -410,7 +449,6 @@ class ReservationViewModel : ViewModel() {
 
 class FCMMessages {
 
-
     fun sendMessageSingle(
         recipient: String,
         title: String,
@@ -425,25 +463,6 @@ class FCMMessages {
         val rootMap = HashMap<String, Any>()
         rootMap["notification"] = notificationMap
         rootMap["to"] = recipient
-        dataMap?.let { rootMap["data"] = it }
-
-        SendFCM().setFcm(rootMap).execute()
-    }
-
-    fun sendMessageMulti(
-        recipients: JSONArray,
-        title: String,
-        body: String,
-        dataMap: Map<String, String>?
-    ) {
-
-        val notificationMap = HashMap<String, Any>()
-        notificationMap["body"] = body
-        notificationMap["title"] = title
-
-        val rootMap = HashMap<String, Any>()
-        rootMap["notification"] = notificationMap
-        rootMap["registration_ids"] = recipients
         dataMap?.let { rootMap["data"] = it }
 
         SendFCM().setFcm(rootMap).execute()

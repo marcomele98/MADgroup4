@@ -35,7 +35,6 @@ import it.polito.madgroup4.model.Court
 import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.model.Review
 import it.polito.madgroup4.model.Sport
-import it.polito.madgroup4.model.User
 import it.polito.madgroup4.utility.calculateStartEndTime
 import it.polito.madgroup4.utility.formatTimestampToString
 import it.polito.madgroup4.utility.imageSelector
