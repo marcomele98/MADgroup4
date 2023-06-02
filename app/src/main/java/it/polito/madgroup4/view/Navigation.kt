@@ -1,5 +1,6 @@
 package it.polito.madgroup4.view
 
+import android.app.Activity
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
@@ -29,9 +30,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavType
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -133,6 +138,8 @@ fun Navigation(
     courtsWithSlots: State<List<CourtWithSlots>?>,
 
     ) {
+
+
     val navController = rememberAnimatedNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val (topBarAction, setTopBarAction) = remember { mutableStateOf<() -> Unit>({}) }
@@ -143,7 +150,12 @@ fun Navigation(
 
     val coroutineScope = rememberCoroutineScope()
 
+    var screen = "Reservations"
 
+    if (activity.intent?.extras != null) {
+        setReservationWithCourt(activity.intent?.extras?.getString("reservationId").toString())
+        screen = activity.intent?.extras?.getString("screen").toString()
+    }
 
     LaunchedEffect(loading) {
         when (loading) {
@@ -217,11 +229,7 @@ fun Navigation(
     } else {
 
         Scaffold(bottomBar = {
-            if (navBackStackEntry?.destination?.route != "Loading"
-                && navBackStackEntry?.destination?.route != "No Connectivity"
-                && navBackStackEntry?.destination?.route != "Welcome"
-                && navBackStackEntry?.destination?.route != "Complete Your Profile"
-            ) BottomNavBar(
+            if (navBackStackEntry?.destination?.route != "Loading" && navBackStackEntry?.destination?.route != "No Connectivity" && navBackStackEntry?.destination?.route != "Welcome" && navBackStackEntry?.destination?.route != "Complete Your Profile") BottomNavBar(
                 navController = navController
             )
         },
@@ -247,7 +255,7 @@ fun Navigation(
             Box(Modifier.padding(it)) {
                 AnimatedNavHost(
                     navController = navController,
-                    startDestination = if (user.value?.email != null) "Reservations" else "Welcome"
+                    startDestination = if (user.value?.email != null) screen else "Welcome"
                 ) {
 
                     fun animatedComposable(
@@ -452,11 +460,7 @@ fun Navigation(
 
                     animatedComposable("Create Achievement") {
                         CreateAchievement(
-                            userVm,
-                            favouriteSport!!,
-                            user,
-                            loadingVm,
-                            setTopBarAction
+                            userVm, favouriteSport!!, user, loadingVm, setTopBarAction
                         )
                     }
 
@@ -470,11 +474,7 @@ fun Navigation(
 
                     animatedComposable("Edit Your Level") {
                         EditLevelSelector(
-                            favouriteSport!!,
-                            setTopBarAction,
-                            userVm,
-                            user,
-                            loadingVm
+                            favouriteSport!!, setTopBarAction, userVm, user, loadingVm
                         )
                     }
 
@@ -513,6 +513,7 @@ fun Navigation(
                         )
                     }
 
+
                     animatedComposable("Invites") {
                         ReservationList(
                             reservations = reservations.value?.filter { it.reservation?.reservationInfo?.status == "Invited" },
@@ -522,6 +523,7 @@ fun Navigation(
                             text = "No invites yet"
                         )
                     }
+
 
                     animatedComposable("Reviewable") {
                         ReservationList(
@@ -538,6 +540,8 @@ fun Navigation(
         }
     }
 }
+
+
 
 
 

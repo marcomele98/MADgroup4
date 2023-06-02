@@ -1,5 +1,6 @@
 package it.polito.madgroup4.viewmodel
 
+import android.os.AsyncTask
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -17,6 +18,15 @@ import it.polito.madgroup4.utility.calculateStartEndTime
 import it.polito.madgroup4.utility.formatDate
 import it.polito.madgroup4.utility.formatDateToTimestamp
 import it.polito.madgroup4.utility.getAllSlots
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
+import okhttp3.Response
+import org.json.JSONArray
+import org.json.JSONException
+import org.json.JSONObject
 import java.time.LocalTime
 import java.util.Date
 
@@ -368,10 +378,123 @@ class ReservationViewModel : ViewModel() {
         db.collection("reservations").document(id)
             .set(reservation.copy(id = id), SetOptions.merge())
             .addOnSuccessListener {
+                reservation.reservationInfo?.pendingUsers?.forEach {
+                    inviaNotifica(it, "You've been invited to play!", id)
+                }
                 stateViewModel.setStatus(Status.Success(message, nextRoute))
             }.addOnFailureListener {
                 stateViewModel.setStatus(Status.Error(error, null))
             }
+    }
+
+    private fun inviaNotifica(id: String, message: String, reservationId: String) {
+        val db = Firebase.firestore
+        val usersCollection = db.collection("users2")
+
+        usersCollection.document(id).get()
+            .addOnSuccessListener { documentSnapshot ->
+                val token = documentSnapshot.getString("token")
+                if (token != null) {
+                    val notification_title = "CUS Torino"
+                    val notification_des = message
+
+                    FCMMessages().sendMessageSingle(
+                        token,
+                        notification_title,
+                        notification_des,
+                        mapOf("screen" to "Reservation Details", "reservationId" to reservationId)
+                    )
+
+
+                }
+
+            }
+    }
+}
+
+
+class FCMMessages {
+
+
+    fun sendMessageSingle(
+        recipient: String,
+        title: String,
+        body: String,
+        dataMap: Map<String, String>?
+    ) {
+
+        val notificationMap = HashMap<String, Any>()
+        notificationMap["body"] = body
+        notificationMap["title"] = title
+
+        val rootMap = HashMap<String, Any>()
+        rootMap["notification"] = notificationMap
+        rootMap["to"] = recipient
+        dataMap?.let { rootMap["data"] = it }
+
+        SendFCM().setFcm(rootMap).execute()
+    }
+
+    fun sendMessageMulti(
+        recipients: JSONArray,
+        title: String,
+        body: String,
+        dataMap: Map<String, String>?
+    ) {
+
+        val notificationMap = HashMap<String, Any>()
+        notificationMap["body"] = body
+        notificationMap["title"] = title
+
+        val rootMap = HashMap<String, Any>()
+        rootMap["notification"] = notificationMap
+        rootMap["registration_ids"] = recipients
+        dataMap?.let { rootMap["data"] = it }
+
+        SendFCM().setFcm(rootMap).execute()
+    }
+
+    private inner class SendFCM : AsyncTask<String, String, String>() {
+
+        private val FCM_MESSAGE_URL = "https://fcm.googleapis.com/fcm/send"
+        private lateinit var fcm: Map<String, Any>
+
+        fun setFcm(fcm: Map<String, Any>): SendFCM {
+            this.fcm = fcm
+            return this
+        }
+
+        override fun doInBackground(vararg strings: String): String? {
+            return try {
+                val JSON: MediaType? = "application/json; charset=utf-8".toMediaTypeOrNull()
+                val body: RequestBody = RequestBody.create(JSON, JSONObject(fcm).toString())
+                val request: Request = Request.Builder()
+                    .url(FCM_MESSAGE_URL)
+                    .post(body)
+                    .addHeader(
+                        "Authorization",
+                        "key=" + "AAAAHNkiKAA:APA91bH3NrTbbrcq06JEuMAScb73370vmAqWvf8i-b7LLLtBpIrv3y_JQ82NAjykYGTfF71bmOJh7ra9-NUX7HjoKHLz2OGCc_qmRb0bbzwqSj6OfYu2vPyJqT2LTo9HRBIGPJusEGkT"
+                    )
+                    .build()
+                val response: Response = OkHttpClient().newCall(request).execute()
+                response.body?.string()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+        }
+
+        override fun onPostExecute(result: String?) {
+            try {
+                val resultJson = JSONObject(result)
+                val success: Int = resultJson.getInt("success")
+                val failure: Int = resultJson.getInt("failure")
+                //Toast.makeText(context, "Sent: " + success + "/" + (success + failure), Toast.LENGTH_LONG).show();
+            } catch (e: JSONException) {
+                e.printStackTrace()
+                //Toast.makeText(context, "Message Failed, Unknown error occurred.", Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
 }

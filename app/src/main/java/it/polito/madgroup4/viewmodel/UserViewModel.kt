@@ -11,6 +11,7 @@ import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.ktx.storage
 import it.polito.madgroup4.model.User
 import java.io.ByteArrayOutputStream
@@ -36,14 +37,22 @@ class UserViewModel(reservationVm: ReservationViewModel) : ViewModel() {
     init {
         val currentUser = auth.currentUser
         if (currentUser == null) {
-            auth.signInAnonymously()
-                .addOnCompleteListener { task ->
+            auth.signInAnonymously().addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         val currentUserId = auth.currentUser!!.uid
-                        db.collection("users2").document(currentUserId).set(User(currentUserId))
-                            .addOnSuccessListener {
-                                createUserListener(currentUserId, reservationVm )
+                        FirebaseMessaging.getInstance().token.addOnCompleteListener { task2 ->
+                            if (task2.isSuccessful) {
+                                val token = task2.result
+                                // Salva il token nel documento utente nel database Firebase
+                                db.collection("users2").document(currentUserId)
+                                    .set(User(currentUserId, token)).addOnSuccessListener {
+                                        createUserListener(currentUserId, reservationVm)
+                                    }
+                            } else {
+                                Log.i("test", "error", task2.exception)
+                                // Gestisci il fallimento nel recupero del token
                             }
+                        }
                     } else {
                         Log.i("test", "error", task.exception)
                     }
@@ -55,15 +64,11 @@ class UserViewModel(reservationVm: ReservationViewModel) : ViewModel() {
 
     private fun createUserListener(uid: String, reservationVm: ReservationViewModel) {
         reservationVm.createReservationsListener(uid)
-        userListener =
-            db.collection("users2").document(uid)
-                .addSnapshotListener { r, e ->
-                    _user.value = if (e != null) throw e
-                    else r?.toObject(User::class.java)
-                }
-        val pathReference = storageRef
-            .child("images")
-            .child("${uid}.jpg")
+        userListener = db.collection("users2").document(uid).addSnapshotListener { r, e ->
+                _user.value = if (e != null) throw e
+                else r?.toObject(User::class.java)
+            }
+        val pathReference = storageRef.child("images").child("${uid}.jpg")
         val localFile = File.createTempFile("images", "jpg")
         pathReference.getFile(localFile).addOnSuccessListener {
             // Local temp file has been created
@@ -92,8 +97,7 @@ class UserViewModel(reservationVm: ReservationViewModel) : ViewModel() {
 
         fun saveUserDetails() {
             db.collection("users2").document(auth.currentUser!!.uid)
-                .set(editedUser, SetOptions.merge())
-                .addOnSuccessListener {
+                .set(editedUser, SetOptions.merge()).addOnSuccessListener {
                     Log.i("test", "User updated successfully")
                     stateViewModel.setStatus(Status.Success(message, nextRoute))
                 }.addOnFailureListener {
@@ -112,9 +116,7 @@ class UserViewModel(reservationVm: ReservationViewModel) : ViewModel() {
 
 
     fun removeAchievement(
-        sportName: String,
-        achievementTitle: String,
-        stateViewModel: LoadingStateViewModel
+        sportName: String, achievementTitle: String, stateViewModel: LoadingStateViewModel
     ) {
         val userTmp = _user.value!!
         userTmp.sports?.forEach { sport ->
@@ -136,9 +138,7 @@ class UserViewModel(reservationVm: ReservationViewModel) : ViewModel() {
 
 
     private fun uploadImage(photo: Bitmap, uid: String, then: () -> Unit) {
-        val ref = storageRef
-            .child("images")
-            .child("${uid}.jpg")
+        val ref = storageRef.child("images").child("${uid}.jpg")
         if (photo != null) {
             val baos = ByteArrayOutputStream()
             photo.compress(Bitmap.CompressFormat.JPEG, 100, baos)
