@@ -27,15 +27,21 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+
+                <data
+                    android:host="www.madgroup4.com"
+                    android:scheme="https" />
+
+                <data
+                    android:host="www.madgroup4.com"
+                    android:scheme="http" />
             </intent-filter>
         </activity>
-<!--        <service
-            android:name=".viewmodel.MyFirebaseMessagingService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
-            </intent-filter>
-        </service>-->
+
         <service
             android:name=".viewmodel.MyFirebaseMessagingService"
             android:exported="false"

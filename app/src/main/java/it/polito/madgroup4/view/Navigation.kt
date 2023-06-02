@@ -522,7 +522,7 @@ fun Navigation(
                             reservations = reservations.value?.filter { it.reservation?.reservationInfo?.status == "Invited" },
                             setReservation = setReservationWithCourt,
                             navController = navController,
-                            modifier = Modifier.padding(16.dp),
+                            modifier = Modifier.padding(horizontal = 16.dp),
                             text = "No invites yet"
                         )
                     }
@@ -533,7 +533,7 @@ fun Navigation(
                             reservations = reservations.value?.filter { it.reservation?.reservationInfo?.status == "Reviewable" },
                             setReservation = setReservationWithCourt,
                             navController = navController,
-                            modifier = Modifier.padding(16.dp),
+                            modifier = Modifier.padding(horizontal = 16.dp),
                             text = "No reviewable reservations"
                         )
                     }

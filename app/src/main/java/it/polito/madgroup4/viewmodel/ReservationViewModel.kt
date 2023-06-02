@@ -1,10 +1,13 @@
 package it.polito.madgroup4.viewmodel
 
+import android.net.Uri
 import android.os.AsyncTask
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.dynamiclinks.DynamicLink
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
@@ -443,6 +446,16 @@ class ReservationViewModel : ViewModel() {
                 }
 
             }
+    }
+
+    fun generateReservationLink(id : String): String {
+        return FirebaseDynamicLinks.getInstance().createDynamicLink()
+            .setLink(Uri.parse("https://www.madgroup4.com/?reservationId=${id}"))
+            .setDomainUriPrefix("https://madgroup4.page.link")
+            .setAndroidParameters(DynamicLink.AndroidParameters.Builder().build())
+            .buildDynamicLink()
+            .uri
+            .toString()
     }
 }
 

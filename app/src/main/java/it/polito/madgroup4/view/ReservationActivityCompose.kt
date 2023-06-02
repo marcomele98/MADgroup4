@@ -8,6 +8,7 @@ import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -26,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import it.polito.madgroup4.R
 import it.polito.madgroup4.model.Court
 import it.polito.madgroup4.model.LevelEnum
@@ -87,6 +89,8 @@ class ReservationActivityCompose : ComponentActivity() {
 
         }
 
+
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // Create channel to show notifications.
             val channelId = getString(R.string.default_notification_channel_id)
@@ -101,9 +105,27 @@ class ReservationActivityCompose : ComponentActivity() {
             )
         }
 
-
-
         askNotificationPermission()
+
+        FirebaseDynamicLinks.getInstance()
+            .getDynamicLink(intent)
+            .addOnSuccessListener { pendingDynamicLinkData ->
+                Log.i("Test dynamic link", "We have a Dynamic Link")
+                var deepLink: Uri? = null
+                if (pendingDynamicLinkData != null) {
+                    deepLink = pendingDynamicLinkData.link
+                }
+                if (deepLink != null) {
+                    Log.i(
+                        "Test dynamic link", "We have a Dynamic Link"
+                    )
+                    val reservationId = deepLink!!.getQueryParameter("reservationId")
+                    // poi dobbiamo gestirlo
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.i("ERROR", "ERROR")
+            }
 
     }
 
