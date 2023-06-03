@@ -5,6 +5,8 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
+import android.net.Uri
+import android.util.Log
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -37,6 +39,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import it.polito.madgroup4.model.Court
 import it.polito.madgroup4.model.CourtWithSlots
 import it.polito.madgroup4.model.LevelEnum
@@ -156,6 +159,9 @@ fun Navigation(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val (topBarAction, setTopBarAction) = remember { mutableStateOf<() -> Unit>({}) }
 
+    val linkReservations = reservationVm.linkReservations.observeAsState(initial = emptyList())
+
+    val (fromLink, setfromLink) = remember { mutableStateOf(false) }
 
     val loading by loadingVm.status.observeAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -165,11 +171,40 @@ fun Navigation(
     var screen = "Reservations"
 
 
+
     if (activity.intent?.extras != null) {
-        setReservationWithCourt(activity.intent?.extras?.getString("reservationId").toString())
-        screen = activity.intent?.extras?.getString("screen").toString()
+        val value = activity.intent?.extras?.getString("screen")
+        if (value != null) {
+            setReservationWithCourt(activity.intent?.extras?.getString("reservationId").toString())
+            screen = value.toString()
+        }
     }
 
+    FirebaseDynamicLinks.getInstance()
+        .getDynamicLink(activity.intent)
+        .addOnSuccessListener { pendingDynamicLinkData ->
+            var deepLink: Uri? = null
+            if (pendingDynamicLinkData != null) {
+                deepLink = pendingDynamicLinkData.link
+            }
+            if (deepLink != null) {
+                if (deepLink!!.getQueryParameter("reservationId") != null) {
+                    val res = deepLink!!.getQueryParameter("reservationId")
+                    if (res != null) {
+                        setReservationWithCourt(res)
+                        setfromLink(true)
+                        reservationVm.getReservationsById(res)
+                    }
+                }
+            }
+        }
+        .addOnFailureListener { e ->
+            Log.i("ERROR", "ERROR")
+        }
+
+    if(fromLink) {
+        screen = "Join Reservation"
+    }
 
 
     LaunchedEffect(loading) {
@@ -585,12 +620,28 @@ fun Navigation(
 
                     animatedComposable("Add Participants") {
                         AddParticipants(
-                            reservation = reservation,
+                            reservationId = reservation,
                             reservations = reservations,
                             owner = user,
                             users = users,
                             reservationVm = reservationVm,
                             loadingVm = loadingVm,
+                            context = activity
+                        )
+                    }
+
+                    animatedComposable("Join Reservation") {
+                        ShowReservation(
+                            reservation,
+                            navController,
+                            linkReservations,
+                            reservationVm,
+                            setSelectedCourt,
+                            setSelectedSlot,
+                            loadingVm,
+                            user,
+                            users,
+                            fromLink = true
                         )
                     }
                 }

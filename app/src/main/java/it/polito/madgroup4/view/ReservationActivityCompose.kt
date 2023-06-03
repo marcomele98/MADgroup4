@@ -106,27 +106,6 @@ class ReservationActivityCompose : ComponentActivity() {
         }
 
         askNotificationPermission()
-
-        FirebaseDynamicLinks.getInstance()
-            .getDynamicLink(intent)
-            .addOnSuccessListener { pendingDynamicLinkData ->
-                Log.i("Test dynamic link", "We have a Dynamic Link")
-                var deepLink: Uri? = null
-                if (pendingDynamicLinkData != null) {
-                    deepLink = pendingDynamicLinkData.link
-                }
-                if (deepLink != null) {
-                    Log.i(
-                        "Test dynamic link", "We have a Dynamic Link"
-                    )
-                    val reservationId = deepLink!!.getQueryParameter("reservationId")
-                    // poi dobbiamo gestirlo
-                }
-            }
-            .addOnFailureListener { e ->
-                Log.i("ERROR", "ERROR")
-            }
-
     }
 
     private fun askNotificationPermission() {

@@ -66,6 +66,10 @@ class ReservationViewModel : ViewModel() {
         MutableLiveData<List<ReservationWithCourt>>().apply { value = emptyList() }
     val sharedReservations: LiveData<List<ReservationWithCourt>> = _sharedReservations
 
+    private var _linkReservations =
+        MutableLiveData<List<ReservationWithCourt>>().apply { value = emptyList() }
+    val linkReservations: LiveData<List<ReservationWithCourt>> = _linkReservations
+
     init {
         db.collection("courts").get().addOnSuccessListener { documents ->
             _allCourts.value = documents.map { it.toObject(Court::class.java) }
@@ -293,7 +297,8 @@ class ReservationViewModel : ViewModel() {
             nextRoute,
             error,
             notificationMessage,
-            invite = user
+            invite = user,
+            create = true
         )
     }
 
@@ -324,6 +329,51 @@ class ReservationViewModel : ViewModel() {
             notificationMessage
         )
     }
+
+
+    fun joinFromLink(
+        userId: String,
+        reservation: Reservation,
+        stateViewModel: LoadingStateViewModel,
+        message: String,
+        error: String,
+        nextRoute: String? = "Reservations",
+        notificationMessage: String? = ""
+    ) {
+        var id = reservation.id!!
+        var reservationInfo = reservation.reservationInfo
+
+        if (reservation.reservationInfo?.totalAvailable!! + reservation.reservationInfo!!.confirmedUsers.size < reservation.reservationInfo?.totalNumber!!) {
+            //rimuovi l'utente dalla lista degli inviti da accettare e settalo come utente confermato
+            if (reservationInfo!!.pendingUsers.contains(userId))
+                reservationInfo!!.pendingUsers.remove(userId)
+            reservationInfo!!.confirmedUsers.add(userId)
+            saveReservationOnDB(
+                id, reservation, stateViewModel, message, nextRoute, error, notificationMessage
+            )
+        } else if (reservation.reservationInfo?.totalAvailable!! > 0) {
+            if (reservationInfo!!.pendingUsers.contains(userId))
+                reservationInfo!!.pendingUsers.remove(userId)
+            reservationInfo!!.confirmedUsers.add(userId)
+            reservationInfo!!.totalAvailable = (reservationInfo.totalAvailable ?: 0) - 1
+            saveReservationOnDB(
+                id, reservation, stateViewModel, message, nextRoute, error, notificationMessage
+            )
+        } else {
+            stateViewModel.setStatus(Status.Error("No places longer available", nextRoute))
+        }
+
+        saveReservationOnDB(
+            id,
+            reservation,
+            stateViewModel,
+            message,
+            nextRoute,
+            error,
+            notificationMessage
+        )
+    }
+
 
     fun acceptAndSaveReservationInvitation(
         reservation: Reservation,
@@ -427,10 +477,13 @@ class ReservationViewModel : ViewModel() {
     ) {
         db.collection("reservations").document(id)
             .set(reservation.copy(id = id), SetOptions.merge()).addOnSuccessListener {
-                reservation.reservationInfo?.pendingUsers?.forEach {
-                    inviaNotifica(it, notificationMessage!!, id)
+                if (invite == null) {
+                    reservation.reservationInfo?.pendingUsers?.forEach {
+                        inviaNotifica(it, notificationMessage!!, id)
+                    }
                 }
                 if (edit == true) {
+                    println("edit")
                     reservation.reservationInfo?.pendingUsers?.forEach {
                         inviaNotifica(it, notificationMessage!!, id)
                     }
@@ -438,8 +491,10 @@ class ReservationViewModel : ViewModel() {
                         if (it != reservation.userId) inviaNotifica(it, notificationMessage!!, id)
                     }
                 } else if (create == false) {
+                    println("create")
                     inviaNotifica(reservation.userId, notificationMessage!!, id)
                 } else if (invite != null) {
+                    println("invite")
                     inviaNotifica(invite.id!!, notificationMessage!!, id)
                 }
                 stateViewModel.setStatus(Status.Success(message, nextRoute))
@@ -466,6 +521,29 @@ class ReservationViewModel : ViewModel() {
             }
 
         }
+    }
+
+    fun getReservationsById(name: String) {
+        db.collection("courts").get()
+            .addOnSuccessListener { courtDocuments ->
+                val courts = courtDocuments.map { it.toObject(Court::class.java) }
+
+                db.collection("reservations").whereEqualTo("id", name).get()
+                    .addOnSuccessListener { reservationDocuments ->
+                        val reservations =
+                            reservationDocuments.map { it.toObject(Reservation::class.java) }
+                        val reservationsWithCourt = reservations.map { reservation ->
+                            val court = courts.find { it.name == reservation.courtName }
+                            ReservationWithCourt(reservation, court)
+                        }
+                        _linkReservations.value = reservationsWithCourt
+
+                    }
+                    .addOnFailureListener { exception ->
+                    }
+            }
+            .addOnFailureListener { exception ->
+            }
     }
 
     fun generateReservationLink(id: String): String {

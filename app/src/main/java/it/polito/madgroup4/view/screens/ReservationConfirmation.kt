@@ -1,12 +1,15 @@
 package it.polito.madgroup4.view.screens
 
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,11 +19,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import it.polito.madgroup4.model.CourtWithSlots
 import it.polito.madgroup4.model.Reservation
 import it.polito.madgroup4.model.ReservationInfo
@@ -114,8 +121,7 @@ fun ReservationConfirmation(
 
 
     LazyColumn(
-        modifier = Modifier
-            .padding(horizontal = 16.dp)
+        modifier = Modifier.padding(horizontal = 16.dp)
     ) {
 
         item {
@@ -124,8 +130,39 @@ fun ReservationConfirmation(
                 reservationDate = reservation.reservation?.date!!.toDate(),
                 reservationTimeSlot = reservationTimeSlot,
                 price = price,
-                stuff = reservation.reservation?.stuff!!,
             )
+        }
+
+        item {
+            if (stuff != null) {
+                val filteredStuff = stuff.filter { it.quantity!! > 0 }
+                if (filteredStuff.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Text(
+                        text = "Rented equipment",
+                        fontSize = 23.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontStyle = FontStyle.Italic
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+                filteredStuff.forEach { stuff ->
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = "${stuff.name} x${stuff.quantity}",
+                            fontSize = 22.sp,
+
+                            )
+                        Spacer(modifier = Modifier.weight(1f))
+                        Text(
+                            text = "${stuff.quantity?.let { stuff.price?.times(it) }}€",
+                            fontSize = 22.sp,
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(4.dp))
+                }
+            }
         }
 
         item { Spacer(modifier = Modifier.height(20.dp)) }

@@ -36,23 +36,7 @@ fun ShareOrCopyInviteLink(
     var isSnackbarVisible by remember { mutableStateOf(false) }
     var snackbarMessage by remember { mutableStateOf("") }
 
-    if (isSnackbarVisible) {
-        Snackbar(
-            action = {},
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-        ) {
-            Text(snackbarMessage)
-        }
 
-        LaunchedEffect(isSnackbarVisible) {
-            if (isSnackbarVisible) {
-                delay(2000) // Mostra lo Snackbar per 2 secondi
-                isSnackbarVisible = false
-            }
-        }
-    }
     Row {
         IconButton(
             onClick = {
@@ -92,6 +76,23 @@ fun ShareOrCopyInviteLink(
                 modifier = Modifier.size(30.dp),
                 contentDescription = "Copy To Clipboard"
             )
+        }
+        if (isSnackbarVisible) {
+            Snackbar(
+                action = {},
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+            ) {
+                Text(snackbarMessage)
+            }
+
+            LaunchedEffect(isSnackbarVisible) {
+                if (isSnackbarVisible) {
+                    delay(2000) // Mostra lo Snackbar per 2 secondi
+                    isSnackbarVisible = false
+                }
+            }
         }
     }
 }

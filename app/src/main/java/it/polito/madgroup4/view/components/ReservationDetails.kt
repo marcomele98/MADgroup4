@@ -37,9 +37,7 @@ fun ReservationDetails(
     playingCourt: Court,
     reservationDate: Date,
     reservationTimeSlot: Int,
-    particularRequests: String? = null,
     price: Double,
-    stuff: List<Stuff>? = null
 ) {
 
     val startEndTime = calculateStartEndTime(
@@ -97,67 +95,15 @@ fun ReservationDetails(
 
         ReservationElement(
             icon = Icons.Default.Schedule,
-            text = startEndTime
-            , description = "Schedule"
+            text = startEndTime, description = "Schedule"
         )
-
-        if(stuff != null){
-            val filteredStuff = stuff.filter { it.quantity!! > 0 }
-            if (filteredStuff.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(20.dp))
-                Text(
-                    text = "Rented equipment", fontSize = 23.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontStyle = FontStyle.Italic
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-                filteredStuff.forEach{ stuff ->
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = "${stuff.name} x${stuff.quantity}",
-                            fontSize = 22.sp,
-
-                        )
-                        Spacer(modifier = Modifier.weight(1f))
-                        Text(
-                            text = "${stuff.quantity?.let { stuff.price?.times(it) }}€",
-                            fontSize = 22.sp,
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(4.dp))
-            }
-        }
-
-        if (particularRequests != null && particularRequests.trim() != "") {
-            Spacer(modifier = Modifier.height(20.dp))
-            Text(
-                text = "Particular requests", fontSize = 23.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
-                fontStyle = FontStyle.Italic
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            ElevatedCard {
-                Text(
-                    text = particularRequests,
-                    fontSize = 18.sp,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(100.dp)
-                        .padding(10.dp)
-                )
-            }
-        }
     }
-
 }
 
 @Composable
 fun ReservationElement(
     icon: ImageVector, text: String, description: String
-){
+) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth()

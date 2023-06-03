@@ -162,6 +162,7 @@ fun Explore(
             setReservation = setReservation,
             navController = navController,
             nextRoute = "Public Match Details",
+            text = "No public matches found",
         )
     }
 }
