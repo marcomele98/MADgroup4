@@ -213,6 +213,8 @@ fun MainScreen(
         )
     }
 
+    val users = userVm.users.observeAsState(initial = null)
+
     Navigation(
         reservationVm,
         userVm,
@@ -249,7 +251,8 @@ fun MainScreen(
         setStuff,
         reservationInfo,
         setReservationInfo,
-        sharedReservations
+        sharedReservations,
+        users
     )
 
 }

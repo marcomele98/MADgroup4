@@ -49,6 +49,7 @@ import it.polito.madgroup4.view.components.BottomNavBar
 import it.polito.madgroup4.view.components.FloatingFab
 import it.polito.madgroup4.view.components.ReservationList
 import it.polito.madgroup4.view.components.TopBar
+import it.polito.madgroup4.view.screens.AddParticipants
 import it.polito.madgroup4.view.screens.AddSport
 import it.polito.madgroup4.view.screens.AdditionalInfo
 import it.polito.madgroup4.view.screens.Courts
@@ -142,8 +143,13 @@ fun Navigation(
     reservationInfo: ReservationInfo,
     setReservationInfo: (ReservationInfo) -> Unit,
     sharedReservations: State<List<ReservationWithCourt>?>,
+    users: State<List<User>?>,
 
     ) {
+
+    LaunchedEffect(users) {
+        println(users.value)
+    }
 
 
     val navController = rememberAnimatedNavController()
@@ -353,7 +359,8 @@ fun Navigation(
                             setSelectedCourt,
                             setSelectedSlot,
                             loadingVm,
-                            user
+                            user,
+                            users
                         )
                     }
 
@@ -525,7 +532,7 @@ fun Navigation(
                             navController = navController,
                             modifier = Modifier.padding(horizontal = 16.dp),
                             text = "No invites yet",
-                            nextRoute = "Public Match Details"
+                            nextRoute = "Reservation Details"
                         )
                     }
 
@@ -572,9 +579,20 @@ fun Navigation(
                             setSelectedSlot,
                             loadingVm,
                             user,
+                            users,
                         )
                     }
 
+                    animatedComposable("Add Participants") {
+                        AddParticipants(
+                            reservation = reservation,
+                            reservations = reservations,
+                            owner = user,
+                            users = users,
+                            reservationVm = reservationVm,
+                            loadingVm = loadingVm,
+                        )
+                    }
                 }
             }
         }

@@ -19,6 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -88,16 +89,17 @@ fun Profile(
                             .then(Modifier.align(Alignment.CenterHorizontally))
                     )
                 } else if (user.value?.photo == true) {
-                    Box(modifier = Modifier
-                        .size(120.dp)
-                        .clip(CircleShape)
-                        .align(Alignment.CenterHorizontally)
-                        .border(1.dp, MaterialTheme.colorScheme.secondary, CircleShape)
+                    Box(
+                        modifier = Modifier
+                            .size(120.dp)
+                            .clip(CircleShape)
+                            .align(Alignment.CenterHorizontally)
+                            .border(1.dp, MaterialTheme.colorScheme.secondary, CircleShape)
                     ) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.align(Alignment.Center),
-                            )
-                        }
+                        CircularProgressIndicator(
+                            modifier = Modifier.align(Alignment.Center),
+                        )
+                    }
                 } else {
                     Image(
                         painter = painterResource(id = R.drawable.profile),
@@ -143,19 +145,20 @@ fun Profile(
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 if (remainingSports.isNotEmpty()) {
-                    Icon(
-                        imageVector = Icons.Outlined.Add,
-                        modifier = Modifier
-                            .size(30.dp)
-                            .alpha(0.6f)
-                            .clickable {
-                                navController.navigate("Add Sport")
-                                setSelectedLevel(LevelEnum.BEGINNER.name)
-                                setSelectedSport(remainingSports[0])
-                            },
-                        //tint = MaterialTheme.colorScheme.secondary,
-                        contentDescription = null
-                    )
+                    IconButton(onClick = {
+                        navController.navigate("Add Sport")
+                        setSelectedLevel(LevelEnum.BEGINNER.name)
+                        setSelectedSport(remainingSports[0])
+                    }) {
+                        Icon(
+                            imageVector = Icons.Outlined.Add,
+                            modifier = Modifier
+                                .size(30.dp)
+                                .alpha(0.6f),
+                            //tint = MaterialTheme.colorScheme.secondary,
+                            contentDescription = null
+                        )
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(10.dp))
@@ -169,16 +172,14 @@ fun Profile(
                 if (user.value?.sports?.size == 0) {
                     Text(
                         text = "You have not added any sport yet",
-                        modifier = Modifier
-                            .align(Alignment.Center),
+                        modifier = Modifier.align(Alignment.Center),
                         fontSize = 18.sp,
                         fontStyle = FontStyle.Italic,
                         color = MaterialTheme.colorScheme.primary
                     )
                 }
                 LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth()
                 ) {
 
 
@@ -195,6 +196,5 @@ fun Profile(
     } else {
         LoadingScreen()
     }
-
 }
 

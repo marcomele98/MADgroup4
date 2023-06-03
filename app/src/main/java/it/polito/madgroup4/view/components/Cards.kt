@@ -90,7 +90,7 @@ fun ReservationCard(
                     status?.let {
                         Text(
                             text = it, fontSize = 18.sp,
-                            color = if (status == "Invited") MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                            color = if (status == "Invited") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary,
                             fontStyle = FontStyle.Italic,
                             fontWeight = FontWeight.Bold
                         )

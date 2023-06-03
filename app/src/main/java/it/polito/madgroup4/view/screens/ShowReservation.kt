@@ -1,5 +1,11 @@
 package it.polito.madgroup4.view.screens
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,12 +14,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -22,8 +33,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -45,6 +58,7 @@ import java.time.LocalTime
 import java.util.Date
 
 
+@OptIn(ExperimentalFoundationApi::class)
 @ExperimentalMaterial3Api
 @Composable
 fun ShowReservation(
@@ -55,12 +69,19 @@ fun ShowReservation(
     setSelectedCourt: (String) -> Unit,
     setSelectedSlot: (Int) -> Unit,
     loadingVm: LoadingStateViewModel,
-    user: State<User?>
+    user: State<User?>,
+    users: State<List<User>?>
 ) {
 
     val openDialog = remember { mutableStateOf(false) }
 
+    val openDialogLeave = remember { mutableStateOf(false) }
+
     val reservation = reservations.value?.find { it.reservation?.id == reservationId }
+
+    val showConfirmed = remember { mutableStateOf(false) }
+
+    val showPending = remember { mutableStateOf(false) }
 
     if (reservation != null) {
         setSelectedSlot(reservation.reservation?.slotNumber!!)
@@ -127,6 +148,44 @@ fun ShowReservation(
                 )
             }
 
+            if (openDialogLeave.value) {
+                AlertDialog(onDismissRequest = {
+                    openDialogLeave.value = false
+                }, confirmButton = {
+                    TextButton(onClick = {
+                        loadingVm.setStatus(Status.Loading)
+                        reservationVm.cancelPartecipationToReservation(
+                            reservation.reservation,
+                            user.value?.id!!,
+                            loadingVm,
+                            "Reservation leaved successfully",
+                            "Error while leaving the reservation",
+                            "Reservations",
+                            "User ${user.value!!.name} ${user.value!!.surname} has leaved your reservation"
+                        )
+                        openDialogLeave.value = false
+                        navController.navigate("Reservations")
+                    }) {
+                        Text("Leave")
+                    }
+                }, dismissButton = {
+                    TextButton(onClick = {
+                        openDialogLeave.value = false
+                    }) {
+                        Text("Cancel")
+                    }
+                }, title = {
+                    Text("Leave Match")
+                }, text = {
+                    Text(
+                        text = "Are you sure you want to leave this match?",
+                    )
+                }, properties = DialogProperties(
+                    dismissOnBackPress = true, dismissOnClickOutside = true
+                )
+                )
+            }
+
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -148,9 +207,167 @@ fun ShowReservation(
                             reservation.reservation.price,
                             reservation.reservation.stuff,
                         )
+                    }
 
-                        if (reservation.reservation.review != null) {
+                    item {
+                        if (reservation.reservation.reservationInfo?.confirmedUsers?.filter { it != user.value?.id }
+                                ?.isNotEmpty()!!
+                            || reservation.reservation.reservationInfo?.pendingUsers?.isNotEmpty()!!
+                            || user.value?.id == reservation.reservation.userId
+                        ) {
                             Spacer(modifier = Modifier.height(25.dp))
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Text(
+                                    text = "Participants",
+                                    fontSize = 23.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    fontStyle = FontStyle.Italic
+                                )
+                                Spacer(modifier = Modifier.weight(1f))
+                                if (!isInThePast && user.value?.id == reservation.reservation.userId)
+                                    IconButton(onClick = { navController.navigate("Add Participants") }) {
+                                        Icon(
+                                            imageVector = Icons.Outlined.Add,
+                                            modifier = Modifier
+                                                .size(30.dp)
+                                                .alpha(0.6f),
+                                            //tint = MaterialTheme.colorScheme.secondary,
+                                            contentDescription = null
+                                        )
+                                    }
+
+                            }
+                        }
+                    }
+
+                    item {
+                        if (reservation.reservation.reservationInfo?.confirmedUsers?.filter { it != user.value?.id }
+                                ?.isNotEmpty()!!) {
+                            Spacer(modifier = Modifier.height(15.dp))
+                            Row(
+                                verticalAlignment = Alignment.Bottom
+                            ) {
+                                Text(
+                                    text = "Confirmed: ${reservation.reservation.reservationInfo?.confirmedUsers?.size}",
+                                    fontSize = 23.sp,
+                                    fontStyle = FontStyle.Italic,
+                                    fontWeight = FontWeight.Bold,
+                                )
+                                Spacer(modifier = Modifier.weight(1f))
+                                Text(
+                                    text = if (!showConfirmed.value) "See All" else "Hide",
+                                    modifier = Modifier
+                                        .clickable(onClick = {
+                                            showConfirmed.value = !showConfirmed.value
+                                        })
+                                        .padding(start = 8.dp),
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
+                    }
+
+
+                    items(reservation.reservation.reservationInfo?.confirmedUsers!!.size) {
+                        val user =
+                            users.value?.find { user -> user.id == reservation.reservation.reservationInfo?.confirmedUsers!![it] }
+                        Column(
+                            modifier = Modifier.animateContentSize(
+                                animationSpec = tween(
+                                    durationMillis = 500,
+                                    easing = FastOutSlowInEasing
+                                )
+                            )
+                        ) {
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .then(
+                                        if (!showConfirmed.value) Modifier.height(0.dp) else Modifier.height(
+                                            30.dp
+                                        )
+                                    ),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                            ) {
+                                Text(
+                                    text = user?.name!! + " " + user.surname!!,
+                                    fontSize = 22.sp,
+                                    fontStyle = FontStyle.Italic
+                                )
+                            }
+                        }
+                    }
+
+                    item() {
+                        if (reservation.reservation.reservationInfo?.pendingUsers?.isNotEmpty()!!) {
+                            Spacer(modifier = Modifier.height(15.dp))
+                            Row(
+                                verticalAlignment = Alignment.Bottom
+                            ) {
+                                Text(
+                                    text = "Invited: ${reservation.reservation.reservationInfo?.pendingUsers?.size} ",
+                                    fontSize = 23.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    fontStyle = FontStyle.Italic
+                                )
+                                Spacer(modifier = Modifier.weight(1f))
+                                Text(
+                                    text = if (!showPending.value) "See All" else "Hide",
+                                    modifier = Modifier
+                                        .clickable(onClick = {
+                                            showPending.value = !showPending.value
+                                        })
+                                        .padding(start = 8.dp),
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
+                    }
+
+                    items(reservation.reservation.reservationInfo?.pendingUsers!!.size) {
+                        val user =
+                            users.value?.find { user -> user.id == reservation.reservation.reservationInfo?.pendingUsers!![it] }
+                        Column(
+                            modifier = Modifier.animateContentSize(
+                                animationSpec = tween(
+                                    durationMillis = 500,
+                                    easing = FastOutSlowInEasing
+                                )
+                            )
+                        ) {
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .then(
+                                        if (!showPending.value) Modifier.height(0.dp) else Modifier.height(
+                                            30.dp
+                                        )
+                                    ),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                            ) {
+                                Text(
+                                    text = user?.name!! + " " + user.surname!!,
+                                    fontSize = 22.sp,
+                                    fontStyle = FontStyle.Italic
+                                )
+                            }
+                        }
+                    }
+
+
+
+                    item {
+                        if (reservation.reservation.review != null) {
+                            Spacer(modifier = Modifier.height(20.dp))
                             Text(
                                 text = "Your review", fontSize = 23.sp,
                                 fontWeight = FontWeight.Bold,
@@ -169,8 +386,10 @@ fun ShowReservation(
                                 )
                             }
                         }
-
                     }
+
+                    item { Spacer(modifier = Modifier.height(20.dp)) }
+
                 }
             }
 
@@ -253,7 +472,9 @@ fun ShowReservation(
                         }
                     }
                 }
-            } else if (reservation.reservation.reservationInfo?.public == true && !reservation.reservation.reservationInfo?.confirmedUsers?.contains(user.value?.id!!)!!
+            } else if (reservation.reservation.reservationInfo?.public == true && !reservation.reservation.reservationInfo?.confirmedUsers?.contains(
+                    user.value?.id!!
+                )!!
             ) {
 
                 Button(
@@ -277,7 +498,24 @@ fun ShowReservation(
                 ) {
                     Text(text = "Join The Match")
                 }
+            } else if (!isInThePast && reservation.reservation.reservationInfo?.confirmedUsers!!.contains(
+                    user.value?.id
+                ) && user.value?.id != reservation.reservation.userId
+            ) {
+                Button(
+                    onClick = {
+                        openDialogLeave.value = !openDialogLeave.value
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        contentColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text(text = "Leave The Match", color = MaterialTheme.colorScheme.onError)
+                }
             }
+
             Spacer(modifier = Modifier.height(16.dp))
         }
     } else {

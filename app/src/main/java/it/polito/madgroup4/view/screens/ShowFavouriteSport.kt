@@ -151,8 +151,7 @@ fun ShowFavouriteSport(
                 IconButton(onClick = {
                     setSelectedLevel(user.value?.sports?.get(sport)?.level!!)
                     navController.navigate("Edit Your Level")
-                }
-                ) {
+                }) {
                     Icon(
                         imageVector = Icons.Outlined.Edit,
                         modifier = Modifier
@@ -177,16 +176,16 @@ fun ShowFavouriteSport(
                     fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
                 )
                 Spacer(modifier = Modifier.weight(1f))
-                Icon(
-                    imageVector = Icons.Outlined.Add,
-                    modifier = Modifier
-                        .size(30.dp)
-                        .alpha(0.6f)
-                        .clickable {
-                            navController.navigate("Create Achievement")
-                        },
-                    contentDescription = null
-                )
+                IconButton(onClick = { navController.navigate("Create Achievement") }) {
+                    Icon(
+                        imageVector = Icons.Outlined.Add,
+                        modifier = Modifier
+                            .size(30.dp)
+                            .alpha(0.6f),
+                        contentDescription = null
+                    )
+                }
+
             }
             Spacer(modifier = Modifier.height(10.dp))
 
@@ -200,26 +199,22 @@ fun ShowFavouriteSport(
                 if (user.value?.sports?.getOrNull(sport)?.achievements?.size == 0) {
                     Text(
                         text = "No achievements yet",
-                        modifier = Modifier
-                            .align(Alignment.Center),
+                        modifier = Modifier.align(Alignment.Center),
                         fontSize = 18.sp,
                         fontStyle = FontStyle.Italic,
                         color = MaterialTheme.colorScheme.primary
                     )
                 }
                 LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth()
 
                 ) {
                     items(user.value?.sports?.getOrNull(sport)?.achievements?.size ?: 0) { index ->
-                        AchievementCard(
-                            achievement = user.value?.sports?.get(sport)?.achievements!![index],
+                        AchievementCard(achievement = user.value?.sports?.get(sport)?.achievements!![index],
                             onDelete = {
                                 deletedAchievement = index
 
-                            }
-                        )
+                            })
                     }
                 }
             }
@@ -227,15 +222,11 @@ fun ShowFavouriteSport(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Button(
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.error
-                ),
-                modifier = Modifier.fillMaxWidth(),
-                onClick = {
-                    openDialog.value = !openDialog.value
-                }
-            ) {
+            Button(colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.error
+            ), modifier = Modifier.fillMaxWidth(), onClick = {
+                openDialog.value = !openDialog.value
+            }) {
                 Text(text = "Remove Sport")
             }
 

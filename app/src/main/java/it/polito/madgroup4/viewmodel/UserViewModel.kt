@@ -34,6 +34,11 @@ class UserViewModel(reservationVm: ReservationViewModel) : ViewModel() {
     private var storage = Firebase.storage("gs://madgroup4-5de93.appspot.com")
     private var storageRef = storage.reference
 
+    private var usersListener: ListenerRegistration? = null
+
+    private var _users = MutableLiveData<List<User>>().apply { value = null }
+    val users: LiveData<List<User>> = _users
+
     init {
         val currentUser = auth.currentUser
         if (currentUser == null) {
@@ -64,6 +69,14 @@ class UserViewModel(reservationVm: ReservationViewModel) : ViewModel() {
 
     private fun createUserListener(uid: String, reservationVm: ReservationViewModel) {
         reservationVm.createReservationsListener(uid)
+
+        usersListener = db.collection("users2").addSnapshotListener { r, e ->
+            if (e != null) throw e
+            else {
+                _users.value = r?.toObjects(User::class.java)
+            }
+        }
+
         userListener = db.collection("users2").document(uid).addSnapshotListener { r, e ->
             _user.value = if (e != null) throw e
             else r?.toObject(User::class.java)

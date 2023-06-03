@@ -18,6 +18,7 @@ import it.polito.madgroup4.model.CourtWithSlots
 import it.polito.madgroup4.model.Reservation
 import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.model.Review
+import it.polito.madgroup4.model.User
 import it.polito.madgroup4.utility.calculateStartEndTime
 import it.polito.madgroup4.utility.formatDate
 import it.polito.madgroup4.utility.formatDateToTimestamp
@@ -123,7 +124,7 @@ class ReservationViewModel : ViewModel() {
                         val court = courts.find { it.name == res.courtName }
                         ReservationWithCourt(res, court)
                     }.filter {
-                        !isInThePast(it)
+                        !isInThePast(it) && (it.reservation?.reservationInfo?.confirmedUsers?.size!! < it.reservation?.reservationInfo?.totalNumber!!)
                     }
 
                     if (confirmed != null) {
@@ -145,7 +146,7 @@ class ReservationViewModel : ViewModel() {
                         val court = courts.find { it.name == res.courtName }
                         ReservationWithCourt(res, court)
                     }?.filter {
-                        !isInThePast(it)
+                        !isInThePast(it) && (it.reservation?.reservationInfo?.confirmedUsers?.size!! < it.reservation?.reservationInfo?.totalNumber!!)
                     }
                     val confirmed = it.map {
                         val res = it.toObject(Reservation::class.java)
@@ -207,7 +208,15 @@ class ReservationViewModel : ViewModel() {
         } else {
             id = db.collection("reservations").document().id
         }
-        saveReservationOnDB(id, reservation, stateViewModel, message, nextRoute, error, create = true)
+        saveReservationOnDB(
+            id,
+            reservation,
+            stateViewModel,
+            message,
+            nextRoute,
+            error,
+            create = true
+        )
     }
 
     fun getAllReviewsByCourtName(name: String) {
@@ -260,14 +269,33 @@ class ReservationViewModel : ViewModel() {
         }
     }
 
-    //TODO query che dovrebbe prendere tutte le prenotazioni della nuova sezione con gli inviti ricevuti
-    fun getPendingReservationsBySportAndUser(userId: String, sport: String) {
-        db.collection("reservations").whereArrayContains("reservationInfo.pendingUsers", userId)
-            .whereEqualTo("sport", sport).get().addOnSuccessListener { documents ->
-                documents.map { it.toObject(Reservation::class.java) }
-            }
-    }
 
+    fun invite(
+        userId: String,
+        reservation: Reservation,
+        stateViewModel: LoadingStateViewModel,
+        message: String,
+        error: String,
+        nextRoute: String? = "Reservations",
+        notificationMessage: String? = "",
+        user: User? = null
+    ) {
+        var id = reservation.id!!
+        var reservationInfo = reservation.reservationInfo
+
+        reservationInfo!!.pendingUsers.add(userId)
+
+        saveReservationOnDB(
+            id,
+            reservation,
+            stateViewModel,
+            message,
+            nextRoute,
+            error,
+            notificationMessage,
+            invite = user
+        )
+    }
 
     fun addInAPublicReservationAndSaveReservation(
         userId: String,
@@ -280,8 +308,7 @@ class ReservationViewModel : ViewModel() {
     ) {
         var id = reservation.id!!
         var reservationInfo = reservation.reservationInfo
-        if (true) { //Todo come quando salviamo una prenotazione e vediamo se quello slot è ancora libero, dovremmo
-            //Todo vedere se c'è ancora posto prima di salvare. quindi magari bisognerebbe fare una query e vedere se il posto sia ancora libero
+        if (reservationInfo?.totalAvailable!! > 0) {
             reservationInfo!!.totalAvailable = (reservationInfo.totalAvailable ?: 0) - 1
             reservationInfo!!.confirmedUsers.add(userId)
         } else {
@@ -310,15 +337,31 @@ class ReservationViewModel : ViewModel() {
         var id = reservation.id!!
         var reservationInfo = reservation.reservationInfo
         if (reservationInfo!!.pendingUsers.contains(userId)) {
-            //rimuovi l'utente dalla lista degli inviti da accettare e settalo come utente confermato
-            reservationInfo!!.pendingUsers.remove(userId)
-            reservationInfo!!.confirmedUsers.add(userId)
+            if (reservation.reservationInfo?.totalAvailable!! + reservation.reservationInfo!!.confirmedUsers.size < reservation.reservationInfo?.totalNumber!!) {
+                //rimuovi l'utente dalla lista degli inviti da accettare e settalo come utente confermato
+                reservationInfo!!.pendingUsers.remove(userId)
+                reservationInfo!!.confirmedUsers.add(userId)
+                saveReservationOnDB(
+                    id, reservation, stateViewModel, message, nextRoute, error, notificationMessage
+                )
+            } else if (reservation.reservationInfo?.totalAvailable!! > 0) {
+                reservationInfo!!.pendingUsers.remove(userId)
+                reservationInfo!!.confirmedUsers.add(userId)
+                reservationInfo!!.totalAvailable = (reservationInfo.totalAvailable ?: 0) - 1
+                saveReservationOnDB(
+                    id, reservation, stateViewModel, message, nextRoute, error, notificationMessage
+                )
+            } else {
+                stateViewModel.setStatus(Status.Error("No places longer available", nextRoute))
+            }
         } else {
-            throw IllegalStateException("User $userId is not invited in this reservation")
+            stateViewModel.setStatus(
+                Status.Error(
+                    "User $userId is not invited in this reservation",
+                    nextRoute
+                )
+            )
         }
-        saveReservationOnDB(
-            id, reservation, stateViewModel, message, nextRoute, error, notificationMessage
-        )
     }
 
     fun rejectAndSaveReservationInvitation(
@@ -379,7 +422,8 @@ class ReservationViewModel : ViewModel() {
         error: String,
         notificationMessage: String? = "",
         edit: Boolean? = false,
-        create: Boolean? = false
+        create: Boolean? = false,
+        invite: User? = null
     ) {
         db.collection("reservations").document(id)
             .set(reservation.copy(id = id), SetOptions.merge()).addOnSuccessListener {
@@ -395,6 +439,8 @@ class ReservationViewModel : ViewModel() {
                     }
                 } else if (create == false) {
                     inviaNotifica(reservation.userId, notificationMessage!!, id)
+                } else if (invite != null) {
+                    inviaNotifica(invite.id!!, notificationMessage!!, id)
                 }
                 stateViewModel.setStatus(Status.Success(message, nextRoute))
             }.addOnFailureListener {
