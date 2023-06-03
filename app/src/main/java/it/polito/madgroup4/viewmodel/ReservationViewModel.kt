@@ -12,6 +12,7 @@ import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firestore.v1.StructuredQuery.UnaryFilter
 import it.polito.madgroup4.model.Court
 import it.polito.madgroup4.model.CourtWithSlots
 import it.polito.madgroup4.model.Reservation
@@ -34,8 +35,7 @@ import java.util.Date
 
 class ReservationViewModel : ViewModel() {
 
-    private var _reservations =
-        MutableLiveData<List<ReservationWithCourt>>().apply { value = null }
+    private var _reservations = MutableLiveData<List<ReservationWithCourt>>().apply { value = null }
     val reservations: LiveData<List<ReservationWithCourt>> = _reservations
 
     private var _playingCourts =
@@ -51,26 +51,41 @@ class ReservationViewModel : ViewModel() {
     private var reservationListener: ListenerRegistration? = null
     private var pendingReservationListener: ListenerRegistration? = null
 
-    private var _allCourts =
-        MutableLiveData<List<Court>>().apply { value = emptyList() }
+    private var _allCourts = MutableLiveData<List<Court>>().apply { value = emptyList() }
     val allCourts: LiveData<List<Court>> = _allCourts
 
-    private var _reviews =
-        MutableLiveData<List<Review>>().apply { value = emptyList() }
+    private var _reviews = MutableLiveData<List<Review>>().apply { value = emptyList() }
     val reviews: LiveData<List<Review>> = _reviews
 
     private var courtWithSlotsListener: ListenerRegistration? = null
 
+    private var sharedReservationsListener: ListenerRegistration? = null
+
+    private var _sharedReservations =
+        MutableLiveData<List<ReservationWithCourt>>().apply { value = emptyList() }
+    val sharedReservations: LiveData<List<ReservationWithCourt>> = _sharedReservations
+
     init {
-        db.collection("courts")
-            .get()
-            .addOnSuccessListener { documents ->
-                _allCourts.value = documents.map { it.toObject(Court::class.java) }
-                if (Firebase.auth.currentUser != null)
-                    createReservationsListener(Firebase.auth.currentUser!!.uid)
+        db.collection("courts").get().addOnSuccessListener { documents ->
+            _allCourts.value = documents.map { it.toObject(Court::class.java) }
+            if (Firebase.auth.currentUser != null) {
+                createReservationsListener(Firebase.auth.currentUser!!.uid)
             }
-            .addOnFailureListener { exception ->
-            }
+        }.addOnFailureListener { exception ->
+        }
+    }
+
+
+    fun isInThePast(it: ReservationWithCourt): Boolean {
+        return it.reservation!!.date.toDate() < formatDate(Date()) || (formatDate(Date()) == formatDate(
+            it.reservation.date.toDate()
+        ) && LocalTime.parse(
+            calculateStartEndTime(
+                it.playingCourt?.openingTime!!, it.reservation.slotNumber
+            ).split("-")[0].trim()
+        ).isBefore(
+            LocalTime.now()
+        ))
     }
 
     fun createReservationsListener(userId: String) {
@@ -78,104 +93,104 @@ class ReservationViewModel : ViewModel() {
         pendingReservationListener?.remove()
         val confirmedUsersQuery = db.collection("reservations")
             .whereArrayContains("reservationInfo.confirmedUsers", userId)
-        val pendingUsersQuery = db.collection("reservations")
-            .whereArrayContains("reservationInfo.pendingUsers", userId)
+        val pendingUsersQuery =
+            db.collection("reservations").whereArrayContains("reservationInfo.pendingUsers", userId)
 
-        fun isInThePast(it: ReservationWithCourt): Boolean {
-            return it.reservation!!.date.toDate() < formatDate(Date())
-                    || (formatDate(Date()) == formatDate(it.reservation.date.toDate())
-                    && LocalTime.parse(
-                calculateStartEndTime(
-                    it.playingCourt?.openingTime!!,
-                    it.reservation.slotNumber
-                ).split("-")[0].trim()
-            ).isBefore(
-                LocalTime.now()
-            ))
+        val sharedReservationsQuery =
+            db.collection("reservations").whereEqualTo("reservationInfo.public", true)
+
+        reservationListener = confirmedUsersQuery.addSnapshotListener { r, e ->
+            pendingUsersQuery.get().addOnSuccessListener {
+                db.collection("courts").get().addOnSuccessListener { documents ->
+                    val courts = documents.map { it.toObject(Court::class.java) }
+                    val confirmed = if (e != null) throw e
+                    else r?.map {
+                        val res = it.toObject(Reservation::class.java)
+                        val court = courts.find { it.name == res.courtName }
+                        val resCourt = ReservationWithCourt(res, court)
+                        resCourt.reservation!!.reservationInfo?.status =
+                            if (isInThePast(resCourt) && (userId == resCourt.reservation.userId) && (resCourt.reservation.review == null)) {
+                                "Reviewable"
+                            } else {
+                                "Confirmed"
+                            }
+                        resCourt
+                    }
+                    val pending = it.map {
+                        val res = it.toObject(Reservation::class.java)
+                        res.reservationInfo?.status = "Invited"
+                        val court = courts.find { it.name == res.courtName }
+                        ReservationWithCourt(res, court)
+                    }.filter {
+                        !isInThePast(it)
+                    }
+
+                    if (confirmed != null) {
+                        _allRes.value = (confirmed + pending).sortedBy { it.reservation?.date }
+                    }
+
+                }
+            }
         }
 
-        reservationListener = confirmedUsersQuery
-            .addSnapshotListener { r, e ->
-                pendingUsersQuery.get().addOnSuccessListener {
-                    db.collection("courts")
-                        .get()
-                        .addOnSuccessListener { documents ->
-                            val courts = documents.map { it.toObject(Court::class.java) }
-                            val confirmed = if (e != null) throw e
-                            else r?.map {
-                                val res = it.toObject(Reservation::class.java)
-                                val court = courts.find { it.name == res.courtName }
-                                val resCourt = ReservationWithCourt(res, court)
-                                resCourt.reservation!!.reservationInfo?.status =
-                                    if (isInThePast(resCourt) && (userId == resCourt.reservation.userId) && (resCourt.reservation.review == null)) {
-                                        "Reviewable"
-                                    } else {
-                                        "Confirmed"
-                                    }
-                                resCourt
+        pendingReservationListener = pendingUsersQuery.addSnapshotListener { r, e ->
+            confirmedUsersQuery.get().addOnSuccessListener {
+                db.collection("courts").get().addOnSuccessListener { documents ->
+                    val courts = documents.map { it.toObject(Court::class.java) }
+                    val pending = if (e != null) throw e
+                    else r?.map {
+                        val res = it.toObject(Reservation::class.java)
+                        res.reservationInfo?.status = "Invited"
+                        val court = courts.find { it.name == res.courtName }
+                        ReservationWithCourt(res, court)
+                    }?.filter {
+                        !isInThePast(it)
+                    }
+                    val confirmed = it.map {
+                        val res = it.toObject(Reservation::class.java)
+                        res.reservationInfo?.status = "Confirmed"
+                        val court = courts.find { it.name == res.courtName }
+                        val resCourt = ReservationWithCourt(res, court)
+                        resCourt.reservation!!.reservationInfo?.status =
+                            if (isInThePast(resCourt) && userId == resCourt.reservation?.userId && (resCourt.reservation.review == null)) {
+                                "Reviewable"
+                            } else {
+                                "Confirmed"
                             }
-                            val pending = it.map {
-                                val res = it.toObject(Reservation::class.java)
-                                res.reservationInfo?.status = "Invited"
-                                val court = courts.find { it.name == res.courtName }
-                                ReservationWithCourt(res, court)
-                            }.filter {
-                                !isInThePast(it)
-                            }
+                        resCourt
+                    }
 
-                            if (confirmed != null) {
-                                _allRes.value =
-                                    (confirmed + pending).sortedBy { it.reservation?.date }
-                            }
+                    if (pending != null) {
+                        _allRes.value = (confirmed + pending).sortedBy { it.reservation?.date }
+                    }
+                }
+            }
+        }
 
-                        }
+        sharedReservationsListener = sharedReservationsQuery.addSnapshotListener { r, e ->
+            db.collection("courts").get().addOnSuccessListener { documents ->
+                val courts = documents.map { it.toObject(Court::class.java) }
+                _sharedReservations.value = if (e != null) throw e
+                else r?.map {
+                    val res = it.toObject(Reservation::class.java)
+                    val court = courts.find { it.name == res.courtName }
+                    ReservationWithCourt(res, court)
+                }?.filter {
+                    !isInThePast(it) && it.reservation?.reservationInfo?.totalAvailable!! > 0
+                            && it.reservation?.reservationInfo?.confirmedUsers?.contains(userId) == false
+                            && it.reservation?.reservationInfo?.pendingUsers?.contains(userId) == false
                 }
             }
 
-        pendingReservationListener = pendingUsersQuery
-            .addSnapshotListener { r, e ->
-                confirmedUsersQuery.get().addOnSuccessListener {
-                    db.collection("courts")
-                        .get()
-                        .addOnSuccessListener { documents ->
-                            val courts = documents.map { it.toObject(Court::class.java) }
-                            val pending = if (e != null) throw e
-                            else r?.map {
-                                val res = it.toObject(Reservation::class.java)
-                                res.reservationInfo?.status = "Invited"
-                                val court = courts.find { it.name == res.courtName }
-                                ReservationWithCourt(res, court)
-                            }?.filter {
-                                !isInThePast(it)
-                            }
-                            val confirmed = it.map {
-                                val res = it.toObject(Reservation::class.java)
-                                res.reservationInfo?.status = "Confirmed"
-                                val court = courts.find { it.name == res.courtName }
-                                val resCourt = ReservationWithCourt(res, court)
-                                resCourt.reservation!!.reservationInfo?.status =
-                                    if (isInThePast(resCourt) && userId == resCourt.reservation?.userId && (resCourt.reservation.review == null)) {
-                                        "Reviewable"
-                                    } else {
-                                        "Confirmed"
-                                    }
-                                resCourt
-                            }
-
-                            if (pending != null) {
-                                _allRes.value =
-                                    (confirmed + pending).sortedBy { it.reservation?.date }
-                            }
-                        }
-                }
-            }
-
+        }
     }
 
     override fun onCleared() {
         super.onCleared();
         reservationListener?.remove();
         courtWithSlotsListener?.remove();
+        pendingReservationListener?.remove();
+        sharedReservationsListener?.remove();
     }
 
     fun saveReservation(
@@ -195,43 +210,36 @@ class ReservationViewModel : ViewModel() {
     }
 
     fun getAllReviewsByCourtName(name: String) {
-        db.collection("reservations")
-            .whereEqualTo("courtName", name)
-            .get()
+        db.collection("reservations").whereEqualTo("courtName", name).get()
             .addOnSuccessListener { documents ->
                 var res = documents.map { it.toObject(Reservation::class.java) }.map { it.review }
                 _reviews.value = res.filterNotNull()
-            }
-            .addOnFailureListener { exception ->
+            }.addOnFailureListener { exception ->
                 println("Error getting documents: $exception")
             }
     }
 
 
     fun getAllPlayingCourtsBySportAndDate(date: Date, sport: String) {
-        db.collection("courts").whereEqualTo("sport", sport)
-            .get()
+        db.collection("courts").whereEqualTo("sport", sport).get()
             .addOnSuccessListener { documents ->
-                courtWithSlotsListener = db.collection("reservations")
-                    .whereEqualTo("date", formatDateToTimestamp(date))
-                    .addSnapshotListener() { r, e ->
-                        val reservations = r?.map { it.toObject(Reservation::class.java) }
-                        val courts = documents.map { it.toObject(Court::class.java) }
-                        _playingCourts.value = courts.map { c ->
-                            val res = reservations?.filter { res -> res.courtName == c.name }
-                            val slotsNotAvailable =
-                                res?.filter { it.date.toDate() == date }?.map { it.slotNumber }
-                            val totSlot =
-                                slotsNotAvailable?.let {
+                courtWithSlotsListener =
+                    db.collection("reservations").whereEqualTo("date", formatDateToTimestamp(date))
+                        .addSnapshotListener() { r, e ->
+                            val reservations = r?.map { it.toObject(Reservation::class.java) }
+                            val courts = documents.map { it.toObject(Court::class.java) }
+                            _playingCourts.value = courts.map { c ->
+                                val res = reservations?.filter { res -> res.courtName == c.name }
+                                val slotsNotAvailable =
+                                    res?.filter { it.date.toDate() == date }?.map { it.slotNumber }
+                                val totSlot = slotsNotAvailable?.let {
                                     getAllSlots(
-                                        it,
-                                        c.openingTime!!,
-                                        c.closingTime!!
+                                        it, c.openingTime!!, c.closingTime!!
                                     )
                                 }
-                            CourtWithSlots(c, totSlot)
+                                CourtWithSlots(c, totSlot)
+                            }
                         }
-                    }
 
             }
     }
@@ -244,42 +252,21 @@ class ReservationViewModel : ViewModel() {
         error: String,
         nextRoute: String? = null
     ) {
-        db.collection("reservations").document(reservation.id!!)
-            .delete()
-            .addOnSuccessListener {
-                stateViewModel.setStatus(Status.Success(message, nextRoute))
-            }.addOnFailureListener {
-                stateViewModel.setStatus(Status.Error(error, null))
-            }
+        db.collection("reservations").document(reservation.id!!).delete().addOnSuccessListener {
+            stateViewModel.setStatus(Status.Success(message, nextRoute))
+        }.addOnFailureListener {
+            stateViewModel.setStatus(Status.Error(error, null))
+        }
     }
 
     //TODO query che dovrebbe prendere tutte le prenotazioni della nuova sezione con gli inviti ricevuti
     fun getPendingReservationsBySportAndUser(userId: String, sport: String) {
-        db.collection("reservations")
-            .whereArrayContains("reservationInfo.pendingUsers", userId)
-            .whereEqualTo("sport", sport)
-            .get()
-            .addOnSuccessListener { documents ->
+        db.collection("reservations").whereArrayContains("reservationInfo.pendingUsers", userId)
+            .whereEqualTo("sport", sport).get().addOnSuccessListener { documents ->
                 documents.map { it.toObject(Reservation::class.java) }
-
             }
     }
 
-    //TODO query che dovrebbe prendere tutte le prenotazioni della nuova sezione 'Scopri' con le partite pubbliche a cui ci si può unire
-    fun getAllPublicReservationsBySportAndDate(date: Date, sport: String) {
-        db.collection("reservations")
-            .whereEqualTo("sport", sport)
-            .whereEqualTo("date", date)
-            .whereEqualTo("reservationInfo.privateReservation", false)
-            .whereGreaterThan("reservationInfo.totalNumber", "reservationInfo.totalAvailable")
-            .get()
-            .addOnSuccessListener { documents ->
-                documents.map { it.toObject(Reservation::class.java) }
-            }
-            .addOnFailureListener { exception ->
-                println("Error getting documents: $exception")
-            }
-    }
 
     fun addInAPublicReservationAndSaveReservation(
         userId: String,
@@ -320,13 +307,7 @@ class ReservationViewModel : ViewModel() {
             throw IllegalStateException("User $userId is not invited in this reservation")
         }
         saveReservationOnDB(
-            id,
-            reservation,
-            stateViewModel,
-            message,
-            nextRoute,
-            error,
-            notificationMessage
+            id, reservation, stateViewModel, message, nextRoute, error, notificationMessage
         )
     }
 
@@ -348,13 +329,7 @@ class ReservationViewModel : ViewModel() {
             throw IllegalStateException("User $userId is not invited in this reservation")
         }
         saveReservationOnDB(
-            id,
-            reservation,
-            stateViewModel,
-            message,
-            nextRoute,
-            error,
-            notificationMessage
+            id, reservation, stateViewModel, message, nextRoute, error, notificationMessage
         )
     }
 
@@ -381,13 +356,7 @@ class ReservationViewModel : ViewModel() {
             throw IllegalStateException("User $id is not a partecipant of this reservation")
         }
         saveReservationOnDB(
-            id,
-            reservation,
-            stateViewModel,
-            message,
-            nextRoute,
-            error,
-            notificationMessage
+            id, reservation, stateViewModel, message, nextRoute, error, notificationMessage
         )
     }
 
@@ -402,8 +371,7 @@ class ReservationViewModel : ViewModel() {
         edit: Boolean? = false,
     ) {
         db.collection("reservations").document(id)
-            .set(reservation.copy(id = id), SetOptions.merge())
-            .addOnSuccessListener {
+            .set(reservation.copy(id = id), SetOptions.merge()).addOnSuccessListener {
                 reservation.reservationInfo?.pendingUsers?.forEach {
                     inviaNotifica(it, notificationMessage!!, id)
                 }
@@ -412,8 +380,7 @@ class ReservationViewModel : ViewModel() {
                         inviaNotifica(it, notificationMessage!!, id)
                     }
                     reservation.reservationInfo?.confirmedUsers?.forEach {
-                        if (it != reservation.userId)
-                            inviaNotifica(it, notificationMessage!!, id)
+                        if (it != reservation.userId) inviaNotifica(it, notificationMessage!!, id)
                     }
                 } else {
                     inviaNotifica(reservation.userId, notificationMessage!!, id)
@@ -428,34 +395,30 @@ class ReservationViewModel : ViewModel() {
         val db = Firebase.firestore
         val usersCollection = db.collection("users2")
 
-        usersCollection.document(id).get()
-            .addOnSuccessListener { documentSnapshot ->
-                val token = documentSnapshot.getString("token")
-                if (token != null) {
-                    val notification_title = "CUS Torino"
-                    val notification_des = message
+        usersCollection.document(id).get().addOnSuccessListener { documentSnapshot ->
+            val token = documentSnapshot.getString("token")
+            if (token != null) {
+                val notification_title = "CUS Torino"
+                val notification_des = message
 
-                    FCMMessages().sendMessageSingle(
-                        token,
-                        notification_title,
-                        notification_des,
-                        mapOf("screen" to "Reservation Details", "reservationId" to reservationId)
+                FCMMessages().sendMessageSingle(
+                    token, notification_title, notification_des, mapOf(
+                        "screen" to "Reservation Details", "reservationId" to reservationId
                     )
+                )
 
-
-                }
 
             }
+
+        }
     }
 
-    fun generateReservationLink(id : String): String {
+    fun generateReservationLink(id: String): String {
         return FirebaseDynamicLinks.getInstance().createDynamicLink()
             .setLink(Uri.parse("https://www.madgroup4.com/?reservationId=${id}"))
             .setDomainUriPrefix("https://madgroup4.page.link")
             .setAndroidParameters(DynamicLink.AndroidParameters.Builder().build())
-            .buildDynamicLink()
-            .uri
-            .toString()
+            .buildDynamicLink().uri.toString()
     }
 }
 
@@ -463,10 +426,7 @@ class ReservationViewModel : ViewModel() {
 class FCMMessages {
 
     fun sendMessageSingle(
-        recipient: String,
-        title: String,
-        body: String,
-        dataMap: Map<String, String>?
+        recipient: String, title: String, body: String, dataMap: Map<String, String>?
     ) {
 
         val notificationMap = HashMap<String, Any>()
@@ -495,14 +455,10 @@ class FCMMessages {
             return try {
                 val JSON: MediaType? = "application/json; charset=utf-8".toMediaTypeOrNull()
                 val body: RequestBody = RequestBody.create(JSON, JSONObject(fcm).toString())
-                val request: Request = Request.Builder()
-                    .url(FCM_MESSAGE_URL)
-                    .post(body)
-                    .addHeader(
-                        "Authorization",
-                        "key=" + "AAAAHNkiKAA:APA91bH3NrTbbrcq06JEuMAScb73370vmAqWvf8i-b7LLLtBpIrv3y_JQ82NAjykYGTfF71bmOJh7ra9-NUX7HjoKHLz2OGCc_qmRb0bbzwqSj6OfYu2vPyJqT2LTo9HRBIGPJusEGkT"
-                    )
-                    .build()
+                val request: Request = Request.Builder().url(FCM_MESSAGE_URL).post(body).addHeader(
+                    "Authorization",
+                    "key=" + "AAAAHNkiKAA:APA91bH3NrTbbrcq06JEuMAScb73370vmAqWvf8i-b7LLLtBpIrv3y_JQ82NAjykYGTfF71bmOJh7ra9-NUX7HjoKHLz2OGCc_qmRb0bbzwqSj6OfYu2vPyJqT2LTo9HRBIGPJusEGkT"
+                ).build()
                 val response: Response = OkHttpClient().newCall(request).execute()
                 response.body?.string()
             } catch (e: Exception) {

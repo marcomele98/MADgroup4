@@ -138,6 +138,7 @@ fun Navigation(
     setStuff: (List<Stuff>) -> Unit,
     reservationInfo: ReservationInfo,
     setReservationInfo: (ReservationInfo) -> Unit,
+    sharedReservations: State<List<ReservationWithCourt>?>,
 
     ) {
 
@@ -157,6 +158,12 @@ fun Navigation(
     if (activity.intent?.extras != null) {
         setReservationWithCourt(activity.intent?.extras?.getString("reservationId").toString())
         screen = activity.intent?.extras?.getString("screen").toString()
+    }
+
+
+    LaunchedEffect(sharedReservations) {
+            println("porco dio")
+        println(sharedReservations.value)
     }
 
     LaunchedEffect(loading) {
@@ -547,6 +554,15 @@ fun Navigation(
                             setStuff = setStuff,
                             reservationInfo = reservationInfo,
                             setReservationInfo = setReservationInfo
+                        )
+                    }
+
+                    animatedComposable("Explore") {
+                        ReservationList(
+                            reservations = sharedReservations.value,
+                            setReservation = setReservationWithCourt,
+                            navController = navController,
+                            modifier = Modifier.padding(horizontal = 16.dp),
                         )
                     }
 

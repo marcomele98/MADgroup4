@@ -197,6 +197,8 @@ fun MainScreen(
 
     val reservations = reservationVm.allRes.observeAsState(initial = null)
 
+    val sharedReservations = reservationVm.sharedReservations.observeAsState(initial = null)
+
     val courtsWithSlots = reservationVm.playingCourts.observeAsState(initial = null)
 
     val (stuff, setStuff) = remember {
@@ -247,6 +249,7 @@ fun MainScreen(
         setStuff,
         reservationInfo,
         setReservationInfo,
+        sharedReservations
     )
 
 }

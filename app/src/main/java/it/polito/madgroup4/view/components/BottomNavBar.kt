@@ -3,6 +3,7 @@ package it.polito.madgroup4.view.components
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
@@ -33,7 +34,7 @@ fun BottomNavBar(
                     Icons.Default.LocationOn, contentDescription = "Playing Courts"
                 )
             },
-            label = { Text("Playing Courts") },
+            label = { Text("Fields") },
             onClick = {
                 navController.navigate("Playing Courts")
             })
@@ -50,6 +51,18 @@ fun BottomNavBar(
             label = { Text("Reservations") },
             onClick = {
                 navController.navigate("Reservations")
+            })
+
+        NavigationBarItem(
+            selected = (navBackStackEntry?.destination?.route == "Explore"),
+            icon = {
+                Icon(
+                    Icons.Default.Explore, contentDescription = "Explore"
+                )
+            },
+            label = { Text("Explore") },
+            onClick = {
+                navController.navigate("Explore")
             })
 
         NavigationBarItem(selected = navBackStackEntry?.destination?.route == "Profile", icon = {
