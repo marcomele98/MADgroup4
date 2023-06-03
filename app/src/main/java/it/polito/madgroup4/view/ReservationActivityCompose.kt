@@ -159,7 +159,7 @@ fun MainScreen(
     }
 
     val sports =
-        listOf("Tennis", "Football", "Basketball", "Volleyball", "Baseball", "Rugby", "Hockey")
+        listOf("Tennis", "Football", "Basket", "Volleyball")
     val (remainingSports, setRemainingSports) = remember {
         mutableStateOf(sports.minus((user.value?.sports?.map { it.name!! } ?: emptyList()).toSet()))
     }

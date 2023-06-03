@@ -476,7 +476,7 @@ class ReservationViewModel : ViewModel() {
         invite: User? = null
     ) {
         db.collection("reservations").document(id)
-            .set(reservation.copy(id = id), SetOptions.merge()).addOnSuccessListener {
+            .set(reservation.copy(id = id, reservationInfo = reservation.reservationInfo?.copy(status = null)), SetOptions.merge()).addOnSuccessListener {
                 if (invite == null) {
                     reservation.reservationInfo?.pendingUsers?.forEach {
                         inviaNotifica(it, notificationMessage!!, id)
