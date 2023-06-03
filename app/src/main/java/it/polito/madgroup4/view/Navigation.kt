@@ -9,6 +9,8 @@ import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -55,6 +57,7 @@ import it.polito.madgroup4.view.screens.CreateReservation
 import it.polito.madgroup4.view.screens.EditLevelSelector
 import it.polito.madgroup4.view.screens.EditProfile
 import it.polito.madgroup4.view.screens.EditReservation
+import it.polito.madgroup4.view.screens.Explore
 import it.polito.madgroup4.view.screens.FirstLogin
 import it.polito.madgroup4.view.screens.LevelSelector
 import it.polito.madgroup4.view.screens.LoadingScreen
@@ -155,16 +158,13 @@ fun Navigation(
 
     var screen = "Reservations"
 
+
     if (activity.intent?.extras != null) {
         setReservationWithCourt(activity.intent?.extras?.getString("reservationId").toString())
         screen = activity.intent?.extras?.getString("screen").toString()
     }
 
 
-    LaunchedEffect(sharedReservations) {
-            println("porco dio")
-        println(sharedReservations.value)
-    }
 
     LaunchedEffect(loading) {
         when (loading) {
@@ -271,28 +271,22 @@ fun Navigation(
                         route: String,
                         content: @Composable AnimatedVisibilityScope.(NavBackStackEntry) -> Unit
                     ) {
-                        composable(route, content = content, enterTransition = {
-                            slideIntoContainer(
-                                AnimatedContentScope.SlideDirection.Up, animationSpec = tween(300)
-                            )
-                        }, exitTransition = {
+                        composable(route, content = content, enterTransition = { scaleIn() },
+                            exitTransition = {
+                                scaleOut(animationSpec = tween(50))
+                            }, popEnterTransition = {
+                                slideIntoContainer(
+                                    AnimatedContentScope.SlideDirection.Left,
+                                    animationSpec = tween(300)
+                                )
 
-                            slideOutOfContainer(
-                                AnimatedContentScope.SlideDirection.Up, animationSpec = tween(300)
-                            )
-                        }, popEnterTransition = {
+                            }, popExitTransition = {
+                                slideOutOfContainer(
+                                    AnimatedContentScope.SlideDirection.Left,
+                                    animationSpec = tween(300)
+                                )
 
-                            slideIntoContainer(
-                                AnimatedContentScope.SlideDirection.Up, animationSpec = tween(300)
-                            )
-
-                        }, popExitTransition = {
-
-                            slideOutOfContainer(
-                                AnimatedContentScope.SlideDirection.Up, animationSpec = tween(300)
-                            )
-
-                        })
+                            })
                     }
 
                     animatedComposable("Profile") {
@@ -530,7 +524,8 @@ fun Navigation(
                             setReservation = setReservationWithCourt,
                             navController = navController,
                             modifier = Modifier.padding(horizontal = 16.dp),
-                            text = "No invites yet"
+                            text = "No invites yet",
+                            nextRoute = "Public Match Details"
                         )
                     }
 
@@ -541,7 +536,8 @@ fun Navigation(
                             setReservation = setReservationWithCourt,
                             navController = navController,
                             modifier = Modifier.padding(horizontal = 16.dp),
-                            text = "No reviewable reservations"
+                            text = "No reviewable reservations",
+                            nextRoute = "Public Match Details"
                         )
                     }
 
@@ -558,11 +554,24 @@ fun Navigation(
                     }
 
                     animatedComposable("Explore") {
-                        ReservationList(
+                        Explore(
                             reservations = sharedReservations.value,
                             setReservation = setReservationWithCourt,
                             navController = navController,
-                            modifier = Modifier.padding(horizontal = 16.dp),
+                            selectedSport = selectedSport,
+                        )
+                    }
+
+                    animatedComposable("Public Match Details") {
+                        ShowReservation(
+                            reservation,
+                            navController,
+                            sharedReservations,
+                            reservationVm,
+                            setSelectedCourt,
+                            setSelectedSlot,
+                            loadingVm,
+                            user,
                         )
                     }
 

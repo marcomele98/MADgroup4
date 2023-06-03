@@ -98,6 +98,7 @@ class ReservationViewModel : ViewModel() {
 
         val sharedReservationsQuery =
             db.collection("reservations").whereEqualTo("reservationInfo.public", true)
+                .whereGreaterThan("reservationInfo.totalAvailable", 0)
 
         reservationListener = confirmedUsersQuery.addSnapshotListener { r, e ->
             pendingUsersQuery.get().addOnSuccessListener {
@@ -176,7 +177,7 @@ class ReservationViewModel : ViewModel() {
                     val court = courts.find { it.name == res.courtName }
                     ReservationWithCourt(res, court)
                 }?.filter {
-                    !isInThePast(it) && it.reservation?.reservationInfo?.totalAvailable!! > 0
+                    !isInThePast(it)
                             && it.reservation?.reservationInfo?.confirmedUsers?.contains(userId) == false
                             && it.reservation?.reservationInfo?.pendingUsers?.contains(userId) == false
                 }
@@ -198,7 +199,7 @@ class ReservationViewModel : ViewModel() {
         stateViewModel: LoadingStateViewModel,
         message: String,
         error: String,
-        nextRoute: String? = "Reservations"
+        nextRoute: String? = "Reservations",
     ) {
         var id = ""
         if (reservation.id != null) {
@@ -206,7 +207,7 @@ class ReservationViewModel : ViewModel() {
         } else {
             id = db.collection("reservations").document().id
         }
-        saveReservationOnDB(id, reservation, stateViewModel, message, nextRoute, error)
+        saveReservationOnDB(id, reservation, stateViewModel, message, nextRoute, error, create = true)
     }
 
     fun getAllReviewsByCourtName(name: String) {
@@ -274,7 +275,8 @@ class ReservationViewModel : ViewModel() {
         stateViewModel: LoadingStateViewModel,
         message: String,
         error: String,
-        nextRoute: String? = "Reservations"
+        nextRoute: String? = "Reservations",
+        notificationMessage: String? = ""
     ) {
         var id = reservation.id!!
         var reservationInfo = reservation.reservationInfo
@@ -285,7 +287,15 @@ class ReservationViewModel : ViewModel() {
         } else {
             throw IllegalStateException("Reservation no longer available")
         }
-        saveReservationOnDB(id, reservation, stateViewModel, message, nextRoute, error)
+        saveReservationOnDB(
+            id,
+            reservation,
+            stateViewModel,
+            message,
+            nextRoute,
+            error,
+            notificationMessage
+        )
     }
 
     fun acceptAndSaveReservationInvitation(
@@ -369,6 +379,7 @@ class ReservationViewModel : ViewModel() {
         error: String,
         notificationMessage: String? = "",
         edit: Boolean? = false,
+        create: Boolean? = false
     ) {
         db.collection("reservations").document(id)
             .set(reservation.copy(id = id), SetOptions.merge()).addOnSuccessListener {
@@ -382,7 +393,7 @@ class ReservationViewModel : ViewModel() {
                     reservation.reservationInfo?.confirmedUsers?.forEach {
                         if (it != reservation.userId) inviaNotifica(it, notificationMessage!!, id)
                     }
-                } else {
+                } else if (create == false) {
                     inviaNotifica(reservation.userId, notificationMessage!!, id)
                 }
                 stateViewModel.setStatus(Status.Success(message, nextRoute))
@@ -406,8 +417,6 @@ class ReservationViewModel : ViewModel() {
                         "screen" to "Reservation Details", "reservationId" to reservationId
                     )
                 )
-
-
             }
 
         }

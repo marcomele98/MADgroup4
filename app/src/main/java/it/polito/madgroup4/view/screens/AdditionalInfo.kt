@@ -64,12 +64,17 @@ fun AdditionalInfo(
     val courtWithSlots = courtsWithSlots.value?.find { it.playingCourt?.name == playingCourt }
     setStuff(courtWithSlots?.playingCourt?.stuff as MutableList<Stuff>)
 
-    setReservationInfo(reservationInfo.copy(
-        totalAvailable = 0,
-        totalNumber = courtWithSlots?.playingCourt?.maxNumber!!,
-    ))
+    LaunchedEffect(Unit) {
+        setReservationInfo(
+            reservationInfo.copy(
+                totalAvailable = 0,
+                totalNumber = courtWithSlots?.playingCourt?.maxNumber!!,
+            )
+        )
+    }
 
     val (checked, setChecked) = remember { mutableStateOf(false) }
+
 
 
     Column() {
@@ -184,7 +189,8 @@ fun AdditionalInfo(
         Button(
             onClick = { navController.navigate("Confirm Reservation") },
             modifier = Modifier
-                .fillMaxWidth().padding(horizontal = 16.dp),
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
         ) {
             Text(text = "Next")
         }

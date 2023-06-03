@@ -27,12 +27,9 @@ fun ReservationList(
     setReservation: (String) -> Unit,
     navController: NavController,
     modifier: Modifier = Modifier,
-    text: String = "No reservations for the selected date"
+    text: String = "No reservations for the selected date",
+    nextRoute: String = "Reservation Details"
 ) {
-
-    LaunchedEffect(reservations) {
-        println("ReservationList: reservations = $reservations")
-    }
 
     Box(
         modifier = Modifier
@@ -44,7 +41,6 @@ fun ReservationList(
             CircularProgressIndicator(Modifier.align(Alignment.Center))
         }
         else if (reservations.isEmpty()) {
-            println("Is empty " + reservations)
             Text(
                 text = text,
                 modifier = Modifier
@@ -61,7 +57,7 @@ fun ReservationList(
                     .fillMaxSize()
             ) {
                 items(reservations.size) { index ->
-                    ReservationCard(reservations[index], setReservation, navController)
+                    ReservationCard(reservations[index], setReservation, navController, nextRoute)
                     if (index == reservations.size - 1) {
                         Spacer(modifier = Modifier.height(70.dp))
                     }

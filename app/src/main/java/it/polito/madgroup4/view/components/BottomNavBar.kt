@@ -6,6 +6,7 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.TravelExplore
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -57,7 +58,7 @@ fun BottomNavBar(
             selected = (navBackStackEntry?.destination?.route == "Explore"),
             icon = {
                 Icon(
-                    Icons.Default.Explore, contentDescription = "Explore"
+                    Icons.Default.TravelExplore, contentDescription = "Explore"
                 )
             },
             label = { Text("Explore") },

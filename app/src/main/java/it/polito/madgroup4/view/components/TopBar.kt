@@ -1,5 +1,6 @@
 package it.polito.madgroup4.view.components
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.outlined.Edit
@@ -37,6 +39,7 @@ import it.polito.madgroup4.utility.imageSelector
 import java.time.LocalTime
 import java.util.Date
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBar(
@@ -64,6 +67,7 @@ fun TopBar(
         setReviewable(reservations.value?.filter { it.reservation?.reservationInfo?.status == "Reviewable" })
     }
 
+    var isFromNotification = navController.previousBackStackEntry?.destination?.route
 
     var isInThePast = false
     if (reservation?.reservation != null) {
@@ -175,15 +179,16 @@ fun TopBar(
         },
 
         navigationIcon = {
-            if (title != "Reservations" && title != "Profile" && title != "Welcome" && title != "Invites" && title != "Reviewable") {
+            if (title != "Reservations" && title != "Profile" && title != "Welcome" && title != "Invites" && title != "Reviewable" && isFromNotification != null && title != "Explore" && title!= "Playing Courts") {
                 IconButton(onClick = {
                     navController.popBackStack();
                 }) {
                     Icon(
-                        Icons.Default.KeyboardArrowLeft,
+                        Icons.Default.ArrowBack,
                         contentDescription = "Back",
                         modifier = Modifier.size(30.dp)
                     )
+
                 }
             }
         },

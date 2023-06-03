@@ -54,7 +54,8 @@ fun Reservations(
                     ?.let { it1 -> formatDate(it1) } == formatDate(selectedDate)
             },
             setReservation = setReservation,
-            navController = navController
+            navController = navController,
+            nextRoute = "Reservation Details"
         )
 
     }

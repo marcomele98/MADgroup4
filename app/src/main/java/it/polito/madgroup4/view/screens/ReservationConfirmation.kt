@@ -102,7 +102,7 @@ fun ReservationConfirmation(
                     reservation?.reservation!!,
                     loadingVm,
                     "Reservation confirmed successfully",
-                    "Error while saving the reservation"
+                    "Error while saving the reservation",
                 )
             } else {
                 setSelectedSlot(-1)

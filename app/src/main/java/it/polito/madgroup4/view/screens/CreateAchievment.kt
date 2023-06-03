@@ -58,16 +58,16 @@ fun CreateAchievement(
         firstDayOfWeek = DayOfWeek.MONDAY,
     )
 
-    if (date.isAfter(LocalDate.now()))
-        date = LocalDate.now()
+    LaunchedEffect(calendarState.selectionState.selection) {
+        if (date.isAfter(LocalDate.now()))
+            date = LocalDate.now()
 
-    if (calendarState.selectionState.selection.isEmpty())
-        calendarState.selectionState.selection = listOf(LocalDate.now())
+        if (calendarState.selectionState.selection.isEmpty())
+            calendarState.selectionState.selection = listOf(LocalDate.now())
 
-    if (calendarState.selectionState.selection[0] != date)
-        date = calendarState.selectionState.selection[0]
-
-
+        if (calendarState.selectionState.selection[0] != date)
+            date = calendarState.selectionState.selection[0]
+    }
 
     LaunchedEffect(description, title, date) {
         setTopBarAction {

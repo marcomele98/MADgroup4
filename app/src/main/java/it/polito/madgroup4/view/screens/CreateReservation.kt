@@ -68,14 +68,16 @@ fun CreateReservation(
 
     val allReservations = reservationVm.allRes.observeAsState().value
 
-    if (calendarState.selectionState.selection.isEmpty()) calendarState.selectionState.selection =
-        listOf(LocalDate.now())
+    LaunchedEffect(calendarState.selectionState.selection) {
+        if (calendarState.selectionState.selection.isEmpty()) calendarState.selectionState.selection =
+            listOf(LocalDate.now())
 
-    if (calendarState.selectionState.selection[0] != date) setDate(calendarState.selectionState.selection[0])
+        if (calendarState.selectionState.selection[0] != date) setDate(calendarState.selectionState.selection[0])
 
-    setSelectedDate(date)
+        setSelectedDate(date)
 
-    setSelectedSlot(-1)
+        setSelectedSlot(-1)
+    }
 
     val formatter = SimpleDateFormat("dd/MM/yyyy")
 

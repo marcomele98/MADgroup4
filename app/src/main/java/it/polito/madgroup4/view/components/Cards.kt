@@ -45,6 +45,7 @@ fun ReservationCard(
     reservation: ReservationWithCourt,
     setReservation: (String) -> Unit,
     navController: NavController,
+    nextRoute: String
 ) {
 
     val startEndTime = calculateStartEndTime(
@@ -56,7 +57,7 @@ fun ReservationCard(
         .fillMaxWidth()
         .clickable {
             setReservation(reservation.reservation.id!!)
-            navController.navigate("Reservation Details")
+            navController.navigate(nextRoute)
         }) {
         Column(
             modifier = Modifier.padding(16.dp)

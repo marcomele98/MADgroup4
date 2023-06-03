@@ -253,6 +253,30 @@ fun ShowReservation(
                         }
                     }
                 }
+            } else if (reservation.reservation.reservationInfo?.public == true && !reservation.reservation.reservationInfo?.confirmedUsers?.contains(user.value?.id!!)!!
+            ) {
+
+                Button(
+                    onClick = {
+                        loadingVm.setStatus(Status.Loading)
+                        reservationVm.addInAPublicReservationAndSaveReservation(
+                            user.value?.id!!,
+                            reservation.reservation,
+                            loadingVm,
+                            "Reservation joined successfully",
+                            "Error while joining the reservation",
+                            "Reservations",
+                            "User ${user.value!!.name} ${user.value!!.surname} has joined your reservation"
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    )
+                ) {
+                    Text(text = "Join The Match")
+                }
             }
             Spacer(modifier = Modifier.height(16.dp))
         }

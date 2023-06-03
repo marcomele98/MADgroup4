@@ -29,8 +29,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
 
+            </intent-filter>
+
+            <intent-filter>
+                <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
                     android:host="www.madgroup4.com"
@@ -40,14 +43,15 @@
                     android:host="www.madgroup4.com"
                     android:scheme="http" />
             </intent-filter>
+
         </activity>
 
         <service
             android:name=".viewmodel.MyFirebaseMessagingService"
-            android:exported="false"
-            android:directBootAware="true">
+            android:directBootAware="true"
+            android:exported="false">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
