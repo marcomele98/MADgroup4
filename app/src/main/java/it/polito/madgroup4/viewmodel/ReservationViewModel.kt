@@ -264,10 +264,19 @@ class ReservationViewModel : ViewModel() {
         stateViewModel: LoadingStateViewModel,
         message: String,
         error: String,
-        nextRoute: String? = null
+        nextRoute: String? = null,
+        notificationMessage: String
     ) {
         db.collection("reservations").document(reservation.id!!).delete().addOnSuccessListener {
             stateViewModel.setStatus(Status.Success(message, nextRoute))
+            reservation.reservationInfo?.confirmedUsers?.filter { it != reservation.userId }
+                ?.forEach() {
+                    inviaNotifica(
+                        it,
+                        notificationMessage,
+                        reservation.id
+                    )
+                }
         }.addOnFailureListener {
             stateViewModel.setStatus(Status.Error(error, null))
         }
@@ -476,7 +485,12 @@ class ReservationViewModel : ViewModel() {
         invite: User? = null
     ) {
         db.collection("reservations").document(id)
-            .set(reservation.copy(id = id, reservationInfo = reservation.reservationInfo?.copy(status = null)), SetOptions.merge()).addOnSuccessListener {
+            .set(
+                reservation.copy(
+                    id = id,
+                    reservationInfo = reservation.reservationInfo?.copy(status = null)
+                ), SetOptions.merge()
+            ).addOnSuccessListener {
                 if (invite == null) {
                     reservation.reservationInfo?.pendingUsers?.forEach {
                         inviaNotifica(it, notificationMessage!!, id)

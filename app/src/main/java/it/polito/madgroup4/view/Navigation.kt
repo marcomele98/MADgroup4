@@ -429,6 +429,8 @@ fun Navigation(
                             reservations = reservations,
                             courtsWithSlots = courtsWithSlots,
                             playingCourt = selectedCourt,
+                            reservationInfo = reservationInfo,
+                            selectedLevel = selectedLevel,
                         )
                     }
 
@@ -644,6 +646,21 @@ fun Navigation(
                             user,
                             users,
                             fromLink = true
+                        )
+                    }
+
+                    animatedComposable("Edit Additional Info") {
+                        AdditionalInfo(
+                            playingCourt = selectedCourt,
+                            courtsWithSlots = courtsWithSlots,
+                            navController = navController,
+                            stuff = stuff,
+                            setStuff = setStuff,
+                            reservationInfo = reservationInfo,
+                            setReservationInfo = setReservationInfo,
+                            selectedLevel = selectedLevel,
+                            reservationId = reservation,
+                            setSelectedLevel = setSelectedLevel,
                         )
                     }
                 }

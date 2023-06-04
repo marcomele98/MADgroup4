@@ -48,6 +48,7 @@ import androidx.core.text.isDigitsOnly
 import androidx.navigation.NavController
 import it.polito.madgroup4.model.CourtWithSlots
 import it.polito.madgroup4.model.ReservationInfo
+import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.model.Stuff
 import it.polito.madgroup4.view.components.LevelCardSelector
 
@@ -61,111 +62,115 @@ fun AdditionalInfo(
     reservationInfo: ReservationInfo,
     setReservationInfo: (ReservationInfo) -> Unit,
     selectedLevel: String,
+    reservationId: String? = null,
+    setSelectedLevel: (String) -> Unit = {},
 ) {
 
     val courtWithSlots = courtsWithSlots.value?.find { it.playingCourt?.name == playingCourt }
     setStuff(courtWithSlots?.playingCourt?.stuff as MutableList<Stuff>)
 
+    val (checked, setChecked) = remember { mutableStateOf(reservationInfo.public!!) }
+
+
     LaunchedEffect(Unit) {
         setReservationInfo(
             reservationInfo.copy(
+                public = false,
                 totalAvailable = 0,
-                totalNumber = courtWithSlots?.playingCourt?.maxNumber!!,
+                totalNumber = courtWithSlots.playingCourt?.maxNumber!!,
             )
         )
     }
 
-    val (checked, setChecked) = remember { mutableStateOf(reservationInfo.public!!) }
+
 
     Column() {
         LazyColumn(Modifier.weight(1f)) {
 
-            item {
-                Text(
-                    text = "Details",
-                    fontSize = 23.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontStyle = FontStyle.Italic,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-            }
-
-            item {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(start = 16.dp, end = 3.dp)
-                ) {
-                    Text(text = "Public match", fontSize = 22.sp)
-                    Spacer(modifier = Modifier.weight(1f))
-                    Checkbox(checked = checked, onCheckedChange = {
-                        setReservationInfo(reservationInfo.copy(public = !checked))
-                        setChecked(!checked)
-                    })
-                }
-            }
-
-            item {
-                AnimatedVisibility(
-                    visible = checked,
-                    enter = fadeIn() + slideInVertically(
-                        initialOffsetY = { -40 },
-                        animationSpec = tween(
-                            durationMillis = 500,
-                            easing = FastOutSlowInEasing
-                        )
-                    ),
-                    exit = fadeOut() + slideOutVertically(
-                        targetOffsetY = { -40 },
-                        animationSpec = tween(
-                            durationMillis = 500,
-                            easing = FastOutSlowInEasing
-                        )
+            if (reservationId == null) {
+                item {
+                    Text(
+                        text = "Details",
+                        fontSize = 23.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontStyle = FontStyle.Italic,
+                        modifier = Modifier.padding(horizontal = 16.dp)
                     )
-                ) {
-                    Column(Modifier.padding(horizontal = 16.dp)) {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        ) {
-                            Text(
-                                text = "Outsider users\nallowed",
-                                fontSize = 22.sp,
-                            )
-                            Spacer(modifier = Modifier.weight(1f))
-                            NumberButton(
-                                initialQuantity = reservationInfo?.totalAvailable ?: 0,
-                                onNumberChange = {
-                                    setReservationInfo(reservationInfo.copy(totalAvailable = it))
-                                },
-                                max = courtWithSlots?.playingCourt?.maxNumber!! - 1
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(16.dp))
-
-
-                        Text(
-                            text = "Suggested Level",
-                            fontSize = 22.sp,
-                        )
-
-                        Spacer(modifier = Modifier.height(10.dp))
-
-                        LevelCardSelector(
-                            level = selectedLevel,
-                            onClick = {
-                                navController.navigate("Select Your Level")
-                            }
-                        )
-
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(start = 16.dp, end = 3.dp)
+                    ) {
+                        Text(text = "Public match", fontSize = 22.sp)
+                        Spacer(modifier = Modifier.weight(1f))
+                        Checkbox(checked = checked, onCheckedChange = {
+                            setReservationInfo(reservationInfo.copy(public = !checked))
+                            setChecked(!checked)
+                        })
                     }
                 }
+
+                item {
+                    AnimatedVisibility(
+                        visible = checked,
+                        enter = fadeIn() + slideInVertically(
+                            initialOffsetY = { -40 },
+                            animationSpec = tween(
+                                durationMillis = 500,
+                                easing = FastOutSlowInEasing
+                            )
+                        ),
+                        exit = fadeOut() + slideOutVertically(
+                            targetOffsetY = { -40 },
+                            animationSpec = tween(
+                                durationMillis = 500,
+                                easing = FastOutSlowInEasing
+                            )
+                        )
+                    ) {
+                        Column(Modifier.padding(horizontal = 16.dp)) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = "Outsider users\nallowed",
+                                    fontSize = 22.sp,
+                                )
+                                Spacer(modifier = Modifier.weight(1f))
+                                NumberButton(
+                                    initialQuantity = reservationInfo?.totalAvailable ?: 0,
+                                    onNumberChange = {
+                                        setReservationInfo(reservationInfo.copy(totalAvailable = it))
+                                    },
+                                    max = courtWithSlots?.playingCourt?.maxNumber!! - 1
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(16.dp))
+
+
+                            Text(
+                                text = "Suggested Level",
+                                fontSize = 22.sp,
+                            )
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            LevelCardSelector(
+                                level = selectedLevel,
+                                onClick = {
+                                    navController.navigate("Select Your Level")
+                                }
+                            )
+
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(20.dp))
+                }
             }
 
-
-            item { Spacer(modifier = Modifier.height(20.dp)) }
 
             item {
                 Text(

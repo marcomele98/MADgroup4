@@ -79,6 +79,8 @@ fun ShowReservation(
 
     val openDialogLeave = remember { mutableStateOf(false) }
 
+    val openDialogJoinPublic = remember { mutableStateOf(false) }
+
     val reservation = reservations.value?.find { it.reservation?.id == reservationId }
 
     val showConfirmed = remember { mutableStateOf(false) }
@@ -125,10 +127,10 @@ fun ShowReservation(
                             loadingVm,
                             "Reservation deleted successfully",
                             "Error while deleting the reservation",
-                            "Reservations"
+                            "Reservations",
+                            "User ${user.value!!.name} ${user.value!!.surname} has deleted the match"
                         )
                         openDialog.value = false
-                        navController.navigate("Reservations")
                     }) {
                         Text("Delete")
                     }
@@ -166,13 +168,48 @@ fun ShowReservation(
                             "User ${user.value!!.name} ${user.value!!.surname} has leaved your reservation"
                         )
                         openDialogLeave.value = false
-                        navController.navigate("Reservations")
                     }) {
                         Text("Leave")
                     }
                 }, dismissButton = {
                     TextButton(onClick = {
                         openDialogLeave.value = false
+                    }) {
+                        Text("Cancel")
+                    }
+                }, title = {
+                    Text("Leave Match")
+                }, text = {
+                    Text(
+                        text = "Are you sure you want to leave this match?",
+                    )
+                }, properties = DialogProperties(
+                    dismissOnBackPress = true, dismissOnClickOutside = true
+                )
+                )
+            }
+
+            if (openDialogLeave.value) {
+                AlertDialog(onDismissRequest = {
+                    openDialogJoinPublic.value = false
+                }, confirmButton = {
+                    TextButton(onClick = {
+                        loadingVm.setStatus(Status.Loading)
+                        reservationVm.addInAPublicReservationAndSaveReservation(
+                            user.value?.id!!,
+                            reservation.reservation,
+                            loadingVm,
+                            "Reservation joined successfully",
+                            "Error while joining the reservation",
+                            "Reservations",
+                            "User ${user.value!!.name} ${user.value!!.surname} has joined your reservation"
+                        )
+                    }) {
+                        Text("Leave")
+                    }
+                }, dismissButton = {
+                    TextButton(onClick = {
+                        openDialogJoinPublic.value = false
                     }) {
                         Text("Cancel")
                     }
@@ -528,16 +565,7 @@ fun ShowReservation(
             ) {
                 Button(
                     onClick = {
-                        loadingVm.setStatus(Status.Loading)
-                        reservationVm.addInAPublicReservationAndSaveReservation(
-                            user.value?.id!!,
-                            reservation.reservation,
-                            loadingVm,
-                            "Reservation joined successfully",
-                            "Error while joining the reservation",
-                            "Reservations",
-                            "User ${user.value!!.name} ${user.value!!.surname} has joined your reservation"
-                        )
+                        openDialogJoinPublic.value = !openDialogJoinPublic.value
                     }, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     )

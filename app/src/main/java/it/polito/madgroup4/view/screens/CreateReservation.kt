@@ -108,7 +108,7 @@ fun CreateReservation(
 
     val onClick = { index: Int ->
         filteredCourts[index].playingCourt?.name?.let { setSelectedCourt(it) }
-        navController.navigate("Select A Time SLot")
+        navController.navigate("Select A Time Slot")
     }
 
     Column(
