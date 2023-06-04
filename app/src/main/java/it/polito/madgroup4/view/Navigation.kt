@@ -212,6 +212,10 @@ fun Navigation(
     }
     setfromLink(false)
 
+    LaunchedEffect(stuff) {
+        println("aaaaa " + stuff)
+    }
+
 
     LaunchedEffect(loading) {
         when (loading) {
@@ -298,12 +302,16 @@ fun Navigation(
                     topBarAction = topBarAction,
                     user = user,
                     favoriteSport = favouriteSport,
+                    setReservationInfo = setReservationInfo,
+                    setSelectedLevel = setSelectedLevel,
                 )
             },
 
             floatingActionButton = {
                 if (navBackStackEntry?.destination?.route == "Reservations") FloatingFab(
                     navController,
+                    setReservationInfo,
+                    setSelectedLevel
                 )
             },
             floatingActionButtonPosition = FabPosition.End,
@@ -439,6 +447,7 @@ fun Navigation(
                             reservationInfo = reservationInfo,
                             selectedLevel = selectedLevel,
                             setStuff = setStuff,
+                            stuff = stuff,
                         )
                     }
 
@@ -654,22 +663,6 @@ fun Navigation(
                             user,
                             users,
                             fromLink = true
-                        )
-                    }
-
-                    animatedComposable("Edit Additional Info") {
-                        AdditionalInfo(
-                            playingCourt = selectedCourt,
-                            courtsWithSlots = courtsWithSlots,
-                            navController = navController,
-                            stuff = stuff,
-                            setStuff = setStuff,
-                            reservationInfo = reservationInfo,
-                            setReservationInfo = setReservationInfo,
-                            selectedLevel = selectedLevel,
-                            reservationId = reservation,
-                            setSelectedLevel = setSelectedLevel,
-                            nextRoute = "Confirm Changes"
                         )
                     }
                 }

@@ -90,7 +90,6 @@ fun ShowReservation(
     if (reservation != null) {
         setSelectedSlot(reservation.reservation?.slotNumber!!)
 
-
         val isInThePast =
             reservation.reservation.date.toDate() < formatDate(Date()) || (formatDate(Date()) == formatDate(
                 reservation.reservation.date.toDate()

@@ -119,9 +119,7 @@ fun ReservationDetails(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = "Available outsider places: ",
-                    fontSize = 22.sp,
-
-                    )
+                    fontSize = 22.sp,)
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
                     text = "${reservationInfo.totalAvailable}",
@@ -140,7 +138,7 @@ fun ReservationDetails(
                     )
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
-                    text = "${selectedLevel ?: reservationInfo.suggestedLevel}",
+                    text = "${reservationInfo.suggestedLevel}",
                     fontStyle = FontStyle.Italic,
                     fontWeight = FontWeight.Bold,
                     fontSize = 22.sp,

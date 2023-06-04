@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import it.polito.madgroup4.model.ReservationInfo
 import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.model.User
 import it.polito.madgroup4.utility.calculateStartEndTime
@@ -50,6 +51,8 @@ fun TopBar(
     favoriteSport: Int? = null,
     reservations: State<List<ReservationWithCourt>?>,
     reservationId: String,
+    setReservationInfo: (ReservationInfo) -> Unit,
+    setSelectedLevel: (String) -> Unit,
 ) {
 
     val reservation = reservations.value?.find { it.reservation?.id == reservationId }
@@ -179,7 +182,7 @@ fun TopBar(
         },
 
         navigationIcon = {
-            if (title != "Reservations" && title != "Profile" && title != "Welcome" && title != "Invites" && title != "Reviewable" && isFromNotification != null && title != "Explore" && title!= "Playing Courts") {
+            if (title != "Reservations" && title != "Profile" && title != "Welcome" && title != "Invites" && title != "Reviewable" && isFromNotification != null && title != "Explore" && title != "Playing Courts") {
                 IconButton(onClick = {
                     navController.popBackStack();
                 }) {
@@ -194,7 +197,16 @@ fun TopBar(
         },
         actions = {
             if (title == "Reservation Details" && !isInThePast && reservation?.reservation?.userId == user.value?.id) {
-                IconButton(onClick = { navController.navigate("Edit Reservation") }) {
+                IconButton(onClick = {
+                    setReservationInfo(
+                        ReservationInfo(
+                            public = false,
+                            totalAvailable = 0,
+                        )
+                    )
+                    setSelectedLevel("BEGINNER")
+                    navController.navigate ("Edit Reservation")
+                }) {
                     Icon(
                         Icons.Outlined.Edit, contentDescription = "Edit"
                     )

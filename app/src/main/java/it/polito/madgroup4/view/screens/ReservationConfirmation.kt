@@ -56,7 +56,7 @@ fun ReservationConfirmation(
     reservationId: String? = null,
     reservations: State<List<ReservationWithCourt>?>? = null,
     courtsWithSlots: State<List<CourtWithSlots>?>,
-    stuff: List<Stuff>? = null,
+    stuff: List<Stuff>,
     reservationInfo: ReservationInfo? = null,
     selectedLevel: String? = null,
     setStuff: (List<Stuff>) -> Unit,
@@ -104,7 +104,7 @@ fun ReservationConfirmation(
             loadingVm.setStatus(Status.Loading)
             reservation?.reservation?.slotNumber = reservationTimeSlot
             reservation?.reservation?.price = price
-            reservation?.reservation?.reservationInfo?.suggestedLevel = selectedLevel
+            reservation?.reservation?.stuff = stuff.toMutableList()
             if (text.trim() != "") reservation?.reservation?.particularRequests = text
             if (courtWithSlots?.slots?.get(
                     reservationTimeSlot
@@ -143,7 +143,7 @@ fun ReservationConfirmation(
 
 
         item {
-            if (stuff != null) {
+            if (stuff.any { it.quantity!! > 0 }) {
                 val filteredStuff = stuff.filter { it.quantity!! > 0 }
                 if (filteredStuff.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(20.dp))
