@@ -40,7 +40,7 @@ fun EditLevelSelector(
     val (selectedLev, setSelectedLev) = remember { mutableStateOf(user.value!!.sports[sport].level) }
 
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(selectedLev) {
         setTopBarAction {
             val newSports = user.value!!.sports.toMutableList()
             newSports[sport].level = selectedLev
