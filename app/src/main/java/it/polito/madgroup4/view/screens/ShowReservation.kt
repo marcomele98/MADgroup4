@@ -204,7 +204,8 @@ fun ShowReservation(
                             reservation.playingCourt!!,
                             reservation.reservation.date.toDate(),
                             reservation.reservation.slotNumber,
-                            reservation.reservation.price
+                            reservation.reservation.price,
+                            reservation.reservation?.reservationInfo,
                         )
                     }
 

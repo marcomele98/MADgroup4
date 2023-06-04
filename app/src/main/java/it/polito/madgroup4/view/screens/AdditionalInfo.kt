@@ -49,6 +49,7 @@ import androidx.navigation.NavController
 import it.polito.madgroup4.model.CourtWithSlots
 import it.polito.madgroup4.model.ReservationInfo
 import it.polito.madgroup4.model.Stuff
+import it.polito.madgroup4.view.components.LevelCardSelector
 
 @Composable
 fun AdditionalInfo(
@@ -59,6 +60,7 @@ fun AdditionalInfo(
     setStuff: (List<Stuff>) -> Unit,
     reservationInfo: ReservationInfo,
     setReservationInfo: (ReservationInfo) -> Unit,
+    selectedLevel: String,
 ) {
 
     val courtWithSlots = courtsWithSlots.value?.find { it.playingCourt?.name == playingCourt }
@@ -73,9 +75,7 @@ fun AdditionalInfo(
         )
     }
 
-    val (checked, setChecked) = remember { mutableStateOf(false) }
-
-
+    val (checked, setChecked) = remember { mutableStateOf(reservationInfo.public!!) }
 
     Column() {
         LazyColumn(Modifier.weight(1f)) {
@@ -123,29 +123,46 @@ fun AdditionalInfo(
                         )
                     )
                 ) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                    ) {
+                    Column(Modifier.padding(horizontal = 16.dp)) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        ) {
+                            Text(
+                                text = "Outsider users\nallowed",
+                                fontSize = 22.sp,
+                            )
+                            Spacer(modifier = Modifier.weight(1f))
+                            NumberButton(
+                                initialQuantity = reservationInfo?.totalAvailable ?: 0,
+                                onNumberChange = {
+                                    setReservationInfo(reservationInfo.copy(totalAvailable = it))
+                                },
+                                max = courtWithSlots?.playingCourt?.maxNumber!! - 1
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
+
+
                         Text(
-                            text = "Outsider users\nallowed",
+                            text = "Suggested Level",
                             fontSize = 22.sp,
                         )
-                        Spacer(modifier = Modifier.weight(1f))
-                        NumberButton(
-                            initialQuantity = 0, onNumberChange = {
-                                setReservationInfo(reservationInfo.copy(totalAvailable = it))
-                            },
-                            max = courtWithSlots?.playingCourt?.maxNumber!! - 1
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        LevelCardSelector(
+                            level = selectedLevel,
+                            onClick = {
+                                navController.navigate("Select Your Level")
+                            }
                         )
+
                     }
                 }
             }
-
-
 
 
             item { Spacer(modifier = Modifier.height(20.dp)) }
@@ -165,7 +182,10 @@ fun AdditionalInfo(
             items(stuff.size) {
                 val name = stuff?.get(it)?.name
                 val itemPrice = stuff?.get(it)?.price
-                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(horizontal = 16.dp)) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                ) {
                     Text(text = "${name!!}  ${itemPrice!!}€", fontSize = 22.sp)
                     Spacer(modifier = Modifier.weight(1f))
                     NumberButton(

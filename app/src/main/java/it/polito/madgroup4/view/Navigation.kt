@@ -412,6 +412,7 @@ fun Navigation(
                             courtsWithSlots = courtsWithSlots,
                             stuff = stuff,
                             reservationInfo = reservationInfo,
+                            selectedLevel = selectedLevel,
                         )
                     }
 
@@ -591,7 +592,8 @@ fun Navigation(
                             stuff = stuff,
                             setStuff = setStuff,
                             reservationInfo = reservationInfo,
-                            setReservationInfo = setReservationInfo
+                            setReservationInfo = setReservationInfo,
+                            selectedLevel = selectedLevel,
                         )
                     }
 

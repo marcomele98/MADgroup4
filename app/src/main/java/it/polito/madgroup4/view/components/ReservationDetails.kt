@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -13,11 +12,11 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Euro
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Schedule
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -26,7 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import it.polito.madgroup4.model.Court
-import it.polito.madgroup4.model.Stuff
+import it.polito.madgroup4.model.ReservationInfo
 import it.polito.madgroup4.utility.calculateStartEndTime
 import it.polito.madgroup4.utility.imageSelector
 import java.text.SimpleDateFormat
@@ -38,6 +37,8 @@ fun ReservationDetails(
     reservationDate: Date,
     reservationTimeSlot: Int,
     price: Double,
+    reservationInfo: ReservationInfo? = null,
+    selectedLevel: String? = null,
 ) {
 
     val startEndTime = calculateStartEndTime(
@@ -46,6 +47,10 @@ fun ReservationDetails(
     )
 
     val formatter = SimpleDateFormat("dd/MM/yyyy")
+
+    LaunchedEffect(Unit) {
+        println("${reservationInfo}}")
+    }
 
     Column {
 
@@ -97,8 +102,55 @@ fun ReservationDetails(
             icon = Icons.Default.Schedule,
             text = startEndTime, description = "Schedule"
         )
+
+
+        if (reservationInfo?.public == true) {
+            Spacer(modifier = Modifier.height(20.dp))
+            Text(
+                text = "Public match details",
+                fontSize = 23.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary,
+                fontStyle = FontStyle.Italic
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "Available outsider places: ",
+                    fontSize = 22.sp,
+
+                    )
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = "${reservationInfo.totalAvailable}",
+                    fontStyle = FontStyle.Italic,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 22.sp,
+                )
+            }
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "Suggested Level: ",
+                    fontSize = 22.sp,
+
+                    )
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = "${selectedLevel ?: reservationInfo.suggestedLevel}",
+                    fontStyle = FontStyle.Italic,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 22.sp,
+                )
+            }
+
+        }
     }
 }
+
 
 @Composable
 fun ReservationElement(

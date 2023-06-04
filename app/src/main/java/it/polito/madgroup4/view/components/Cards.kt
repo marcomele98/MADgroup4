@@ -89,7 +89,8 @@ fun ReservationCard(
 
                     status?.let {
                         Text(
-                            text = it, fontSize = 18.sp,
+                            text = it,
+                            fontSize = 18.sp,
                             color = if (status == "Invited") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary,
                             fontStyle = FontStyle.Italic,
                             fontWeight = FontWeight.Bold
@@ -99,6 +100,13 @@ fun ReservationCard(
             }
 
 
+            if (reservation?.reservation?.reservationInfo?.suggestedLevel != null && reservation.reservation.reservationInfo?.public == true) {
+                Spacer(modifier = Modifier.height(10.dp))
+                Text(
+                    text = reservation?.reservation?.reservationInfo?.suggestedLevel!!,
+                    fontSize = 18.sp
+                )
+            }
 
 
             Spacer(modifier = Modifier.height(10.dp))

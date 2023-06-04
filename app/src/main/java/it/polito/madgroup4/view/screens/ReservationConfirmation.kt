@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -58,7 +57,8 @@ fun ReservationConfirmation(
     reservations: State<List<ReservationWithCourt>?>? = null,
     courtsWithSlots: State<List<CourtWithSlots>?>,
     stuff: List<Stuff>? = null,
-    reservationInfo: ReservationInfo? = null
+    reservationInfo: ReservationInfo? = null,
+    selectedLevel: String? = null,
 ) {
 
     val courtWithSlots = courtsWithSlots.value?.find { it.playingCourt?.name == playingCourt }
@@ -81,7 +81,10 @@ fun ReservationConfirmation(
                         )
                     )
                 ),
-                reservationInfo = reservationInfo?.copy(confirmedUsers = mutableListOf(userVm.user.value!!.id!!)),
+                reservationInfo = reservationInfo?.copy(
+                    confirmedUsers = mutableListOf(userVm.user.value!!.id!!),
+                    suggestedLevel = selectedLevel
+                ),
                 sport = courtWithSlots?.playingCourt?.sport!! //TODO aggiunto per fare agilmente le queries su reservations
             ), courtWithSlots?.playingCourt
         )
@@ -130,8 +133,11 @@ fun ReservationConfirmation(
                 reservationDate = reservation.reservation?.date!!.toDate(),
                 reservationTimeSlot = reservationTimeSlot,
                 price = price,
+                reservationInfo = reservation.reservation?.reservationInfo,
+                selectedLevel = selectedLevel,
             )
         }
+
 
         item {
             if (stuff != null) {
@@ -175,7 +181,8 @@ fun ReservationConfirmation(
                 onValueChange = { text = it },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(100.dp),
+                    .height(100.dp)
+                    .padding(bottom = 16.dp),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Done,
                     keyboardType = KeyboardType.Text,

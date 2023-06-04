@@ -6,6 +6,7 @@ data class ReservationInfo(
     var confirmedUsers: MutableList<String> = mutableListOf(),
     var pendingUsers: MutableList<String> = mutableListOf(),
     var status: String? = null,
-    var public: Boolean? = false
+    var public: Boolean? = false,
+    var suggestedLevel: String? = null,
 )
 
