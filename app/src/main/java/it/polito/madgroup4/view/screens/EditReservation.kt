@@ -30,7 +30,7 @@ fun EditReservation(
         slots = selectedCourt?.slots!!,
         onClick = {
             setSelectedSlot(it)
-            navController.navigate("Confirm Changes")
+            navController.navigate("Edit Reservation")
         },
     )
 

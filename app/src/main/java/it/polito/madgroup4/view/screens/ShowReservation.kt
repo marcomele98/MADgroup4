@@ -256,8 +256,9 @@ fun ShowReservation(
                     }
 
                     item {
-                        if (reservation.reservation.reservationInfo?.confirmedUsers?.filter { it != user.value?.id }
-                                ?.isNotEmpty()!! || reservation.reservation.reservationInfo?.pendingUsers?.isNotEmpty()!!) {
+                        if ((reservation.reservation.reservationInfo?.confirmedUsers?.filter { it != user.value?.id }
+                                ?.isNotEmpty()!! || reservation.reservation.reservationInfo?.pendingUsers?.isNotEmpty()!!)
+                            || (!isInThePast && user.value?.id == reservation.reservation.userId)) {
                             Spacer(modifier = Modifier.height(20.dp))
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,

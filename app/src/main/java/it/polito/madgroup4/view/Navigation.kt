@@ -61,6 +61,7 @@ import it.polito.madgroup4.view.screens.CreateReservation
 import it.polito.madgroup4.view.screens.EditLevelSelector
 import it.polito.madgroup4.view.screens.EditProfile
 import it.polito.madgroup4.view.screens.EditReservation
+import it.polito.madgroup4.view.screens.EditReservationConfirmation
 import it.polito.madgroup4.view.screens.Explore
 import it.polito.madgroup4.view.screens.FirstLogin
 import it.polito.madgroup4.view.screens.LevelSelector
@@ -387,7 +388,7 @@ fun Navigation(
                         )
                     }
 
-                    animatedComposable("Edit Reservation") {
+                    animatedComposable("Update time slot") {
                         EditReservation(
                             reservation,
                             selectedSlot,
@@ -431,23 +432,19 @@ fun Navigation(
                         )
                     }
 
-                    animatedComposable("Confirm Changes") {
-                        ReservationConfirmation(
+                    animatedComposable("Edit Reservation") {
+                        EditReservationConfirmation(
                             reservationVm = reservationVm,
                             userVm = userVm,
                             loadingVm = loadingVm,
-                            playingCourt = selectedCourt,
-                            reservationDate = creationDate,
                             reservationTimeSlot = selectedSlot,
                             setSelectedSlot = setSelectedSlot,
                             setTopBarAction = setTopBarAction,
-                            reservationId = reservation,
-                            reservations = reservations,
                             courtsWithSlots = courtsWithSlots,
-                            reservationInfo = reservationInfo,
+                            reservationId = reservation,
                             selectedLevel = selectedLevel,
-                            setStuff = setStuff,
-                            stuff = stuff,
+                            playingCourt = selectedCourt,
+                            reservations = reservations
                         )
                     }
 

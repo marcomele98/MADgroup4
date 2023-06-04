@@ -205,7 +205,7 @@ fun TopBar(
                         )
                     )
                     setSelectedLevel("BEGINNER")
-                    navController.navigate ("Edit Reservation")
+                    navController.navigate ("Update time slot")
                 }) {
                     Icon(
                         Icons.Outlined.Edit, contentDescription = "Edit"
@@ -217,7 +217,7 @@ fun TopBar(
                         Icons.Outlined.Edit, contentDescription = "Edit Profile"
                     )
                 }
-            } else if (title == "Edit Profile" || title == "Add Sport" || title == "Confirm Reservation" || title == "Rate This Playing Court" || title == "Confirm Changes" || title == "Edit Your Level" || title == "Create Achievement" || title == "Complete Your Profile") {
+            } else if (title == "Edit Profile" || title == "Add Sport" || title == "Confirm Reservation" || title == "Rate This Playing Court" || title == "Edit Reservation" || title == "Edit Your Level" || title == "Create Achievement" || title == "Complete Your Profile") {
                 IconButton(onClick = {
                     topBarAction()
                 }) {
