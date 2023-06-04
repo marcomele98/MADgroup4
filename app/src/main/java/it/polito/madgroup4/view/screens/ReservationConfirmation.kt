@@ -136,9 +136,53 @@ fun ReservationConfirmation(
                 reservationDate = reservation.reservation?.date!!.toDate(),
                 reservationTimeSlot = reservationTimeSlot,
                 price = price,
-                reservationInfo = reservation.reservation?.reservationInfo,
-                selectedLevel = selectedLevel,
             )
+        }
+
+        item {
+            if (reservation?.reservation?.reservationInfo?.public == true) {
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(
+                    text = "Public match details",
+                    fontSize = 23.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontStyle = FontStyle.Italic
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "Available outsider places: ",
+                        fontSize = 22.sp,)
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = "${reservation?.reservation?.reservationInfo!!.totalAvailable}",
+                        fontStyle = FontStyle.Italic,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 22.sp,
+                    )
+                }
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "Suggested Level: ",
+                        fontSize = 22.sp,
+
+                        )
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = "${reservation?.reservation?.reservationInfo!!.suggestedLevel}",
+                        fontStyle = FontStyle.Italic,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 22.sp,
+                    )
+                }
+
+            }
+
         }
 
 

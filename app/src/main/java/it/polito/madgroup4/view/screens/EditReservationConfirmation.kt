@@ -64,23 +64,6 @@ fun EditReservationConfirmation(
 
     val initialSlot = reservation?.reservation?.slotNumber
 
-    /*
-    var res: ReservationWithCourt? =
-        ReservationWithCourt(
-            Reservation(
-                courtName = res.reservation!!.courtName,
-                slotNumber = reservationTimeSlot, //TODO CHECK
-                userId = userVm.user.value!!.id!!,
-                price = res.reservation.price,
-                stuff = editedStuff ?: mutableListOf(),
-                date = res.reservation.date,
-                reservationInfo = res.reservation.reservationInfo?.copy(), //TODO SE EDITIAMO VEDIAMO DOPO
-                sport = res.reservation.sport,
-                particularRequests =  res.reservation.particularRequests
-            ), courtWithSlots?.playingCourt
-        )
-     */
-
     var editedStuff by remember {
         mutableStateOf(reservation.reservation?.stuff?.map {
             Stuff(
@@ -90,13 +73,15 @@ fun EditReservationConfirmation(
                 it.maxQuantity
             )
         }?.toMutableList())
-    } //TODO quando modifichiamo editstuff bisogna vambiare refresh
+    }
 
     var refresh by remember { mutableStateOf(false) }
 
     var price by remember { mutableStateOf(reservation?.reservation?.price!!) }
 
     var text by remember { mutableStateOf(reservation?.reservation?.particularRequests ?: "") }
+
+    var totalAvailable by remember { mutableStateOf(reservation.reservation?.reservationInfo?.totalAvailable) }
 
     LaunchedEffect(refresh, price, text) {
         setTopBarAction {
@@ -111,7 +96,10 @@ fun EditReservationConfirmation(
                         slotNumber = reservationTimeSlot,
                         price = price,
                         stuff = editedStuff ?: mutableListOf(),
-                        particularRequests = if (text.trim() != "") text.trim() else null
+                        particularRequests = if (text.trim() != "") text.trim() else null,
+                        reservationInfo = reservation.reservation.reservationInfo?.copy(
+                            totalAvailable = totalAvailable
+                        )
                     ),
                     loadingVm,
                     "Reservation confirmed successfully",
@@ -127,7 +115,8 @@ fun EditReservationConfirmation(
 
 
     LazyColumn(
-        modifier = Modifier.padding(horizontal = 16.dp)
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
     ) {
 
         item {
@@ -136,19 +125,70 @@ fun EditReservationConfirmation(
                 reservationDate = reservation.reservation?.date!!.toDate(),
                 reservationTimeSlot = reservationTimeSlot,
                 price = price,
-                reservationInfo = reservation.reservation?.reservationInfo,
-                selectedLevel = selectedLevel,
             )
         }
 
         item {
+            if (reservation.reservation?.reservationInfo?.public == true) {
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(
+                    text = "Public match details",
+                    fontSize = 23.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontStyle = FontStyle.Italic
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Outsider users\nallowed",
+                        fontSize = 22.sp,
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    NumberButton(
+                        initialQuantity = reservation.reservation.reservationInfo?.totalAvailable
+                            ?: 0,
+                        onNumberChange = {
+                            totalAvailable = it
+                        },
+                        max = courtWithSlots?.playingCourt?.maxNumber!! - reservation?.reservation?.reservationInfo?.confirmedUsers!!.size
+                    )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "Suggested Level: ",
+                        fontSize = 22.sp,
+
+                        )
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = "${reservation?.reservation?.reservationInfo!!.suggestedLevel}",
+                        fontStyle = FontStyle.Italic,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 22.sp,
+                    )
+                }
+
+            }
+
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = "Rent equipment",
                 fontSize = 23.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
                 fontStyle = FontStyle.Italic,
-                modifier = Modifier.padding(horizontal = 16.dp)
             )
         }
         item { Spacer(modifier = Modifier.height(8.dp)) }
@@ -158,7 +198,6 @@ fun EditReservationConfirmation(
             val itemPrice = editedStuff?.get(it)?.price
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(horizontal = 16.dp)
             ) {
                 Text(text = "${name!!}  ${itemPrice!!}€", fontSize = 22.sp)
                 Spacer(modifier = Modifier.weight(1f))
@@ -174,7 +213,6 @@ fun EditReservationConfirmation(
                 )
             }
             Spacer(modifier = Modifier.height(8.dp))
-
         }
 
         item {
