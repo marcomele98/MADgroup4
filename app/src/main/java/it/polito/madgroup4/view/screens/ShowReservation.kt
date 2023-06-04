@@ -198,7 +198,7 @@ fun ShowReservation(
                 )
             }
 
-            if (openDialogLeave.value) {
+            if (openDialogJoinPublic.value) {
 
                 AlertDialog(onDismissRequest = {
                     openDialogJoinPublic.value = false
