@@ -64,6 +64,7 @@ fun AdditionalInfo(
     selectedLevel: String,
     reservationId: String? = null,
     setSelectedLevel: (String) -> Unit = {},
+    nextRoute: String ? = "Confirm Reservation",
 ) {
 
     val courtWithSlots = courtsWithSlots.value?.find { it.playingCourt?.name == playingCourt }
@@ -212,7 +213,7 @@ fun AdditionalInfo(
 
 
         Button(
-            onClick = { navController.navigate("Confirm Reservation") },
+            onClick = { navController.navigate(nextRoute!!) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),

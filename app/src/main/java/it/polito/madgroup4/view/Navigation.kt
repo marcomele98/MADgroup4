@@ -669,6 +669,7 @@ fun Navigation(
                             selectedLevel = selectedLevel,
                             reservationId = reservation,
                             setSelectedLevel = setSelectedLevel,
+                            nextRoute = "Confirm Changes"
                         )
                     }
                 }

@@ -274,7 +274,8 @@ class ReservationViewModel : ViewModel() {
                     inviaNotifica(
                         it,
                         notificationMessage,
-                        reservation.id
+                        reservation.id,
+                        screen = "Reservations"
                     )
                 }
         }.addOnFailureListener {
@@ -507,7 +508,7 @@ class ReservationViewModel : ViewModel() {
             }
     }
 
-    private fun inviaNotifica(id: String, message: String, reservationId: String) {
+    private fun inviaNotifica(id: String, message: String, reservationId: String, screen: String? = "Reservation Details") {
         val db = Firebase.firestore
         val usersCollection = db.collection("users2")
 
@@ -519,7 +520,7 @@ class ReservationViewModel : ViewModel() {
 
                 FCMMessages().sendMessageSingle(
                     token, notification_title, notification_des, mapOf(
-                        "screen" to "Reservation Details", "reservationId" to reservationId
+                        "screen" to screen!!, "reservationId" to reservationId
                     )
                 )
             }
