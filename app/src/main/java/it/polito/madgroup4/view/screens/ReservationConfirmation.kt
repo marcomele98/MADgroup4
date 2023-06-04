@@ -59,6 +59,7 @@ fun ReservationConfirmation(
     stuff: List<Stuff>? = null,
     reservationInfo: ReservationInfo? = null,
     selectedLevel: String? = null,
+    setStuff: (List<Stuff>) -> Unit,
 ) {
 
     val courtWithSlots = courtsWithSlots.value?.find { it.playingCourt?.name == playingCourt }
@@ -120,6 +121,7 @@ fun ReservationConfirmation(
                 loadingVm.setStatus(Status.Error("Slot already booked", "Select A Time Slot"))
             }
             setSelectedSlot(-1)
+            setStuff(mutableListOf())
         }
     }
 

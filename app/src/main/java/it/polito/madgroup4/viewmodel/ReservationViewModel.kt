@@ -371,16 +371,6 @@ class ReservationViewModel : ViewModel() {
         } else {
             stateViewModel.setStatus(Status.Error("No places longer available", nextRoute))
         }
-
-        saveReservationOnDB(
-            id,
-            reservation,
-            stateViewModel,
-            message,
-            nextRoute,
-            error,
-            notificationMessage
-        )
     }
 
 

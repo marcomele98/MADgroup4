@@ -168,43 +168,49 @@ fun Navigation(
 
     val coroutineScope = rememberCoroutineScope()
 
-    var screen = "Reservations"
+    var screen by remember { mutableStateOf("Reservations") }
 
 
+    LaunchedEffect(Unit) {
+        if (activity.intent?.extras != null) {
+            val value = activity.intent?.extras?.getString("screen")
+            if (value != null) {
+                setReservationWithCourt(
+                    activity.intent?.extras?.getString("reservationId").toString()
+                )
+                screen = value.toString()
 
-    if (activity.intent?.extras != null) {
-        val value = activity.intent?.extras?.getString("screen")
-        if (value != null) {
-            setReservationWithCourt(activity.intent?.extras?.getString("reservationId").toString())
-            screen = value.toString()
-        }
-    }
-
-    FirebaseDynamicLinks.getInstance()
-        .getDynamicLink(activity.intent)
-        .addOnSuccessListener { pendingDynamicLinkData ->
-            var deepLink: Uri? = null
-            if (pendingDynamicLinkData != null) {
-                deepLink = pendingDynamicLinkData.link
             }
-            if (deepLink != null) {
-                if (deepLink!!.getQueryParameter("reservationId") != null) {
-                    val res = deepLink!!.getQueryParameter("reservationId")
-                    if (res != null) {
-                        setReservationWithCourt(res)
-                        setfromLink(true)
-                        reservationVm.getReservationsById(res)
+        }
+
+        FirebaseDynamicLinks.getInstance()
+            .getDynamicLink(activity.intent)
+            .addOnSuccessListener { pendingDynamicLinkData ->
+                var deepLink: Uri? = null
+                if (pendingDynamicLinkData != null) {
+                    deepLink = pendingDynamicLinkData.link
+                }
+                if (deepLink != null) {
+                    if (deepLink!!.getQueryParameter("reservationId") != null) {
+                        val res = deepLink!!.getQueryParameter("reservationId")
+                        if (res != null) {
+                            setReservationWithCourt(res)
+                            setfromLink(true)
+                            reservationVm.getReservationsById(res)
+                        }
                     }
                 }
             }
-        }
-        .addOnFailureListener { e ->
-            Log.i("ERROR", "ERROR")
-        }
+            .addOnFailureListener { e ->
+                Log.i("ERROR", "ERROR")
+            }
 
-    if(fromLink) {
+    }
+
+    if (fromLink) {
         screen = "Join Reservation"
     }
+    setfromLink(false)
 
 
     LaunchedEffect(loading) {
@@ -411,6 +417,7 @@ fun Navigation(
                             setTopBarAction = setTopBarAction,
                             courtsWithSlots = courtsWithSlots,
                             stuff = stuff,
+                            setStuff = setStuff,
                             reservationInfo = reservationInfo,
                             selectedLevel = selectedLevel,
                         )
@@ -421,6 +428,7 @@ fun Navigation(
                             reservationVm = reservationVm,
                             userVm = userVm,
                             loadingVm = loadingVm,
+                            playingCourt = selectedCourt,
                             reservationDate = creationDate,
                             reservationTimeSlot = selectedSlot,
                             setSelectedSlot = setSelectedSlot,
@@ -428,9 +436,9 @@ fun Navigation(
                             reservationId = reservation,
                             reservations = reservations,
                             courtsWithSlots = courtsWithSlots,
-                            playingCourt = selectedCourt,
                             reservationInfo = reservationInfo,
                             selectedLevel = selectedLevel,
+                            setStuff = setStuff,
                         )
                     }
 

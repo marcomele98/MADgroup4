@@ -102,12 +102,22 @@ fun ShowReservation(
                 LocalTime.now()
             ))
 
+        val sport = user.value?.sports?.find { it.name == reservation.reservation.sport }
+        var message = ""
+
         LaunchedEffect(Unit) {
             setSelectedCourt(reservation.playingCourt!!.name!!)
             reservationVm.getAllPlayingCourtsBySportAndDate(
                 formatDate(formatTimestampToString(reservation.reservation.date)),
                 reservation.playingCourt!!.sport!!
             )
+            if (sport == null) {
+                message =
+                    "The suggested level for this match is ${reservation.reservation.reservationInfo?.suggestedLevel} while you don't have set your level for this sport. Are you sure you want to join this match? "
+            } else if (sport.level != reservation.reservation.reservationInfo?.suggestedLevel) {
+                message =
+                    "The suggested level for this match is ${reservation.reservation.reservationInfo?.suggestedLevel} while your level for this sport is ${sport.level}. Are you sure you want to join this match? "
+            }
         }
 
         Column(
@@ -190,6 +200,7 @@ fun ShowReservation(
             }
 
             if (openDialogLeave.value) {
+
                 AlertDialog(onDismissRequest = {
                     openDialogJoinPublic.value = false
                 }, confirmButton = {
@@ -205,7 +216,7 @@ fun ShowReservation(
                             "User ${user.value!!.name} ${user.value!!.surname} has joined your reservation"
                         )
                     }) {
-                        Text("Leave")
+                        Text("Join")
                     }
                 }, dismissButton = {
                     TextButton(onClick = {
@@ -214,10 +225,10 @@ fun ShowReservation(
                         Text("Cancel")
                     }
                 }, title = {
-                    Text("Leave Match")
+                    Text("Join Match")
                 }, text = {
                     Text(
-                        text = "Are you sure you want to leave this match?",
+                        text = message,
                     )
                 }, properties = DialogProperties(
                     dismissOnBackPress = true, dismissOnClickOutside = true
@@ -565,7 +576,20 @@ fun ShowReservation(
             ) {
                 Button(
                     onClick = {
-                        openDialogJoinPublic.value = !openDialogJoinPublic.value
+                        if(message == "") {
+                            loadingVm.setStatus(Status.Loading)
+                            reservationVm.addInAPublicReservationAndSaveReservation(
+                                user.value?.id!!,
+                                reservation.reservation,
+                                loadingVm,
+                                "Reservation joined successfully",
+                                "Error while joining the reservation",
+                                "Reservations",
+                                "User ${user.value!!.name} ${user.value!!.surname} has joined your reservation"
+                            )
+                        } else {
+                            openDialogJoinPublic.value = !openDialogJoinPublic.value
+                        }
                     }, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     )
@@ -574,7 +598,7 @@ fun ShowReservation(
                 }
             } else if (!reservation.reservation.reservationInfo?.confirmedUsers?.contains(
                     user.value?.id!!
-                )!! || fromLink == true
+                )!! && fromLink == true
             ) {
                 Button(
                     onClick = {

@@ -153,15 +153,18 @@ fun AddParticipants(
                         value = search,
                         onValueChange = {
                             search = it.lowercase().trim();
-                            filteredUsers = users.value?.filter {
-                                it.id != owner.value?.id &&
-                                        it.name!!.lowercase().trim()
-                                            .startsWith(search) || it.nickname!!.lowercase().trim()
-                                    .startsWith(search) || it.surname!!.lowercase().trim()
-                                    .startsWith(
-                                        search
-                                    )
-                            }!!.take(5)
+                            filteredUsers =
+                                users.value?.filter { it.name != null && it.id != null && it.surname != null && it.nickname != null }
+                                    ?.filter {
+                                        it.id != owner.value?.id &&
+                                                it.name!!.lowercase().trim()
+                                                    .startsWith(search) || it.nickname!!.lowercase()
+                                            .trim()
+                                            .startsWith(search) || it.surname!!.lowercase().trim()
+                                            .startsWith(
+                                                search
+                                            )
+                                    }!!.take(5)
                         },
                         modifier = Modifier
                             .fillMaxWidth(),
