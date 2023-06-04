@@ -101,8 +101,6 @@ fun ShowReservation(
                 LocalTime.now()
             ))
 
-        val sport = user.value?.sports?.find { it.name == reservation.reservation.sport }
-        var message = ""
 
         LaunchedEffect(Unit) {
             setSelectedCourt(reservation.playingCourt!!.name!!)
@@ -110,13 +108,6 @@ fun ShowReservation(
                 formatDate(formatTimestampToString(reservation.reservation.date)),
                 reservation.playingCourt!!.sport!!
             )
-            if (sport == null) {
-                message =
-                    "The suggested level for this match is ${reservation.reservation.reservationInfo?.suggestedLevel} while you don't have set your level for this sport. Are you sure you want to join this match? "
-            } else if (sport.level != reservation.reservation.reservationInfo?.suggestedLevel) {
-                message =
-                    "The suggested level for this match is ${reservation.reservation.reservationInfo?.suggestedLevel} while your level for this sport is ${sport.level}. Are you sure you want to join this match? "
-            }
         }
 
         Column(
@@ -199,7 +190,15 @@ fun ShowReservation(
             }
 
             if (openDialogJoinPublic.value) {
-
+                val sport = user.value?.sports?.find { it.name == reservation.reservation.sport }
+                var message = ""
+                if (sport == null) {
+                    message =
+                        "The suggested level for this match is ${reservation.reservation.reservationInfo?.suggestedLevel} while you don't have set your level for this sport. Are you sure you want to join this match? "
+                } else if (sport.level != reservation.reservation.reservationInfo?.suggestedLevel) {
+                    message =
+                        "The suggested level for this match is ${reservation.reservation.reservationInfo?.suggestedLevel} while your level for this sport is ${sport.level}. Are you sure you want to join this match? "
+                }
                 AlertDialog(onDismissRequest = {
                     openDialogJoinPublic.value = false
                 }, confirmButton = {
@@ -258,7 +257,7 @@ fun ShowReservation(
 
                     item {
                         if (reservation.reservation.reservationInfo?.confirmedUsers?.filter { it != user.value?.id }
-                                ?.isNotEmpty()!! || reservation.reservation.reservationInfo?.pendingUsers?.isNotEmpty()!! || user.value?.id == reservation.reservation.userId) {
+                                ?.isNotEmpty()!! || reservation.reservation.reservationInfo?.pendingUsers?.isNotEmpty()!!) {
                             Spacer(modifier = Modifier.height(20.dp))
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
@@ -575,7 +574,9 @@ fun ShowReservation(
             ) {
                 Button(
                     onClick = {
-                        if(message == "") {
+                        val sport = user.value?.sports?.find { it.name == reservation.reservation.sport }
+
+                        if(sport != null && sport.level == reservation.reservation.reservationInfo?.suggestedLevel) {
                             loadingVm.setStatus(Status.Loading)
                             reservationVm.addInAPublicReservationAndSaveReservation(
                                 user.value?.id!!,

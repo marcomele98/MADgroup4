@@ -599,7 +599,7 @@ fun Navigation(
                             navController = navController,
                             modifier = Modifier.padding(horizontal = 16.dp),
                             text = "No reviewable reservations",
-                            nextRoute = "Public Match Details"
+                            nextRoute = "Reservation Details"
                         )
                     }
 

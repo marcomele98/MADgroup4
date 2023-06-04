@@ -135,7 +135,7 @@ fun imageSelector(sport: String): ImageVector {
     return when (sport) {
         "Tennis" -> Icons.Default.SportsTennis
         "Football" -> Icons.Default.SportsSoccer
-        "Basketball" -> Icons.Default.SportsBasketball
+        "Basket" -> Icons.Default.SportsBasketball
         "Baseball" -> Icons.Default.SportsBaseball
         "Volleyball" -> Icons.Default.SportsVolleyball
         "Rugby" -> Icons.Default.SportsRugby
