@@ -25,4 +25,8 @@ data class Court(
     val maxNumber: Int? = null,
 
     val stuff: List<Stuff> = emptyList(),
+
+    var review : Float? = null,
+
+    var reviewNumber : Int? = null
 )

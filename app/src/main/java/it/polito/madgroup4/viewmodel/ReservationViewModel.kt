@@ -20,6 +20,7 @@ import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.model.Review
 import it.polito.madgroup4.model.User
 import it.polito.madgroup4.utility.calculateStartEndTime
+import it.polito.madgroup4.utility.floatEquals
 import it.polito.madgroup4.utility.formatDate
 import it.polito.madgroup4.utility.formatDateToTimestamp
 import it.polito.madgroup4.utility.getAllSlots
@@ -70,13 +71,36 @@ class ReservationViewModel : ViewModel() {
         MutableLiveData<List<ReservationWithCourt>>().apply { value = emptyList() }
     val linkReservations: LiveData<List<ReservationWithCourt>> = _linkReservations
 
+    private var courtListener: ListenerRegistration? = null
+
     init {
-        db.collection("courts").get().addOnSuccessListener { documents ->
-            _allCourts.value = documents.map { it.toObject(Court::class.java) }
-            if (Firebase.auth.currentUser != null) {
-                createReservationsListener(Firebase.auth.currentUser!!.uid)
+        courtListener = db.collection("courts").addSnapshotListener { r, e ->
+            if (e != null) throw e
+            else {
+                db.collection("reservations").get().addOnSuccessListener { documents ->
+                    var reviews =
+                        documents.map { it.toObject(Reservation::class.java) }.map { it.review }
+                    val courts = r?.map { it.toObject(Court::class.java) }
+
+                    courts?.forEach { court ->
+                        val courtReviews = reviews.filter { it?.courtName == court.name }
+                        val avgVal: Float = courtReviews.flatMap {
+                            listOf(
+                                it?.cleaningRating, it?.serviceRating, it?.structureRating
+                            )
+                        }.filter { kotlin.math.abs(it ?: 0f - 0f) > 0.0001f }
+                            .fold(mutableListOf(0f, 0f)) { sum, value ->
+                                sum[0] += 1f
+                                sum[1] += value!!
+                                sum
+                            }.reduce { sum, value -> if (floatEquals(sum, 0f)) 0f else value / sum }
+                        court.review = avgVal
+                        court.reviewNumber = courtReviews.size
+                    }
+                    _allCourts.value = courts
+                }
+
             }
-        }.addOnFailureListener { exception ->
         }
     }
 
@@ -182,9 +206,9 @@ class ReservationViewModel : ViewModel() {
                     val court = courts.find { it.name == res.courtName }
                     ReservationWithCourt(res, court)
                 }?.filter {
-                    !isInThePast(it)
-                            && it.reservation?.reservationInfo?.confirmedUsers?.contains(userId) == false
-                            && it.reservation?.reservationInfo?.pendingUsers?.contains(userId) == false
+                    !isInThePast(it) && it.reservation?.reservationInfo?.confirmedUsers?.contains(
+                        userId
+                    ) == false && it.reservation?.reservationInfo?.pendingUsers?.contains(userId) == false
                 }
             }
 
@@ -213,13 +237,7 @@ class ReservationViewModel : ViewModel() {
             id = db.collection("reservations").document().id
         }
         saveReservationOnDB(
-            id,
-            reservation,
-            stateViewModel,
-            message,
-            nextRoute,
-            error,
-            create = true
+            id, reservation, stateViewModel, message, nextRoute, error, create = true
         )
     }
 
@@ -242,16 +260,52 @@ class ReservationViewModel : ViewModel() {
                         .addSnapshotListener() { r, e ->
                             val reservations = r?.map { it.toObject(Reservation::class.java) }
                             val courts = documents.map { it.toObject(Court::class.java) }
-                            _playingCourts.value = courts.map { c ->
-                                val res = reservations?.filter { res -> res.courtName == c.name }
-                                val slotsNotAvailable =
-                                    res?.filter { it.date.toDate() == date }?.map { it.slotNumber }
-                                val totSlot = slotsNotAvailable?.let {
-                                    getAllSlots(
-                                        it, c.openingTime!!, c.closingTime!!
-                                    )
+
+                            db.collection("reservations").get().addOnSuccessListener { documents ->
+                                val reviews =
+                                    documents.map { it.toObject(Reservation::class.java) }
+                                        .map { it.review }
+
+                                val c = courts.map { c ->
+                                    val res =
+                                        reservations?.filter { res -> res.courtName == c.name }
+                                    val slotsNotAvailable =
+                                        res?.filter { it.date.toDate() == date }
+                                            ?.map { it.slotNumber }
+                                    val totSlot = slotsNotAvailable?.let {
+                                        getAllSlots(
+                                            it, c.openingTime!!, c.closingTime!!
+                                        )
+                                    }
+
+                                    CourtWithSlots(c, totSlot)
                                 }
-                                CourtWithSlots(c, totSlot)
+
+                                c?.forEach { court ->
+                                    val courtReviews =
+                                        reviews.filter { it?.courtName == court.playingCourt?.name }
+                                    val avgVal: Float = courtReviews.flatMap {
+                                        listOf(
+                                            it?.cleaningRating,
+                                            it?.serviceRating,
+                                            it?.structureRating
+                                        )
+                                    }.filter { kotlin.math.abs(it ?: 0f - 0f) > 0.0001f }
+                                        .fold(mutableListOf(0f, 0f)) { sum, value ->
+                                            sum[0] += 1f
+                                            sum[1] += value!!
+                                            sum
+                                        }.reduce { sum, value ->
+                                            if (floatEquals(
+                                                    sum,
+                                                    0f
+                                                )
+                                            ) 0f else value / sum
+                                        }
+                                    court.playingCourt?.review = avgVal
+                                    court.playingCourt?.reviewNumber = courtReviews.size
+                                }
+                                _playingCourts.value = c
                             }
                         }
 
@@ -272,10 +326,7 @@ class ReservationViewModel : ViewModel() {
             reservation.reservationInfo?.confirmedUsers?.filter { it != reservation.userId }
                 ?.forEach() {
                     inviaNotifica(
-                        it,
-                        notificationMessage,
-                        reservation.id,
-                        screen = "Reservations"
+                        it, notificationMessage, reservation.id, screen = "Reservations"
                     )
                 }
         }.addOnFailureListener {
@@ -330,13 +381,7 @@ class ReservationViewModel : ViewModel() {
             throw IllegalStateException("Reservation no longer available")
         }
         saveReservationOnDB(
-            id,
-            reservation,
-            stateViewModel,
-            message,
-            nextRoute,
-            error,
-            notificationMessage
+            id, reservation, stateViewModel, message, nextRoute, error, notificationMessage
         )
     }
 
@@ -355,15 +400,17 @@ class ReservationViewModel : ViewModel() {
 
         if (reservation.reservationInfo?.totalAvailable!! + reservation.reservationInfo!!.confirmedUsers.size < reservation.reservationInfo?.totalNumber!!) {
             //rimuovi l'utente dalla lista degli inviti da accettare e settalo come utente confermato
-            if (reservationInfo!!.pendingUsers.contains(userId))
-                reservationInfo!!.pendingUsers.remove(userId)
+            if (reservationInfo!!.pendingUsers.contains(userId)) reservationInfo!!.pendingUsers.remove(
+                userId
+            )
             reservationInfo!!.confirmedUsers.add(userId)
             saveReservationOnDB(
                 id, reservation, stateViewModel, message, nextRoute, error, notificationMessage
             )
         } else if (reservation.reservationInfo?.totalAvailable!! > 0) {
-            if (reservationInfo!!.pendingUsers.contains(userId))
-                reservationInfo!!.pendingUsers.remove(userId)
+            if (reservationInfo!!.pendingUsers.contains(userId)) reservationInfo!!.pendingUsers.remove(
+                userId
+            )
             reservationInfo!!.confirmedUsers.add(userId)
             reservationInfo!!.totalAvailable = (reservationInfo.totalAvailable ?: 0) - 1
             saveReservationOnDB(
@@ -407,8 +454,7 @@ class ReservationViewModel : ViewModel() {
         } else {
             stateViewModel.setStatus(
                 Status.Error(
-                    "User $userId is not invited in this reservation",
-                    nextRoute
+                    "User $userId is not invited in this reservation", nextRoute
                 )
             )
         }
@@ -438,7 +484,7 @@ class ReservationViewModel : ViewModel() {
 
 
     //prima di chiamare le funzioni faremo un check. se chi vuole cancellare la prenotazione è l'owner (il suo id è quello userId salvato nella prenotazione)
-    //altrimenti uno semplicemente abbandona la partita, che sarà disponibile per altri, quindi si chiamerà questa funzione
+//altrimenti uno semplicemente abbandona la partita, che sarà disponibile per altri, quindi si chiamerà questa funzione
     fun cancelPartecipationToReservation(
         reservation: Reservation,
         userId: String,
@@ -475,40 +521,40 @@ class ReservationViewModel : ViewModel() {
         create: Boolean? = false,
         invite: User? = null
     ) {
-        db.collection("reservations").document(id)
-            .set(
-                reservation.copy(
-                    id = id,
-                    reservationInfo = reservation.reservationInfo?.copy(status = null)
-                ), SetOptions.merge()
-            ).addOnSuccessListener {
-                if (invite == null) {
-                    reservation.reservationInfo?.pendingUsers?.forEach {
-                        inviaNotifica(it, notificationMessage!!, id)
-                    }
+        db.collection("reservations").document(id).set(
+            reservation.copy(
+                id = id, reservationInfo = reservation.reservationInfo?.copy(status = null)
+            ), SetOptions.merge()
+        ).addOnSuccessListener {
+            if (invite == null) {
+                reservation.reservationInfo?.pendingUsers?.forEach {
+                    inviaNotifica(it, notificationMessage!!, id)
                 }
-                if (edit == true) {
-                    println("edit")
-                    reservation.reservationInfo?.pendingUsers?.forEach {
-                        inviaNotifica(it, notificationMessage!!, id)
-                    }
-                    reservation.reservationInfo?.confirmedUsers?.forEach {
-                        if (it != reservation.userId) inviaNotifica(it, notificationMessage!!, id)
-                    }
-                } else if (create == false) {
-                    println("create")
-                    inviaNotifica(reservation.userId, notificationMessage!!, id)
-                } else if (invite != null) {
-                    println("invite")
-                    inviaNotifica(invite.id!!, notificationMessage!!, id)
-                }
-                stateViewModel.setStatus(Status.Success(message, nextRoute))
-            }.addOnFailureListener {
-                stateViewModel.setStatus(Status.Error(error, null))
             }
+            if (edit == true) {
+                println("edit")
+                reservation.reservationInfo?.pendingUsers?.forEach {
+                    inviaNotifica(it, notificationMessage!!, id)
+                }
+                reservation.reservationInfo?.confirmedUsers?.forEach {
+                    if (it != reservation.userId) inviaNotifica(it, notificationMessage!!, id)
+                }
+            } else if (create == false) {
+                println("create")
+                inviaNotifica(reservation.userId, notificationMessage!!, id)
+            } else if (invite != null) {
+                println("invite")
+                inviaNotifica(invite.id!!, notificationMessage!!, id)
+            }
+            stateViewModel.setStatus(Status.Success(message, nextRoute))
+        }.addOnFailureListener {
+            stateViewModel.setStatus(Status.Error(error, null))
+        }
     }
 
-    private fun inviaNotifica(id: String, message: String, reservationId: String, screen: String? = "Reservation Details") {
+    private fun inviaNotifica(
+        id: String, message: String, reservationId: String, screen: String? = "Reservation Details"
+    ) {
         val db = Firebase.firestore
         val usersCollection = db.collection("users2")
 
@@ -529,26 +575,23 @@ class ReservationViewModel : ViewModel() {
     }
 
     fun getReservationsById(name: String) {
-        db.collection("courts").get()
-            .addOnSuccessListener { courtDocuments ->
-                val courts = courtDocuments.map { it.toObject(Court::class.java) }
+        db.collection("courts").get().addOnSuccessListener { courtDocuments ->
+            val courts = courtDocuments.map { it.toObject(Court::class.java) }
 
-                db.collection("reservations").whereEqualTo("id", name).get()
-                    .addOnSuccessListener { reservationDocuments ->
-                        val reservations =
-                            reservationDocuments.map { it.toObject(Reservation::class.java) }
-                        val reservationsWithCourt = reservations.map { reservation ->
-                            val court = courts.find { it.name == reservation.courtName }
-                            ReservationWithCourt(reservation, court)
-                        }
-                        _linkReservations.value = reservationsWithCourt
+            db.collection("reservations").whereEqualTo("id", name).get()
+                .addOnSuccessListener { reservationDocuments ->
+                    val reservations =
+                        reservationDocuments.map { it.toObject(Reservation::class.java) }
+                    val reservationsWithCourt = reservations.map { reservation ->
+                        val court = courts.find { it.name == reservation.courtName }
+                        ReservationWithCourt(reservation, court)
+                    }
+                    _linkReservations.value = reservationsWithCourt
 
-                    }
-                    .addOnFailureListener { exception ->
-                    }
-            }
-            .addOnFailureListener { exception ->
-            }
+                }.addOnFailureListener { exception ->
+                }
+        }.addOnFailureListener { exception ->
+        }
     }
 
     fun generateReservationLink(id: String): String {

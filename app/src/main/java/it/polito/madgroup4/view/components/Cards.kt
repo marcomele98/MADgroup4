@@ -145,7 +145,7 @@ fun PlayingCourtCard(
                 verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()
             ) {
                 Icon(
-                    imageSelector(playingCourt.sport!!), contentDescription = "Reservations"
+                    imageSelector(playingCourt.sport!!), contentDescription = "Court"
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
@@ -159,6 +159,11 @@ fun PlayingCourtCard(
             }
 
             Spacer(modifier = Modifier.height(10.dp))
+
+            if (playingCourt.reviewNumber != null && playingCourt.reviewNumber!! > 0) {
+                Evaluation(stars = playingCourt.review ?: 0f, label = "", reviews = playingCourt.reviewNumber!!)
+            }
+
 
             Text(
                 text = playingCourt.address + ", " + playingCourt.city + " (" + playingCourt.province + ")",
@@ -305,17 +310,19 @@ fun ReviewCard(
 
 @Composable
 fun Evaluation(
-    stars: Float, label: String
+    stars: Float, label: String, reviews: Int? = null
 ) {
 
     Row(
         verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()
     ) {
-        Text(
-            text = label,
-            modifier = Modifier.width(80.dp),
-        )
-        Spacer(modifier = Modifier.width(8.dp))
+        if (label != "") {
+            Text(
+                text = label,
+                modifier = Modifier.width(80.dp),
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+        }
 
         RatingBar(value = stars,
             onValueChange = {},
@@ -324,6 +331,14 @@ fun Evaluation(
                 .inactiveColor(MaterialTheme.colorScheme.surfaceVariant).stepSize(StepSize.HALF)
                 .numStars(5).size(20.dp).padding(0.dp),
             onRatingChanged = {})
+        if(reviews != null) {
+            Text(
+                text = "($reviews reviews)",
+                modifier = Modifier.padding(start = 4.dp),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Light,
+            )
+        }
     }
 
     Spacer(modifier = Modifier.height(8.dp))
