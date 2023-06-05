@@ -378,7 +378,8 @@ class ReservationViewModel : ViewModel() {
             reservationInfo!!.totalAvailable = (reservationInfo.totalAvailable ?: 0) - 1
             reservationInfo!!.confirmedUsers.add(userId)
         } else {
-            throw IllegalStateException("Reservation no longer available")
+            stateViewModel.setStatus(Status.Error("Reservation no longer available", nextRoute))
+//            throw IllegalStateException("Reservation no longer available")
         }
         saveReservationOnDB(
             id, reservation, stateViewModel, message, nextRoute, error, notificationMessage
@@ -454,7 +455,7 @@ class ReservationViewModel : ViewModel() {
         } else {
             stateViewModel.setStatus(
                 Status.Error(
-                    "User $userId is not invited in this reservation", nextRoute
+                    "You are not invited for this match", nextRoute
                 )
             )
         }
@@ -475,7 +476,8 @@ class ReservationViewModel : ViewModel() {
             //rimuovi l'utente dalla lista degli inviti da accettare
             reservationInfo!!.pendingUsers.remove(userId)
         } else {
-            throw IllegalStateException("User $userId is not invited in this reservation")
+            stateViewModel.setStatus(Status.Error("You are not invited for this match", nextRoute))
+//            throw IllegalStateException("User $userId is not invited in this reservation")
         }
         saveReservationOnDB(
             id, reservation, stateViewModel, message, nextRoute, error, notificationMessage
@@ -502,7 +504,8 @@ class ReservationViewModel : ViewModel() {
             // dobbiamo farlo solo se l'utente è esterno
             reservationInfo.totalAvailable = (reservationInfo.totalAvailable ?: 0) + 1
         } else {
-            throw IllegalStateException("User $id is not a partecipant of this reservation")
+            stateViewModel.setStatus(Status.Error("You are not a participant of this reservation", nextRoute))
+//            throw IllegalStateException("User $id is not a partecipant of this reservation")
         }
         saveReservationOnDB(
             id, reservation, stateViewModel, message, nextRoute, error, notificationMessage

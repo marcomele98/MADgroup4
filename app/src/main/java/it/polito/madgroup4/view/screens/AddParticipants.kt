@@ -244,7 +244,7 @@ fun AddParticipants(
                                     "User invited successfully",
                                     "Error while inviting the user",
                                     "Add Participants",
-                                    "User ${owner.value?.name} ${owner.value?.surname} invited you to play",
+                                    "${owner.value?.name} ${owner.value?.surname} invited you to play",
                                     user
                                 )
                             }) {
