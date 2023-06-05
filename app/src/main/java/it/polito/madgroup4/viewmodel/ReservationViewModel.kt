@@ -74,16 +74,16 @@ class ReservationViewModel : ViewModel() {
     private var courtListener: ListenerRegistration? = null
 
     init {
-        courtListener = db.collection("courts").addSnapshotListener { r, e ->
-            if (e != null) throw e
-            else {
-                db.collection("reservations").get().addOnSuccessListener { documents ->
+        db.collection("courts").get().addOnSuccessListener { documents ->
+            courtListener = db.collection("reservations").addSnapshotListener { r, e ->
+                if (e != null) throw e
+                else {
                     var reviews =
-                        documents.map { it.toObject(Reservation::class.java) }.map { it.review }
-                    val courts = r?.map { it.toObject(Court::class.java) }
+                        r?.map { it.toObject(Reservation::class.java) }?.map { it.review }
+                    val courts = documents.map { it.toObject(Court::class.java) }
 
                     courts?.forEach { court ->
-                        val courtReviews = reviews.filter { it?.courtName == court.name }
+                        val courtReviews = reviews?.filter { it?.courtName == court.name }?.filterNotNull()!!
                         val avgVal: Float = courtReviews.flatMap {
                             listOf(
                                 it?.cleaningRating, it?.serviceRating, it?.structureRating
