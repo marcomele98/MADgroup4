@@ -183,15 +183,38 @@ fun TopBar(
 
         navigationIcon = {
             if (title != "Reservations" && title != "Profile" && title != "Welcome" && title != "Invites" && title != "Reviewable" && isFromNotification != null && title != "Explore" && title != "Playing Courts") {
-                IconButton(onClick = {
-                    navController.popBackStack();
-                }) {
-                    Icon(
-                        Icons.Default.ArrowBack,
-                        contentDescription = "Back",
-                        modifier = Modifier.size(30.dp)
-                    )
+                if (title == "Your Sport") {
+                    IconButton(onClick = {
+                        navController.navigate("Profile")
+                    }) {
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = "Back",
+                            modifier = Modifier.size(30.dp)
+                        )
 
+                    }
+                } else if (title == "Reservation Details") {
+                    IconButton(onClick = {
+                        navController.navigate("Reservations")
+                    }) {
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = "Back",
+                            modifier = Modifier.size(30.dp)
+                        )
+
+                    }
+                } else {
+                    IconButton(onClick = {
+                        navController.popBackStack();
+                    }) {
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = "Back",
+                            modifier = Modifier.size(30.dp)
+                        )
+                    }
                 }
             }
         },
@@ -205,7 +228,7 @@ fun TopBar(
                         )
                     )
                     setSelectedLevel("BEGINNER")
-                    navController.navigate ("Update time slot")
+                    navController.navigate("Update time slot")
                 }) {
                     Icon(
                         Icons.Outlined.Edit, contentDescription = "Edit"

@@ -138,7 +138,7 @@ fun ShowFavouriteSport(
                 .padding(horizontal = 16.dp)
         ) {
 
-            Row() {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = "Your Level",
                     fontSize = 23.sp,
@@ -167,7 +167,7 @@ fun ShowFavouriteSport(
                 fontStyle = FontStyle.Italic,
             )
             Spacer(modifier = Modifier.height(20.dp))
-            Row {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = "Your Achivements",
                     fontSize = 23.sp,

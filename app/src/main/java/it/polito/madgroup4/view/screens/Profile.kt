@@ -135,7 +135,7 @@ fun Profile(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            Row {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = "Your Sports",
                     fontSize = 23.sp,

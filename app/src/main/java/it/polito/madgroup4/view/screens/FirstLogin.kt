@@ -1,6 +1,7 @@
 package it.polito.madgroup4.view.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,14 +32,16 @@ fun FirstLogin(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
-            .padding(top = 70.dp)
+            .padding(top = 70.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
         Image(
             painter = painterResource(id = R.drawable.logo),
             contentDescription = "logo",
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .height(200.dp)
+                .height(130.dp)
                 .then(Modifier.align(Alignment.CenterHorizontally))
         )
         Spacer(modifier = Modifier.height(80.dp))
