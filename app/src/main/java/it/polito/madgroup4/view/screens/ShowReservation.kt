@@ -616,7 +616,7 @@ fun ShowReservation(
                 }
             } else if (reservation.reservation.reservationInfo?.public == true && !reservation.reservation.reservationInfo?.confirmedUsers?.contains(
                     user.value?.id!!
-                )!!
+                )!! && fromLink == false
             ) {
                 Button(
                     onClick = {
