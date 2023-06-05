@@ -102,8 +102,8 @@ fun EditReservationConfirmation(
                         )
                     ),
                     loadingVm,
-                    "Reservation confirmed successfully",
-                    "Error while saving the reservation",
+                    "Reservation edited successfully",
+                    "Error while editing the reservation",
                 )
             } else {
                 setSelectedSlot(-1)

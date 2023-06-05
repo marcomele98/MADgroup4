@@ -128,7 +128,7 @@ fun ShowReservation(
                             "Reservation deleted successfully",
                             "Error while deleting the reservation",
                             "Reservations",
-                            "User ${user.value!!.name} ${user.value!!.surname} has deleted the match"
+                            "${user.value!!.name} ${user.value!!.surname} has deleted the match"
                         )
                         openDialog.value = false
                     }) {
@@ -165,7 +165,7 @@ fun ShowReservation(
                             "Reservation leaved successfully",
                             "Error while leaving the reservation",
                             "Reservations",
-                            "User ${user.value!!.name} ${user.value!!.surname} has leaved your reservation"
+                            "${user.value!!.name} ${user.value!!.surname} has leaved your reservation"
                         )
                         openDialogLeave.value = false
                     }) {
@@ -211,7 +211,7 @@ fun ShowReservation(
                             "Reservation joined successfully",
                             "Error while joining the reservation",
                             "Reservations",
-                            "User ${user.value!!.name} ${user.value!!.surname} has joined your reservation"
+                            "${user.value!!.name} ${user.value!!.surname} has joined your reservation"
                         )
                     }) {
                         Text("Join")
@@ -584,7 +584,7 @@ fun ShowReservation(
                                     "Invite rejected successfully",
                                     "Error while rejecting the invite",
                                     "Reservations",
-                                    "User ${user.value!!.name} ${user.value!!.surname} has rejected your invite"
+                                    "${user.value!!.name} ${user.value!!.surname} has rejected your invite"
                                 )
                             }, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.error
@@ -604,7 +604,7 @@ fun ShowReservation(
                                     "Invite accepted successfully",
                                     "Error while accepting the invite",
                                     "Reservations",
-                                    "User ${user.value!!.name} ${user.value!!.surname} has accepted your invite"
+                                    "${user.value!!.name} ${user.value!!.surname} has accepted your invite"
                                 )
                             }, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.tertiary
@@ -631,7 +631,7 @@ fun ShowReservation(
                                 "Reservation joined successfully",
                                 "Error while joining the reservation",
                                 "Reservations",
-                                "User ${user.value!!.name} ${user.value!!.surname} has joined your reservation"
+                                "${user.value!!.name} ${user.value!!.surname} has joined your reservation"
                             )
                         } else {
                             openDialogJoinPublic.value = !openDialogJoinPublic.value
@@ -656,7 +656,7 @@ fun ShowReservation(
                             "Reservation joined successfully",
                             "Error while joining the reservation",
                             "Reservations",
-                            "User ${user.value!!.name} ${user.value!!.surname} has joined your reservation"
+                            "${user.value!!.name} ${user.value!!.surname} has joined your reservation"
                         )
                     }, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(
                         contentColor = MaterialTheme.colorScheme.onPrimary
