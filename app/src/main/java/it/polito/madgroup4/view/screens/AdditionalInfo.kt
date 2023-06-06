@@ -40,6 +40,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -64,7 +66,7 @@ fun AdditionalInfo(
     selectedLevel: String,
     reservationId: String? = null,
     setSelectedLevel: (String) -> Unit = {},
-    nextRoute: String ? = "Confirm Reservation",
+    nextRoute: String? = "Confirm Reservation",
 ) {
 
     val courtWithSlots = courtsWithSlots.value?.find { it.playingCourt?.name == playingCourt }
@@ -264,7 +266,9 @@ fun NumberButton(initialQuantity: Int, onNumberChange: (Int) -> Unit, max: Int) 
         modifier = Modifier
             .height(50.dp)
             .width(130.dp),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-
-        )
+        keyboardOptions = KeyboardOptions.Default.copy(
+            imeAction = ImeAction.Done,
+            keyboardType = KeyboardType.Number
+        ),
+    )
 }
