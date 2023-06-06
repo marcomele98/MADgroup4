@@ -104,7 +104,7 @@ fun ShowFavouriteSport(
             TextButton(onClick = {
                 userVm.removeAchievement(
                     user.value?.sports?.get(sport)?.name!!,
-                    user.value?.sports?.get(sport)?.achievements!![deletedAchievement!!].title!!,
+                    deletedAchievement!!,
                     loadingVm,
                 )
                 deletedAchievement = null
@@ -135,42 +135,51 @@ fun ShowFavouriteSport(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
         ) {
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(start = 16.dp, end = 4.dp)
+            ) {
                 Text(
                     text = "Your Level",
-                    fontSize = 23.sp,
+                    fontSize = 21.sp,
                     fontWeight = Bold,
                     color = MaterialTheme.colorScheme.primary,
                     fontStyle = FontStyle.Italic
                 )
                 Spacer(modifier = Modifier.weight(1f))
 
+
                 IconButton(onClick = {
                     setSelectedLevel(user.value?.sports?.get(sport)?.level!!)
                     navController.navigate("Edit Your Level")
                 }) {
+
                     Icon(
                         imageVector = Icons.Outlined.Edit,
                         modifier = Modifier
-                            .size(30.dp)
+                            .size(25.dp)
                             .alpha(0.6f),
                         contentDescription = null,
                     )
                 }
+
             }
             Text(
                 text = user.value?.sports?.get(sport)?.level!!,
                 fontSize = 18.sp,
                 fontStyle = FontStyle.Italic,
+                modifier = Modifier.padding(horizontal = 16.dp)
             )
             Spacer(modifier = Modifier.height(20.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(start = 16.dp, end = 4.dp)
+            ) {
                 Text(
                     text = "Your Achivements",
-                    fontSize = 23.sp,
+                    fontSize = 21.sp,
                     fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary,
                     fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
@@ -193,6 +202,7 @@ fun ShowFavouriteSport(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
+                    .padding(horizontal = 16.dp)
                     .weight(1f)
                     .clip(RoundedCornerShape(12.dp))
             ) {
@@ -213,7 +223,6 @@ fun ShowFavouriteSport(
                         AchievementCard(achievement = user.value?.sports?.get(sport)?.achievements!![index],
                             onDelete = {
                                 deletedAchievement = index
-
                             })
                     }
                 }
@@ -224,7 +233,7 @@ fun ShowFavouriteSport(
 
             Button(colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.error
-            ), modifier = Modifier.fillMaxWidth(), onClick = {
+            ), modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(), onClick = {
                 openDialog.value = !openDialog.value
             }) {
                 Text(text = "Remove Sport")

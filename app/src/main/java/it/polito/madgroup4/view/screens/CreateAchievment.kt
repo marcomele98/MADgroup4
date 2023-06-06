@@ -101,7 +101,7 @@ fun CreateAchievement(
         Modifier.padding(horizontal = 16.dp)
     ) {
 
-        Spacer(modifier = Modifier.size(30.dp))
+        Spacer(modifier = Modifier.size(10.dp))
         OutlinedTextField(
             value = title,
             //supportingText = { Text(text = "Max 50 characters") },

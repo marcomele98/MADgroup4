@@ -2,6 +2,7 @@ package it.polito.madgroup4.view.components
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Euro
@@ -25,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -36,6 +39,7 @@ import com.gowtham.ratingbar.RatingBarStyle
 import com.gowtham.ratingbar.StepSize
 import it.polito.madgroup4.model.Court
 import it.polito.madgroup4.model.Review
+import it.polito.madgroup4.utility.courtSelector
 import it.polito.madgroup4.utility.floatEquals
 import it.polito.madgroup4.utility.imageSelector
 
@@ -62,48 +66,54 @@ fun CourtDetails(
     val ctx = LocalContext.current
 
 
-    Column {
-        Row(
-            verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                text = playingCourt.name!!, fontWeight = FontWeight.Bold, fontSize = 30.sp
+    LazyColumn {
+        item {
+            Row(
+                verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = playingCourt.name!!, fontWeight = FontWeight.Bold, fontSize = 25.sp
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Icon(
+                    imageSelector(playingCourt.sport!!),
+                    contentDescription = "Court",
+                    modifier = Modifier.size(30.dp)
+                )
+            }
+            Spacer(modifier = Modifier.height(15.dp))
+
+            AvgReviews(numberOfStars = avgVal, numberOfReviews = numReview, onClick = onClick)
+
+            Spacer(modifier = Modifier.height(15.dp))
+
+            Image(
+                painter = painterResource(courtSelector(playingCourt.name!!)),
+                contentDescription = "Court"
             )
-            Spacer(modifier = Modifier.weight(1f))
-            Icon(
-                imageSelector(playingCourt.sport!!),
-                contentDescription = "Court",
-                modifier = Modifier.size(35.dp)
-            )
-        }
-        Spacer(modifier = Modifier.height(15.dp))
 
-        AvgReviews(numberOfStars = avgVal, numberOfReviews = numReview, onClick = onClick)
+            Spacer(modifier = Modifier.height(15.dp))
 
-        Spacer(modifier = Modifier.height(30.dp))
-
-        //TODO: lascio tutto sulla stessa riga? potrebbe essere troppo lunga
-        CourtElement(
-            icon = Icons.Default.LocationOn,
-            description = "Location",
-            text = playingCourt.address + ", " + playingCourt.city + " (" + playingCourt.province + ")"
-        )
-
-        CourtElement(
-            icon = Icons.Default.Euro, description = "Price", text = playingCourt.price.toString()
-        )
-
-        CourtElement(
-            icon = Icons.Default.Schedule,
-            text = "${playingCourt.openingTime} - ${playingCourt.closingTime}",
-            description = "times"
-        )
-
-        if (playingCourt.phone != null)
             CourtElement(
-                icon = Icons.Default.Call,
-                text = playingCourt.phone,
-                description = "phone"
+                icon = Icons.Default.LocationOn,
+                description = "Location",
+                text = playingCourt.address + ", " + playingCourt.city + " (" + playingCourt.province + ")"
+            )
+
+            CourtElement(
+                icon = Icons.Default.Euro,
+                description = "Price",
+                text = playingCourt.price.toString()
+            )
+
+            CourtElement(
+                icon = Icons.Default.Schedule,
+                text = "${playingCourt.openingTime} - ${playingCourt.closingTime}",
+                description = "times"
+            )
+
+            if (playingCourt.phone != null) CourtElement(
+                icon = Icons.Default.Call, text = playingCourt.phone, description = "phone"
             ) {
 
                 val u = Uri.parse("tel:" + playingCourt.phone)
@@ -116,13 +126,11 @@ fun CourtDetails(
                     // show() method display the toast with
                     // exception message.
                     /*Toast.makeText(ctx, "An error occurred", Toast.LENGTH_LONG)
-                        .show()*/
+                    .show()*/
                 }
             }
 
-        if (playingCourt.email != null)
-            CourtElement(
-                icon = Icons.Default.Mail,
+            if (playingCourt.email != null) CourtElement(icon = Icons.Default.Mail,
                 text = playingCourt.email,
                 description = "email",
                 onClick = {
@@ -136,31 +144,25 @@ fun CourtDetails(
                         // show() method display the toast with
                         // exception message.
                         /*Toast.makeText(ctx, "An error occurred", Toast.LENGTH_LONG)
-                            .show()*/
+                        .show()*/
                     }
-                }
-            )
-
+                })
+        }
     }
-    Spacer(modifier = Modifier.height(20.dp))
 }
 
 
 @Composable
 fun CourtElement(
-    icon: ImageVector,
-    text: String,
-    description: String,
-    onClick: (() -> Unit)? = null
+    icon: ImageVector, text: String, description: String, onClick: (() -> Unit)? = null
 ) {
     Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
+        verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()
     ) {
         Icon(icon, description)
         Spacer(modifier = Modifier.width(10.dp))
         Text(
-            text = text, fontSize = 22.sp,
+            text = text, fontSize = 20.sp,
             modifier = if (onClick == null) Modifier else Modifier.clickable(onClick = onClick),
             fontStyle = if (onClick == null) FontStyle.Normal else FontStyle.Italic,
             fontWeight = if (onClick == null) FontWeight.Normal else FontWeight.Light,
@@ -168,7 +170,7 @@ fun CourtElement(
             //color = if (onClick == null) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.primary
         )
     }
-    Spacer(modifier = Modifier.height(20.dp))
+    Spacer(modifier = Modifier.height(15.dp))
 }
 
 

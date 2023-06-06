@@ -82,7 +82,7 @@ fun AddParticipants(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = "Invite with link",
-                        fontSize = 23.sp,
+                        fontSize = 21.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary,
                         fontStyle = FontStyle.Italic
@@ -103,7 +103,7 @@ fun AddParticipants(
                     ) {
                         Icon(
                             Icons.Outlined.Share,
-                            modifier = Modifier.size(30.dp),
+                            modifier = Modifier.size(25.dp),
                             contentDescription = "Share"
                         )
                     }
@@ -125,7 +125,7 @@ fun AddParticipants(
                         // on below line adding a text for our button.
                         Icon(
                             Icons.Default.ContentCopy,
-                            modifier = Modifier.size(30.dp),
+                            modifier = Modifier.size(25.dp),
                             contentDescription = "Copy To Clipboard"
                         )
                     }
@@ -133,10 +133,10 @@ fun AddParticipants(
             }
 
             item {
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(15.dp))
                 Text(
                     text = "Search friends",
-                    fontSize = 23.sp,
+                    fontSize = 21.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary,
                     fontStyle = FontStyle.Italic
@@ -211,7 +211,7 @@ fun AddParticipants(
                         Column {
                             Text(
                                 text = user?.name!! + " " + user.surname!!,
-                                fontSize = 22.sp,
+                                fontSize = 20.sp,
                                 fontStyle = FontStyle.Italic
                             )
                             Text(text = "@" + user.nickname!!, fontSize = 18.sp)

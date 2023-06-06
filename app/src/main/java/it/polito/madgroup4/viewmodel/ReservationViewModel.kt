@@ -1,5 +1,6 @@
 package it.polito.madgroup4.viewmodel
 
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.AsyncTask
 import androidx.lifecycle.LiveData
@@ -12,6 +13,7 @@ import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import com.google.firestore.v1.StructuredQuery.UnaryFilter
 import it.polito.madgroup4.model.Court
 import it.polito.madgroup4.model.CourtWithSlots
@@ -73,20 +75,28 @@ class ReservationViewModel : ViewModel() {
 
     private var courtListener: ListenerRegistration? = null
 
+//    private var _courtsPhotos = MutableLiveData<List<Bitmap>>().apply { value = emptyList() }
+//    val courtsPhotos: LiveData<List<Bitmap>> = _courtsPhotos
+//
+//
+//    private var storage = Firebase.storage("gs://madgroup4-5de93.appspot.com")
+//    private var storageRef = storage.reference
+
     init {
         db.collection("courts").get().addOnSuccessListener { documents ->
             courtListener = db.collection("reservations").addSnapshotListener { r, e ->
                 if (e != null) throw e
                 else {
-                    var reviews =
+                    val reviews =
                         r?.map { it.toObject(Reservation::class.java) }?.map { it.review }
                     val courts = documents.map { it.toObject(Court::class.java) }
 
-                    courts?.forEach { court ->
-                        val courtReviews = reviews?.filter { it?.courtName == court.name }?.filterNotNull()!!
+                    courts.forEach { court ->
+                        val courtReviews =
+                            reviews?.filter { it?.courtName == court.name }?.filterNotNull()!!
                         val avgVal: Float = courtReviews.flatMap {
                             listOf(
-                                it?.cleaningRating, it?.serviceRating, it?.structureRating
+                                it.cleaningRating, it.serviceRating, it.structureRating
                             )
                         }.filter { kotlin.math.abs(it ?: 0f - 0f) > 0.0001f }
                             .fold(mutableListOf(0f, 0f)) { sum, value ->
@@ -98,20 +108,20 @@ class ReservationViewModel : ViewModel() {
                         court.reviewNumber = courtReviews.size
                     }
                     _allCourts.value = courts
-                }
 
+                }
             }
         }
     }
 
 
-    fun isInThePast(it: ReservationWithCourt): Boolean {
+    fun isInThePast(it: ReservationWithCourt, finish: Boolean = false): Boolean {
         return it.reservation!!.date.toDate() < formatDate(Date()) || (formatDate(Date()) == formatDate(
             it.reservation.date.toDate()
         ) && LocalTime.parse(
             calculateStartEndTime(
                 it.playingCourt?.openingTime!!, it.reservation.slotNumber
-            ).split("-")[0].trim()
+            ).split("-")[if(finish) 1 else 0].trim()
         ).isBefore(
             LocalTime.now()
         ))
@@ -139,7 +149,7 @@ class ReservationViewModel : ViewModel() {
                         val court = courts.find { it.name == res.courtName }
                         val resCourt = ReservationWithCourt(res, court)
                         resCourt.reservation!!.reservationInfo?.status =
-                            if (isInThePast(resCourt) && (userId == resCourt.reservation.userId) && (resCourt.reservation.review == null)) {
+                            if (isInThePast(resCourt, true) && (userId == resCourt.reservation.userId) && (resCourt.reservation.review == null)) {
                                 "Reviewable"
                             } else {
                                 "Confirmed"
@@ -182,7 +192,7 @@ class ReservationViewModel : ViewModel() {
                         val court = courts.find { it.name == res.courtName }
                         val resCourt = ReservationWithCourt(res, court)
                         resCourt.reservation!!.reservationInfo?.status =
-                            if (isInThePast(resCourt) && userId == resCourt.reservation?.userId && (resCourt.reservation.review == null)) {
+                            if (isInThePast(resCourt, true) && userId == resCourt.reservation?.userId && (resCourt.reservation.review == null)) {
                                 "Reviewable"
                             } else {
                                 "Confirmed"
@@ -236,15 +246,27 @@ class ReservationViewModel : ViewModel() {
         } else {
             id = db.collection("reservations").document().id
         }
-        saveReservationOnDB(
-            id, reservation, stateViewModel, message, nextRoute, error, create = true
-        )
+        db.collection("reservations").whereEqualTo("courtName", reservation.courtName).get()
+            .addOnSuccessListener { document ->
+                val reservations = document.map { it.toObject(Reservation::class.java) }
+                reservations.find { it.date == reservation.date && it.slotNumber == reservation.slotNumber && reservation.id != it.id }
+                    ?.let {
+                        stateViewModel.setStatus(Status.Error("Slot already booked", "Select A Time Slot"))
+                    } ?: run {
+                    saveReservationOnDB(
+                        id, reservation, stateViewModel, message, nextRoute, error, create = true
+                    )
+                }
+
+            }
+
     }
 
     fun getAllReviewsByCourtName(name: String) {
         db.collection("reservations").whereEqualTo("courtName", name).get()
             .addOnSuccessListener { documents ->
-                var res = documents.map { it.toObject(Reservation::class.java) }.map { it.review }
+                var res =
+                    documents.map { it.toObject(Reservation::class.java) }.map { it.review }
                 _reviews.value = res.filterNotNull()
             }.addOnFailureListener { exception ->
                 println("Error getting documents: $exception")
@@ -256,57 +278,59 @@ class ReservationViewModel : ViewModel() {
         db.collection("courts").whereEqualTo("sport", sport).get()
             .addOnSuccessListener { documents ->
                 courtWithSlotsListener =
-                    db.collection("reservations").whereEqualTo("date", formatDateToTimestamp(date))
+                    db.collection("reservations")
+                        .whereEqualTo("date", formatDateToTimestamp(date))
                         .addSnapshotListener() { r, e ->
                             val reservations = r?.map { it.toObject(Reservation::class.java) }
                             val courts = documents.map { it.toObject(Court::class.java) }
 
-                            db.collection("reservations").get().addOnSuccessListener { documents ->
-                                val reviews =
-                                    documents.map { it.toObject(Reservation::class.java) }
-                                        .map { it.review }
+                            db.collection("reservations").get()
+                                .addOnSuccessListener { documents ->
+                                    val reviews =
+                                        documents.map { it.toObject(Reservation::class.java) }
+                                            .map { it.review }
 
-                                val c = courts.map { c ->
-                                    val res =
-                                        reservations?.filter { res -> res.courtName == c.name }
-                                    val slotsNotAvailable =
-                                        res?.filter { it.date.toDate() == date }
-                                            ?.map { it.slotNumber }
-                                    val totSlot = slotsNotAvailable?.let {
-                                        getAllSlots(
-                                            it, c.openingTime!!, c.closingTime!!
-                                        )
+                                    val c = courts.map { c ->
+                                        val res =
+                                            reservations?.filter { res -> res.courtName == c.name }
+                                        val slotsNotAvailable =
+                                            res?.filter { it.date.toDate() == date }
+                                                ?.map { it.slotNumber }
+                                        val totSlot = slotsNotAvailable?.let {
+                                            getAllSlots(
+                                                it, c.openingTime!!, c.closingTime!!
+                                            )
+                                        }
+
+                                        CourtWithSlots(c, totSlot)
                                     }
 
-                                    CourtWithSlots(c, totSlot)
+                                    c?.forEach { court ->
+                                        val courtReviews =
+                                            reviews.filter { it?.courtName == court.playingCourt?.name }
+                                        val avgVal: Float = courtReviews.flatMap {
+                                            listOf(
+                                                it?.cleaningRating,
+                                                it?.serviceRating,
+                                                it?.structureRating
+                                            )
+                                        }.filter { kotlin.math.abs(it ?: 0f - 0f) > 0.0001f }
+                                            .fold(mutableListOf(0f, 0f)) { sum, value ->
+                                                sum[0] += 1f
+                                                sum[1] += value!!
+                                                sum
+                                            }.reduce { sum, value ->
+                                                if (floatEquals(
+                                                        sum,
+                                                        0f
+                                                    )
+                                                ) 0f else value / sum
+                                            }
+                                        court.playingCourt?.review = avgVal
+                                        court.playingCourt?.reviewNumber = courtReviews.size
+                                    }
+                                    _playingCourts.value = c
                                 }
-
-                                c?.forEach { court ->
-                                    val courtReviews =
-                                        reviews.filter { it?.courtName == court.playingCourt?.name }
-                                    val avgVal: Float = courtReviews.flatMap {
-                                        listOf(
-                                            it?.cleaningRating,
-                                            it?.serviceRating,
-                                            it?.structureRating
-                                        )
-                                    }.filter { kotlin.math.abs(it ?: 0f - 0f) > 0.0001f }
-                                        .fold(mutableListOf(0f, 0f)) { sum, value ->
-                                            sum[0] += 1f
-                                            sum[1] += value!!
-                                            sum
-                                        }.reduce { sum, value ->
-                                            if (floatEquals(
-                                                    sum,
-                                                    0f
-                                                )
-                                            ) 0f else value / sum
-                                        }
-                                    court.playingCourt?.review = avgVal
-                                    court.playingCourt?.reviewNumber = courtReviews.size
-                                }
-                                _playingCourts.value = c
-                            }
                         }
 
             }
@@ -440,14 +464,26 @@ class ReservationViewModel : ViewModel() {
                 reservationInfo!!.pendingUsers.remove(userId)
                 reservationInfo!!.confirmedUsers.add(userId)
                 saveReservationOnDB(
-                    id, reservation, stateViewModel, message, nextRoute, error, notificationMessage
+                    id,
+                    reservation,
+                    stateViewModel,
+                    message,
+                    nextRoute,
+                    error,
+                    notificationMessage
                 )
             } else if (reservation.reservationInfo?.totalAvailable!! > 0) {
                 reservationInfo!!.pendingUsers.remove(userId)
                 reservationInfo!!.confirmedUsers.add(userId)
                 reservationInfo!!.totalAvailable = (reservationInfo.totalAvailable ?: 0) - 1
                 saveReservationOnDB(
-                    id, reservation, stateViewModel, message, nextRoute, error, notificationMessage
+                    id,
+                    reservation,
+                    stateViewModel,
+                    message,
+                    nextRoute,
+                    error,
+                    notificationMessage
                 )
             } else {
                 stateViewModel.setStatus(Status.Error("No places longer available", nextRoute))
@@ -476,7 +512,12 @@ class ReservationViewModel : ViewModel() {
             //rimuovi l'utente dalla lista degli inviti da accettare
             reservationInfo!!.pendingUsers.remove(userId)
         } else {
-            stateViewModel.setStatus(Status.Error("You are not invited for this match", nextRoute))
+            stateViewModel.setStatus(
+                Status.Error(
+                    "You are not invited for this match",
+                    nextRoute
+                )
+            )
 //            throw IllegalStateException("User $userId is not invited in this reservation")
         }
         saveReservationOnDB(
@@ -504,7 +545,12 @@ class ReservationViewModel : ViewModel() {
             // dobbiamo farlo solo se l'utente è esterno
             reservationInfo.totalAvailable = (reservationInfo.totalAvailable ?: 0) + 1
         } else {
-            stateViewModel.setStatus(Status.Error("You are not a participant of this reservation", nextRoute))
+            stateViewModel.setStatus(
+                Status.Error(
+                    "You are not a participant of this reservation",
+                    nextRoute
+                )
+            )
 //            throw IllegalStateException("User $id is not a partecipant of this reservation")
         }
         saveReservationOnDB(
@@ -535,7 +581,6 @@ class ReservationViewModel : ViewModel() {
                 }
             }
             if (edit == true) {
-                println("edit")
                 reservation.reservationInfo?.pendingUsers?.forEach {
                     inviaNotifica(it, notificationMessage!!, id)
                 }
@@ -543,10 +588,8 @@ class ReservationViewModel : ViewModel() {
                     if (it != reservation.userId) inviaNotifica(it, notificationMessage!!, id)
                 }
             } else if (create == false) {
-                println("create")
                 inviaNotifica(reservation.userId, notificationMessage!!, id)
             } else if (invite != null) {
-                println("invite")
                 inviaNotifica(invite.id!!, notificationMessage!!, id)
             }
             stateViewModel.setStatus(Status.Success(message, nextRoute))
@@ -556,7 +599,10 @@ class ReservationViewModel : ViewModel() {
     }
 
     private fun inviaNotifica(
-        id: String, message: String, reservationId: String, screen: String? = "Reservation Details"
+        id: String,
+        message: String,
+        reservationId: String,
+        screen: String? = "Reservation Details"
     ) {
         val db = Firebase.firestore
         val usersCollection = db.collection("users2")
@@ -639,10 +685,11 @@ class FCMMessages {
             return try {
                 val JSON: MediaType? = "application/json; charset=utf-8".toMediaTypeOrNull()
                 val body: RequestBody = RequestBody.create(JSON, JSONObject(fcm).toString())
-                val request: Request = Request.Builder().url(FCM_MESSAGE_URL).post(body).addHeader(
-                    "Authorization",
-                    "key=" + "AAAAHNkiKAA:APA91bH3NrTbbrcq06JEuMAScb73370vmAqWvf8i-b7LLLtBpIrv3y_JQ82NAjykYGTfF71bmOJh7ra9-NUX7HjoKHLz2OGCc_qmRb0bbzwqSj6OfYu2vPyJqT2LTo9HRBIGPJusEGkT"
-                ).build()
+                val request: Request =
+                    Request.Builder().url(FCM_MESSAGE_URL).post(body).addHeader(
+                        "Authorization",
+                        "key=" + "AAAAHNkiKAA:APA91bH3NrTbbrcq06JEuMAScb73370vmAqWvf8i-b7LLLtBpIrv3y_JQ82NAjykYGTfF71bmOJh7ra9-NUX7HjoKHLz2OGCc_qmRb0bbzwqSj6OfYu2vPyJqT2LTo9HRBIGPJusEGkT"
+                    ).build()
                 val response: Response = OkHttpClient().newCall(request).execute()
                 response.body?.string()
             } catch (e: Exception) {

@@ -89,9 +89,7 @@ fun ReviewForm(
                     "Error while saving review",
                     "Reservation Details"
                 )
-                navController.popBackStack()
             }
-            //setReview(review)
         }
     }
 
@@ -108,7 +106,7 @@ fun ReviewForm(
             Text(
                 text = reservation.playingCourt!!.name!!,
                 fontWeight = FontWeight.Bold,
-                fontSize = 30.sp
+                fontSize = 25.sp
             )
             Spacer(modifier = Modifier.weight(1f))
             Icon(

@@ -237,7 +237,8 @@ fun TopBar(
             } else if (title == "Profile") {
                 IconButton(onClick = { navController.navigate("Edit Profile") }) {
                     Icon(
-                        Icons.Outlined.Edit, contentDescription = "Edit Profile"
+                        Icons.Outlined.Edit,
+                        contentDescription = "Edit Profile",
                     )
                 }
             } else if (title == "Edit Profile" || title == "Add Sport" || title == "Confirm Reservation" || title == "Rate This Playing Court" || title == "Edit Reservation" || title == "Edit Your Level" || title == "Create Achievement" || title == "Complete Your Profile") {

@@ -56,18 +56,18 @@ fun ReservationDetails(
             Text(
                 text = playingCourt.name!!,
                 fontWeight = FontWeight.Bold,
-                fontSize = 30.sp
+                fontSize = 25.sp
             )
             Spacer(modifier = Modifier.weight(1f))
             Icon(
                 imageSelector(playingCourt.sport!!),
                 contentDescription = "Reservations",
                 modifier = Modifier
-                    .size(35.dp)
+                    .size(30.dp)
             )
         }
 
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.height(15.dp))
 
         ReservationElement(
             icon = Icons.Default.LocationOn,
@@ -75,7 +75,7 @@ fun ReservationDetails(
             description = "Location"
         )
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(15.dp))
 
         ReservationElement(
             icon = Icons.Default.Euro,
@@ -83,7 +83,7 @@ fun ReservationDetails(
             description = "Price"
         )
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(15.dp))
 
         ReservationElement(
             icon = Icons.Default.DateRange,
@@ -91,7 +91,7 @@ fun ReservationDetails(
             description = "DateRange"
         )
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(15.dp))
 
         ReservationElement(
             icon = Icons.Default.Schedule,
@@ -113,7 +113,7 @@ fun ReservationElement(
         Spacer(modifier = Modifier.width(10.dp))
         Text(
             text = text,
-            fontSize = 22.sp
+            fontSize = 20.sp
         )
     }
 }

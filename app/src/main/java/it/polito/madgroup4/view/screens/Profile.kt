@@ -70,12 +70,14 @@ fun Profile(
 
         Column(
             Modifier
-                .padding(horizontal = 16.dp)
                 .fillMaxSize()
+                .padding(top = 10.dp)
         ) {
 
             Column(
-                Modifier.fillMaxWidth()
+                Modifier
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth()
             ) {
                 if (userPic.value != null) {
                     Image(
@@ -83,7 +85,7 @@ fun Profile(
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
-                            .size(120.dp)
+                            .size(110.dp)
                             .clip(CircleShape)
                             .border(1.dp, MaterialTheme.colorScheme.secondary, CircleShape)
                             .then(Modifier.align(Alignment.CenterHorizontally))
@@ -91,7 +93,7 @@ fun Profile(
                 } else if (user.value?.photo == true) {
                     Box(
                         modifier = Modifier
-                            .size(120.dp)
+                            .size(110.dp)
                             .clip(CircleShape)
                             .align(Alignment.CenterHorizontally)
                             .border(1.dp, MaterialTheme.colorScheme.secondary, CircleShape)
@@ -106,19 +108,19 @@ fun Profile(
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
-                            .size(120.dp)
+                            .size(110.dp)
                             .clip(CircleShape)
                             .border(1.dp, MaterialTheme.colorScheme.secondary, CircleShape)
                             .then(Modifier.align(Alignment.CenterHorizontally))
                     )
                 }
 
-                Spacer(modifier = Modifier.height(25.dp))
+                Spacer(modifier = Modifier.height(15.dp))
 
                 Text(
                     text = user.value?.name + " " + user.value?.surname,
                     textAlign = TextAlign.Center,
-                    fontSize = 30.sp,
+                    fontSize = 25.sp,
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -133,12 +135,15 @@ fun Profile(
             }
 
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(15.dp))
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(start = 16.dp, end = 4.dp)
+            ) {
                 Text(
                     text = "Your Sports",
-                    fontSize = 23.sp,
+                    fontSize = 21.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary,
                     fontStyle = FontStyle.Italic
@@ -146,16 +151,15 @@ fun Profile(
                 Spacer(modifier = Modifier.weight(1f))
                 if (remainingSports.isNotEmpty()) {
                     IconButton(onClick = {
-                        navController.navigate("Add Sport")
                         setSelectedLevel(LevelEnum.BEGINNER.name)
                         setSelectedSport(remainingSports[0])
+                        navController.navigate("Add Sport")
                     }) {
                         Icon(
                             imageVector = Icons.Outlined.Add,
                             modifier = Modifier
                                 .size(30.dp)
                                 .alpha(0.6f),
-                            //tint = MaterialTheme.colorScheme.secondary,
                             contentDescription = null
                         )
                     }
@@ -167,6 +171,7 @@ fun Profile(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
+                    .padding(horizontal = 16.dp)
                     .clip(RoundedCornerShape(12.dp))
             ) {
                 if (user.value?.sports?.size == 0) {
@@ -181,8 +186,6 @@ fun Profile(
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth()
                 ) {
-
-
                     items(user.value?.sports?.size!!) { index ->
                         SportCard(sport = user.value?.sports?.get(index)!!, onClick = {
                             setFavoriteSport(index)

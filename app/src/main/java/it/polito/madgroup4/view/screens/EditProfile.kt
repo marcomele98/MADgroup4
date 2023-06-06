@@ -263,6 +263,7 @@ fun EditProfile(
                 Modifier.fillMaxWidth()
             ) {
 
+                Spacer(modifier = Modifier.size(10.dp))
 
                 Box(Modifier.align(Alignment.CenterHorizontally)) {
                     if (editedUser?.photo == true && editImageBitmap != null) {
@@ -271,7 +272,7 @@ fun EditProfile(
                             contentDescription = null,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
-                                .size(120.dp)
+                                .size(110.dp)
                                 .clip(CircleShape)
                                 .border(1.dp, MaterialTheme.colorScheme.secondary, CircleShape)
                         )
@@ -282,7 +283,7 @@ fun EditProfile(
                             contentDescription = null,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
-                                .size(120.dp)
+                                .size(110.dp)
                                 .clip(CircleShape)
                                 .border(1.dp, MaterialTheme.colorScheme.secondary, CircleShape)
                         )

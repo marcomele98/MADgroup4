@@ -48,30 +48,27 @@ fun ReservationConfirmation(
     reservationVm: ReservationViewModel,
     userVm: UserViewModel,
     loadingVm: LoadingStateViewModel,
-    playingCourt: String? = null,
+    playingCourt: String,
     reservationDate: LocalDate,
     reservationTimeSlot: Int,
     setSelectedSlot: (Int) -> Unit,
     setTopBarAction: (() -> Unit) -> Unit,
-    reservationId: String? = null,
-    reservations: State<List<ReservationWithCourt>?>? = null,
     courtsWithSlots: State<List<CourtWithSlots>?>,
     stuff: List<Stuff>,
-    reservationInfo: ReservationInfo? = null,
-    selectedLevel: String? = null,
+    reservationInfo: ReservationInfo,
+    selectedLevel: String,
     setStuff: (List<Stuff>) -> Unit,
 ) {
 
     val courtWithSlots = courtsWithSlots.value?.find { it.playingCourt?.name == playingCourt }
 
-
-    var reservation: ReservationWithCourt? = if (reservationId == null) {
+    var reservation: ReservationWithCourt? =
         ReservationWithCourt(
             Reservation(
                 courtName = playingCourt!!,
                 slotNumber = reservationTimeSlot,
                 userId = userVm.user.value!!.id!!,
-                price = courtWithSlots?.playingCourt?.price!! + (0 + stuff!!.sumOf { item -> item.price!! * item.quantity!!.toDouble() }),
+                price = courtWithSlots?.playingCourt?.price!! + (0 + stuff.sumOf { item -> item.price!! * item.quantity!!.toDouble() }),
                 stuff = stuff as MutableList<Stuff>,
                 date = formatDateToTimestamp(
                     SimpleDateFormat("dd/MM/yyyy").parse(
@@ -82,20 +79,16 @@ fun ReservationConfirmation(
                         )
                     )
                 ),
-                reservationInfo = reservationInfo?.copy(
+                reservationInfo = reservationInfo.copy(
                     confirmedUsers = mutableListOf(userVm.user.value!!.id!!),
                     suggestedLevel = selectedLevel
                 ),
-                sport = courtWithSlots?.playingCourt?.sport!! //TODO aggiunto per fare agilmente le queries su reservations
-            ), courtWithSlots?.playingCourt
+                sport = courtWithSlots.playingCourt?.sport!!
+            ), courtWithSlots.playingCourt
         )
-    } else {
-        reservations?.value?.find { it.reservation?.id == reservationId }!!.copy()
-    }
 
-    val initialSlot = reservation?.reservation?.slotNumber
 
-    var price by remember { mutableStateOf(reservation?.reservation?.price!!) }
+    val price by remember { mutableStateOf(reservation?.reservation?.price!!) }
 
     var text by remember { mutableStateOf(reservation?.reservation?.particularRequests ?: "") }
 
@@ -106,20 +99,12 @@ fun ReservationConfirmation(
             reservation?.reservation?.price = price
             reservation?.reservation?.stuff = stuff.toMutableList()
             if (text.trim() != "") reservation?.reservation?.particularRequests = text
-            if (courtWithSlots?.slots?.get(
-                    reservationTimeSlot
-                )?.isBooked == false || (reservation!!.reservation!!.slotNumber == initialSlot && reservationId != null)
-            ) {
-                reservationVm.saveReservation(
-                    reservation?.reservation!!,
-                    loadingVm,
-                    "Reservation confirmed successfully",
-                    "Error while saving the reservation",
-                )
-            } else {
-                setSelectedSlot(-1)
-                loadingVm.setStatus(Status.Error("Slot already booked", "Select A Time Slot"))
-            }
+            reservationVm.saveReservation(
+                reservation?.reservation!!,
+                loadingVm,
+                "Reservation confirmed successfully",
+                "Error while saving the reservation",
+            )
             setSelectedSlot(-1)
             setStuff(mutableListOf())
         }
@@ -144,7 +129,7 @@ fun ReservationConfirmation(
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(
                     text = "Public match details",
-                    fontSize = 23.sp,
+                    fontSize = 21.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary,
                     fontStyle = FontStyle.Italic
@@ -155,13 +140,14 @@ fun ReservationConfirmation(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = "Available outsider places: ",
-                        fontSize = 22.sp,)
+                        fontSize = 20.sp,
+                    )
                     Spacer(modifier = Modifier.weight(1f))
                     Text(
                         text = "${reservation?.reservation?.reservationInfo!!.totalAvailable}",
                         fontStyle = FontStyle.Italic,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 22.sp,
+                        fontSize = 20.sp,
                     )
                 }
                 Spacer(modifier = Modifier.height(4.dp))
@@ -169,7 +155,7 @@ fun ReservationConfirmation(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = "Suggested Level: ",
-                        fontSize = 22.sp,
+                        fontSize = 20.sp,
 
                         )
                     Spacer(modifier = Modifier.weight(1f))
@@ -177,7 +163,7 @@ fun ReservationConfirmation(
                         text = "${reservation?.reservation?.reservationInfo!!.suggestedLevel}",
                         fontStyle = FontStyle.Italic,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 22.sp,
+                        fontSize = 20.sp,
                     )
                 }
 
@@ -193,7 +179,7 @@ fun ReservationConfirmation(
                     Spacer(modifier = Modifier.height(20.dp))
                     Text(
                         text = "Rented equipment",
-                        fontSize = 23.sp,
+                        fontSize = 21.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary,
                         fontStyle = FontStyle.Italic
@@ -204,13 +190,13 @@ fun ReservationConfirmation(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             text = "${stuff.name} x${stuff.quantity}",
-                            fontSize = 22.sp,
+                            fontSize = 20.sp,
 
                             )
                         Spacer(modifier = Modifier.weight(1f))
                         Text(
                             text = "${stuff.quantity?.let { stuff.price?.times(it) }}€",
-                            fontSize = 22.sp,
+                            fontSize = 20.sp,
                         )
                     }
                     Spacer(modifier = Modifier.height(4.dp))

@@ -62,7 +62,6 @@ fun EditReservationConfirmation(
 
     val reservation = reservations?.value?.find { it.reservation?.id == reservationId }!!.copy()
 
-    val initialSlot = reservation?.reservation?.slotNumber
 
     var editedStuff by remember {
         mutableStateOf(reservation.reservation?.stuff?.map {
@@ -86,11 +85,6 @@ fun EditReservationConfirmation(
     LaunchedEffect(refresh, price, text) {
         setTopBarAction {
             loadingVm.setStatus(Status.Loading)
-
-            if (courtWithSlots?.slots?.get(
-                    reservationTimeSlot
-                )?.isBooked == false || (reservationTimeSlot == initialSlot && reservationId != null)
-            ) {
                 reservationVm.saveReservation(
                     reservation.reservation!!.copy(
                         slotNumber = reservationTimeSlot,
@@ -105,10 +99,6 @@ fun EditReservationConfirmation(
                     "Reservation edited successfully",
                     "Error while editing the reservation",
                 )
-            } else {
-                setSelectedSlot(-1)
-                loadingVm.setStatus(Status.Error("Slot already booked", "Select A Time Slot"))
-            }
             setSelectedSlot(-1)
         }
     }
@@ -133,7 +123,7 @@ fun EditReservationConfirmation(
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(
                     text = "Public match details",
-                    fontSize = 23.sp,
+                    fontSize = 21.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary,
                     fontStyle = FontStyle.Italic
@@ -148,7 +138,7 @@ fun EditReservationConfirmation(
                 ) {
                     Text(
                         text = "Outsider users\nallowed",
-                        fontSize = 22.sp,
+                        fontSize = 20.sp,
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     NumberButton(
@@ -165,7 +155,7 @@ fun EditReservationConfirmation(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = "Suggested Level: ",
-                        fontSize = 22.sp,
+                        fontSize = 20.sp,
 
                         )
                     Spacer(modifier = Modifier.weight(1f))
@@ -173,7 +163,7 @@ fun EditReservationConfirmation(
                         text = "${reservation?.reservation?.reservationInfo!!.suggestedLevel}",
                         fontStyle = FontStyle.Italic,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 22.sp,
+                        fontSize = 20.sp,
                     )
                 }
 
@@ -185,7 +175,7 @@ fun EditReservationConfirmation(
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = "Rent equipment",
-                fontSize = 23.sp,
+                fontSize = 21.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
                 fontStyle = FontStyle.Italic,
@@ -199,7 +189,7 @@ fun EditReservationConfirmation(
             Row(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(text = "${name!!}  ${itemPrice!!}€", fontSize = 22.sp)
+                Text(text = "${name!!}  ${itemPrice!!}€", fontSize = 20.sp)
                 Spacer(modifier = Modifier.weight(1f))
                 NumberButton(
                     initialQuantity = editedStuff?.get(it)?.quantity!!,

@@ -112,7 +112,7 @@ fun CreateReservation(
     }
 
     Column(
-        Modifier.padding(horizontal = 16.dp)
+        Modifier.padding(horizontal = 16.dp).padding(top = 10.dp)
     ) {
 
         Row() {

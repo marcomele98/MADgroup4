@@ -14,7 +14,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 
@@ -35,7 +37,7 @@ fun BottomNavBar(
                     Icons.Default.LocationOn, contentDescription = "Playing Courts"
                 )
             },
-            label = { Text("Fields") },
+            label = { Text("Fields", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
             onClick = {
                 navController.navigate("Playing Courts")
             })
@@ -49,7 +51,7 @@ fun BottomNavBar(
                     Icons.Default.DateRange, contentDescription = "Reservations"
                 )
             },
-            label = { Text("Reservations") },
+            label = { Text("Reservations", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
             onClick = {
                 navController.navigate("Reservations")
             })
@@ -61,7 +63,7 @@ fun BottomNavBar(
                     Icons.Default.TravelExplore, contentDescription = "Explore"
                 )
             },
-            label = { Text("Explore") },
+            label = { Text("Explore", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
             onClick = {
                 navController.navigate("Explore")
             })
@@ -70,7 +72,7 @@ fun BottomNavBar(
             Icon(
                 Icons.Default.Person, contentDescription = "Profile"
             )
-        }, label = { Text("Profile") }, onClick = { navController.navigate("Profile") })
+        }, label = { Text("Profile", fontSize = 11.sp, fontWeight = FontWeight.Bold) }, onClick = { navController.navigate("Profile") })
 
     }
 

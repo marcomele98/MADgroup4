@@ -55,7 +55,7 @@ fun Reservations(
             },
             setReservation = setReservation,
             navController = navController,
-            nextRoute = "Reservation Details"
+            nextRoute = "Reservation Details",
         )
 
     }

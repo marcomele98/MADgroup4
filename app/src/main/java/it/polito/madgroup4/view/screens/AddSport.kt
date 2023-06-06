@@ -51,11 +51,10 @@ fun AddSport(
             .padding(horizontal = 16.dp)
     ) {
 
-        Spacer(modifier = Modifier.height(25.dp))
 
         Text(
             text = "Select a sport",
-            fontSize = 23.sp,
+            fontSize = 21.sp,
             fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary,
             fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
@@ -68,11 +67,11 @@ fun AddSport(
             onClick = { navController.navigate("Select Your Sport") }
         )
 
-        Spacer(modifier = Modifier.height(25.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         Text(
             text = "Select a Level",
-            fontSize = 23.sp,
+            fontSize = 21.sp,
             fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary,
             fontStyle = androidx.compose.ui.text.font.FontStyle.Italic

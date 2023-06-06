@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -35,7 +36,7 @@ fun SlotSelector(
 ) {
 
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().padding(top = 10.dp),
         contentAlignment = Alignment.TopCenter
     ) {
         LazyVerticalGrid(
@@ -43,10 +44,9 @@ fun SlotSelector(
 
             // content padding
             contentPadding = PaddingValues(
-                start = 12.dp,
-                top = 16.dp,
-                end = 12.dp,
-                bottom = 16.dp
+                start = 16.dp,
+                end = 16.dp,
+                bottom = 16.dp,
             ),
             content = {
                 items(slots.size) { index ->
@@ -79,7 +79,7 @@ fun SlotSelector(
                         Text(
                             text = slots[index].time,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp,
+                            fontSize = 18.sp,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.padding(16.dp)
                         )

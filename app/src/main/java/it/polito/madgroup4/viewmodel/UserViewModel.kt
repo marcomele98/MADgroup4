@@ -30,7 +30,6 @@ class UserViewModel(reservationVm: ReservationViewModel) : ViewModel() {
     private var _userPhoto = MutableLiveData<Bitmap?>().apply { value = null }
     val userPhoto: LiveData<Bitmap?> = _userPhoto
 
-
     private var storage = Firebase.storage("gs://madgroup4-5de93.appspot.com")
     private var storageRef = storage.reference
 
@@ -107,7 +106,6 @@ class UserViewModel(reservationVm: ReservationViewModel) : ViewModel() {
         imageBitmap: Bitmap? = null,
         nextRoute: String
     ) {
-
         fun saveUserDetails() {
             db.collection("users2")
                 .whereEqualTo("nickname", "${editedUser.nickname}")
@@ -120,10 +118,10 @@ class UserViewModel(reservationVm: ReservationViewModel) : ViewModel() {
                                 stateViewModel.setStatus(Status.Success(message, nextRoute))
                             }.addOnFailureListener {
                                 Log.i("test", "$it")
-                                stateViewModel.setStatus(Status.Error(error, "Edit Profile"))
+                                stateViewModel.setStatus(Status.Error(error, null))
                             }
                     } else {
-                        stateViewModel.setStatus(Status.Error("Nickname already in use", "Edit Profile"))
+                        stateViewModel.setStatus(Status.Error("Nickname already in use", "back"))
                     }
                 }
                 .addOnFailureListener { exception ->
@@ -147,14 +145,12 @@ class UserViewModel(reservationVm: ReservationViewModel) : ViewModel() {
 
 
     fun removeAchievement(
-        sportName: String, achievementTitle: String, stateViewModel: LoadingStateViewModel
+        sportName: String, achievementId: Int, stateViewModel: LoadingStateViewModel
     ) {
         val userTmp = _user.value!!
         userTmp.sports?.forEach { sport ->
             if (sport.name == sportName) {
-                sport.achievements = sport.achievements.filter { achievement ->
-                    achievement.title != achievementTitle
-                }
+                sport.achievements = sport.achievements - sport.achievements[achievementId]
             }
         }
         saveUser(

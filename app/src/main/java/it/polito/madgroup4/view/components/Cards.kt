@@ -1,10 +1,12 @@
 package it.polito.madgroup4.view.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -30,12 +33,14 @@ import com.gowtham.ratingbar.RatingBar
 import com.gowtham.ratingbar.RatingBarConfig
 import com.gowtham.ratingbar.RatingBarStyle
 import com.gowtham.ratingbar.StepSize
+import it.polito.madgroup4.R
 import it.polito.madgroup4.model.Achievement
 import it.polito.madgroup4.model.Court
 import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.model.Review
 import it.polito.madgroup4.model.Sport
 import it.polito.madgroup4.utility.calculateStartEndTime
+import it.polito.madgroup4.utility.courtSelector
 import it.polito.madgroup4.utility.formatTimestampToString
 import it.polito.madgroup4.utility.imageSelector
 
@@ -74,7 +79,7 @@ fun ReservationCard(
                 Text(
                     text = reservation.playingCourt.sport,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 22.sp
+                    fontSize = 20.sp
                 )
                 Spacer(
                     modifier = Modifier
@@ -138,6 +143,9 @@ fun PlayingCourtCard(
             onClick()
         }) {
 
+
+        Image(painter = painterResource(id = courtSelector(playingCourt.name!!)), contentDescription = "Court", Modifier.fillMaxSize())
+
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
@@ -149,7 +157,7 @@ fun PlayingCourtCard(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = playingCourt.name!!, fontWeight = FontWeight.Bold, fontSize = 22.sp
+                    text = playingCourt.name!!, fontWeight = FontWeight.Bold, fontSize = 20.sp
                 )
                 Spacer(
                     modifier = Modifier
@@ -203,7 +211,7 @@ fun SportCardSelector(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = sport, fontWeight = FontWeight.Bold, fontSize = 22.sp
+                    text = sport, fontWeight = FontWeight.Bold, fontSize = 20.sp
                 )
                 Spacer(
                     modifier = Modifier.weight(1f)
@@ -234,7 +242,7 @@ fun LevelCardSelector(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = level, fontWeight = FontWeight.Bold, fontSize = 22.sp
+                    text = level, fontWeight = FontWeight.Bold, fontSize = 20.sp
                 )
                 Spacer(
                     modifier = Modifier.weight(1f)
@@ -261,6 +269,19 @@ fun ReviewCard(
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = review.title, fontWeight = FontWeight.Bold, fontSize = 20.sp
+                )
+                Spacer(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                )
+            }
             if (showNickname) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -269,22 +290,9 @@ fun ReviewCard(
                         .padding(bottom = 8.dp)
                 ) {
                     Text(
-                        text = "@" + review.userId, fontSize = 20.sp
+                        text = "@" + review.userId, fontSize = 16.sp, fontStyle = FontStyle.Italic, color = MaterialTheme.colorScheme.primary
                     )
                 }
-            }
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = review.title, fontWeight = FontWeight.Bold, fontSize = 22.sp
-                )
-                Spacer(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight()
-                )
             }
             Spacer(modifier = Modifier.height(10.dp))
 
@@ -320,7 +328,8 @@ fun Evaluation(
             Text(
                 text = label,
                 modifier = Modifier.width(80.dp),
-            )
+                fontSize = 18.sp,
+                )
             Spacer(modifier = Modifier.width(8.dp))
         }
 
@@ -335,7 +344,7 @@ fun Evaluation(
             Text(
                 text = "($reviews reviews)",
                 modifier = Modifier.padding(start = 4.dp),
-                fontSize = 16.sp,
+                fontSize = 18.sp,
                 fontWeight = FontWeight.Light,
             )
         }
@@ -364,7 +373,7 @@ fun SportCard(sport: Sport, onClick: () -> Unit) {
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = sport.name, fontWeight = FontWeight.Bold, fontSize = 22.sp
+                    text = sport.name, fontWeight = FontWeight.Bold, fontSize = 20.sp
                 )
                 Spacer(
                     modifier = Modifier.weight(1f)
@@ -398,33 +407,37 @@ fun AchievementCard(
             .fillMaxWidth()
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier
+                .padding(bottom = 16.dp)
+                .padding(top = 4.dp)
         ) {
             Row(
-                verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(start = 16.dp, end = 4.dp)
             ) {
                 Text(
-                    text = achievement.title!!, fontWeight = FontWeight.Bold, fontSize = 22.sp
+                    text = achievement.title!!, fontWeight = FontWeight.Bold, fontSize = 20.sp
                 )
                 Spacer(
                     modifier = Modifier
                         .weight(1f)
-                        .fillMaxHeight()
                 )
                 IconButton(onClick = onDelete) {
                     Icon(imageVector = Icons.Outlined.Delete, contentDescription = null)
                 }
             }
-            Spacer(modifier = Modifier.height(10.dp))
             Text(
-                text = formatTimestampToString(achievement?.date!!), fontSize = 18.sp
+                text = formatTimestampToString(achievement?.date!!),
+                fontSize = 18.sp,
+                modifier = Modifier.padding(horizontal = 16.dp)
             )
-            Spacer(modifier = Modifier.height(5.dp))
             if (achievement.description?.trim() ?: "" != "") {
+                Spacer(modifier = Modifier.height(10.dp))
                 Text(
                     text = "\"${achievement.description!!}\"",
                     fontSize = 18.sp,
-                    fontStyle = FontStyle.Italic
+                    fontStyle = FontStyle.Italic,
+                    modifier = Modifier.padding(horizontal = 16.dp)
                 )
             }
 

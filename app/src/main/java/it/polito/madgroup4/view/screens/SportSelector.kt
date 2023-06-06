@@ -29,7 +29,7 @@ fun SportSelector(
 ) {
     LazyColumn(
         modifier = Modifier
-            .padding(16.dp)
+            .padding(horizontal = 16.dp).padding(top = 10.dp)
     )
 
     {
@@ -62,7 +62,7 @@ fun SportSelector(
                         Spacer(modifier = Modifier.width(16.dp))
                         Text(
                             text = sports[index],
-                            fontSize = 30.sp
+                            fontSize = 20.sp
                         )
                         Spacer(
                             modifier = Modifier

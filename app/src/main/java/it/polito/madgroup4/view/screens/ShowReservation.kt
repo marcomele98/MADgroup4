@@ -41,6 +41,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
@@ -101,6 +102,16 @@ fun ShowReservation(
                 LocalTime.now()
             ))
 
+        val isFinished = reservation.reservation.date.toDate() < formatDate(Date()) || (formatDate(Date()) == formatDate(
+            reservation.reservation.date.toDate()
+        ) && LocalTime.parse(
+            calculateStartEndTime(
+                reservation.playingCourt!!.openingTime!!, reservation.reservation.slotNumber
+            ).split("-")[1].trim()
+        ).isBefore(
+            LocalTime.now()
+        ))
+
 
         LaunchedEffect(Unit) {
             setSelectedCourt(reservation.playingCourt!!.name!!)
@@ -111,9 +122,7 @@ fun ShowReservation(
         }
 
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
+            modifier = Modifier.fillMaxWidth()
         ) {
 
             if (openDialog.value) {
@@ -245,13 +254,16 @@ fun ShowReservation(
                 ) {
 
                     item {
-
-                        ReservationDetails(
-                            reservation.playingCourt!!,
-                            reservation.reservation.date.toDate(),
-                            reservation.reservation.slotNumber,
-                            reservation.reservation.price,
-                        )
+                        Column(
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                        ) {
+                            ReservationDetails(
+                                reservation.playingCourt!!,
+                                reservation.reservation.date.toDate(),
+                                reservation.reservation.slotNumber,
+                                reservation.reservation.price,
+                            )
+                        }
                     }
 
                     item {
@@ -259,32 +271,40 @@ fun ShowReservation(
                             Spacer(modifier = Modifier.height(20.dp))
                             Text(
                                 text = "Public match details",
-                                fontSize = 23.sp,
+                                fontSize = 21.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary,
-                                fontStyle = FontStyle.Italic
+                                fontStyle = FontStyle.Italic,
+                                modifier = Modifier.padding(horizontal = 16.dp),
                             )
                             Spacer(modifier = Modifier.height(8.dp))
 
 
-                            Row(verticalAlignment = Alignment.CenterVertically) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                            ) {
                                 Text(
                                     text = "Available outsider places: ",
-                                    fontSize = 22.sp,)
+                                    fontSize = 20.sp,
+                                )
                                 Spacer(modifier = Modifier.weight(1f))
                                 Text(
                                     text = "${reservation?.reservation?.reservationInfo!!.totalAvailable}",
                                     fontStyle = FontStyle.Italic,
                                     fontWeight = FontWeight.Bold,
-                                    fontSize = 22.sp,
+                                    fontSize = 20.sp,
                                 )
                             }
                             Spacer(modifier = Modifier.height(4.dp))
 
-                            Row(verticalAlignment = Alignment.CenterVertically) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                            ) {
                                 Text(
                                     text = "Suggested Level: ",
-                                    fontSize = 22.sp,
+                                    fontSize = 20.sp,
 
                                     )
                                 Spacer(modifier = Modifier.weight(1f))
@@ -292,7 +312,7 @@ fun ShowReservation(
                                     text = "${reservation?.reservation?.reservationInfo!!.suggestedLevel}",
                                     fontStyle = FontStyle.Italic,
                                     fontWeight = FontWeight.Bold,
-                                    fontSize = 22.sp,
+                                    fontSize = 20.sp,
                                 )
                             }
 
@@ -302,15 +322,15 @@ fun ShowReservation(
 
                     item {
                         if ((reservation.reservation.reservationInfo?.confirmedUsers?.filter { it != user.value?.id }
-                                ?.isNotEmpty()!! || reservation.reservation.reservationInfo?.pendingUsers?.isNotEmpty()!!)
-                            || (!isInThePast && user.value?.id == reservation.reservation.userId)) {
+                                ?.isNotEmpty()!! || reservation.reservation.reservationInfo?.pendingUsers?.isNotEmpty()!!) || (!isInThePast && user.value?.id == reservation.reservation.userId)) {
                             Spacer(modifier = Modifier.height(20.dp))
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(start = 16.dp, end = 4.dp),
                             ) {
                                 Text(
                                     text = "Participants",
-                                    fontSize = 23.sp,
+                                    fontSize = 21.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.primary,
                                     fontStyle = FontStyle.Italic
@@ -336,11 +356,14 @@ fun ShowReservation(
                         if (reservation.reservation.reservationInfo?.confirmedUsers?.filter { it != user.value?.id }
                                 ?.isNotEmpty()!!) {
                             Row(
-                                verticalAlignment = Alignment.Bottom
+                                verticalAlignment = Alignment.Bottom,
+                                modifier = Modifier
+                                    .padding(horizontal = 16.dp)
+                                    .padding(top = 4.dp),
                             ) {
                                 Text(
                                     text = "Confirmed: ${reservation.reservation.reservationInfo?.confirmedUsers?.size}",
-                                    fontSize = 23.sp,
+                                    fontSize = 21.sp,
                                     fontStyle = FontStyle.Italic,
                                     fontWeight = FontWeight.Bold,
                                 )
@@ -365,11 +388,13 @@ fun ShowReservation(
                         val user =
                             users.value?.find { user -> user.id == reservation.reservation.reservationInfo?.confirmedUsers!![it] }
                         Column(
-                            modifier = Modifier.animateContentSize(
-                                animationSpec = tween(
-                                    durationMillis = 500, easing = FastOutSlowInEasing
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .animateContentSize(
+                                    animationSpec = tween(
+                                        durationMillis = 500, easing = FastOutSlowInEasing
+                                    )
                                 )
-                            )
                         ) {
 
                             Row(
@@ -384,7 +409,7 @@ fun ShowReservation(
                             ) {
                                 Text(
                                     text = user?.name!! + " " + user.surname!!,
-                                    fontSize = 22.sp,
+                                    fontSize = 20.sp,
                                     fontStyle = FontStyle.Italic
                                 )
                             }
@@ -393,13 +418,15 @@ fun ShowReservation(
 
                     item() {
                         if (reservation.reservation.reservationInfo?.pendingUsers?.isNotEmpty()!!) {
-                            Spacer(modifier = Modifier.height(15.dp))
                             Row(
-                                verticalAlignment = Alignment.Bottom
+                                verticalAlignment = Alignment.Bottom,
+                                modifier = Modifier
+                                    .padding(horizontal = 16.dp)
+                                    .padding(top = 4.dp),
                             ) {
                                 Text(
                                     text = "Invited: ${reservation.reservation.reservationInfo?.pendingUsers?.size} ",
-                                    fontSize = 23.sp,
+                                    fontSize = 21.sp,
                                     fontWeight = FontWeight.Bold,
                                     fontStyle = FontStyle.Italic
                                 )
@@ -423,11 +450,13 @@ fun ShowReservation(
                         val user =
                             users.value?.find { user -> user.id == reservation.reservation.reservationInfo?.pendingUsers!![it] }
                         Column(
-                            modifier = Modifier.animateContentSize(
-                                animationSpec = tween(
-                                    durationMillis = 500, easing = FastOutSlowInEasing
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .animateContentSize(
+                                    animationSpec = tween(
+                                        durationMillis = 500, easing = FastOutSlowInEasing
+                                    )
                                 )
-                            )
                         ) {
 
                             Row(
@@ -442,7 +471,7 @@ fun ShowReservation(
                             ) {
                                 Text(
                                     text = user?.name!! + " " + user.surname!!,
-                                    fontSize = 22.sp,
+                                    fontSize = 20.sp,
                                     fontStyle = FontStyle.Italic
                                 )
                             }
@@ -458,24 +487,28 @@ fun ShowReservation(
                                 Spacer(modifier = Modifier.height(20.dp))
                                 Text(
                                     text = "Rented equipment",
-                                    fontSize = 23.sp,
+                                    fontSize = 21.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.primary,
-                                    fontStyle = FontStyle.Italic
+                                    fontStyle = FontStyle.Italic,
+                                    modifier = Modifier.padding(horizontal = 16.dp),
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
                             }
                             filteredStuff.forEach { stuff ->
-                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.padding(horizontal = 16.dp),
+                                ) {
                                     Text(
                                         text = "${stuff.name} x${stuff.quantity}",
-                                        fontSize = 22.sp,
+                                        fontSize = 20.sp,
 
                                         )
                                     Spacer(modifier = Modifier.weight(1f))
                                     Text(
                                         text = "${stuff.quantity?.let { stuff.price?.times(it) }}€",
-                                        fontSize = 22.sp,
+                                        fontSize = 20.sp,
                                     )
                                 }
                                 Spacer(modifier = Modifier.height(4.dp))
@@ -489,13 +522,16 @@ fun ShowReservation(
                             Spacer(modifier = Modifier.height(20.dp))
                             Text(
                                 text = "Particular requests",
-                                fontSize = 23.sp,
+                                fontSize = 21.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary,
-                                fontStyle = FontStyle.Italic
+                                fontStyle = FontStyle.Italic,
+                                modifier = Modifier.padding(horizontal = 16.dp),
                             )
                             Spacer(modifier = Modifier.height(8.dp))
-                            ElevatedCard {
+                            ElevatedCard(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                            ) {
                                 Text(
                                     text = particularRequests,
                                     fontSize = 18.sp,
@@ -512,19 +548,21 @@ fun ShowReservation(
 
 
                     item {
-                        if (reservation.reservation.review != null) {
+                        if (reservation.reservation.review != null && reservation.reservation.userId == user.value?.id) {
                             Spacer(modifier = Modifier.height(20.dp))
                             Text(
                                 text = "Your review",
-                                fontSize = 23.sp,
+                                fontSize = 21.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary,
-                                fontStyle = FontStyle.Italic
+                                fontStyle = FontStyle.Italic,
+                                modifier = Modifier.padding(horizontal = 16.dp),
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Box(
                                 modifier = Modifier
                                     .fillMaxSize()
+                                    .padding(horizontal = 16.dp)
                                     .clip(RoundedCornerShape(12.dp))
                             ) {
                                 ReviewCard(
@@ -533,13 +571,11 @@ fun ShowReservation(
                             }
                         }
                     }
-
-                    item { Spacer(modifier = Modifier.height(20.dp)) }
-
+                    item {
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
                 }
             }
-
-            Spacer(modifier = Modifier.height(8.dp))
 
             if (!isInThePast && reservation.reservation.userId == user.value?.id) {
                 Button(
@@ -547,28 +583,36 @@ fun ShowReservation(
                         openDialog.value = !openDialog.value
                     }, colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.error
-                    ), modifier = Modifier.fillMaxWidth()
+                    ), modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .fillMaxWidth()
                 ) {
                     Text(text = "Delete", color = MaterialTheme.colorScheme.onError)
                 }
-            } else if (reservation.reservation.review == null && reservation.reservation.userId == user.value?.id) {
+                Spacer(modifier = Modifier.height(16.dp))
+            } else if (isFinished && reservation.reservation.review == null && reservation.reservation.userId == user.value?.id) {
                 Button(
                     onClick = { navController.navigate("Rate This Playing Court") }, //modificichiamo? in questo momento valutiamo il playing court ma associato alla prenotazione
-                    modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     )
                 ) {
                     Text(text = "Rate This Playing Court")
                 }
+                Spacer(modifier = Modifier.height(16.dp))
             } else if (reservation.reservation.reservationInfo?.status == "Invited") {
-
-                Column() {
+                val u = users.value?.find { user -> user.id == reservation.reservation.userId }
+                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                     Text(
-                        text = "You have been invited to play",
+                        text = "You have been invited to play by\n${u?.name} ${u?.surname}",
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.align(CenterHorizontally),
-                        fontSize = 22.sp,
-                        fontStyle = FontStyle.Italic
+                        textAlign = TextAlign.Center,
+                        fontSize = 20.sp,
+                        fontStyle = FontStyle.Italic,
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -613,6 +657,7 @@ fun ShowReservation(
                             Text(text = "Accept", color = MaterialTheme.colorScheme.onTertiary)
                         }
                     }
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
             } else if (reservation.reservation.reservationInfo?.public == true && !reservation.reservation.reservationInfo?.confirmedUsers?.contains(
                     user.value?.id!!
@@ -620,9 +665,10 @@ fun ShowReservation(
             ) {
                 Button(
                     onClick = {
-                        val sport = user.value?.sports?.find { it.name == reservation.reservation.sport }
+                        val sport =
+                            user.value?.sports?.find { it.name == reservation.reservation.sport }
 
-                        if(sport != null && sport.level == reservation.reservation.reservationInfo?.suggestedLevel) {
+                        if (sport != null && sport.level == reservation.reservation.reservationInfo?.suggestedLevel) {
                             loadingVm.setStatus(Status.Loading)
                             reservationVm.addInAPublicReservationAndSaveReservation(
                                 user.value?.id!!,
@@ -636,52 +682,73 @@ fun ShowReservation(
                         } else {
                             openDialogJoinPublic.value = !openDialogJoinPublic.value
                         }
-                    }, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(
+                    },
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     )
                 ) {
                     Text(text = "Join The Match")
                 }
+                Spacer(modifier = Modifier.height(16.dp))
             } else if (!reservation.reservation.reservationInfo?.confirmedUsers?.contains(
                     user.value?.id!!
                 )!! && fromLink == true
             ) {
-                Button(
-                    onClick = {
-                        loadingVm.setStatus(Status.Loading)
-                        reservationVm.joinFromLink(
-                            user.value?.id!!,
-                            reservation.reservation,
-                            loadingVm,
-                            "Reservation joined successfully",
-                            "Error while joining the reservation",
-                            "Reservations",
-                            "${user.value!!.name} ${user.value!!.surname} has joined your reservation"
-                        )
-                    }, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(
-                        contentColor = MaterialTheme.colorScheme.onPrimary
+                val u = users.value?.find { user -> user.id == reservation.reservation.userId }
+                Column() {
+                    Text(
+                        text = "You have been invited to play by\n${u?.name} ${u?.surname}",
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.align(CenterHorizontally),
+                        textAlign = TextAlign.Center,
+                        fontSize = 20.sp,
+                        fontStyle = FontStyle.Italic,
                     )
-                ) {
-                    Text(text = "Join The Match")
+                    Button(
+                        onClick = {
+                            loadingVm.setStatus(Status.Loading)
+                            reservationVm.joinFromLink(
+                                user.value?.id!!,
+                                reservation.reservation,
+                                loadingVm,
+                                "Reservation joined successfully",
+                                "Error while joining the reservation",
+                                "Reservations",
+                                "${user.value!!.name} ${user.value!!.surname} has joined your reservation"
+                            )
+                        },
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        )
+                    ) {
+                        Text(text = "Join The Match")
+                    }
                 }
+
+                Spacer(modifier = Modifier.height(16.dp))
             } else if (!isInThePast && reservation.reservation.reservationInfo?.confirmedUsers!!.contains(
                     user.value?.id
                 ) && user.value?.id != reservation.reservation.userId
             ) {
-
                 Button(
                     onClick = {
                         openDialogLeave.value = !openDialogLeave.value
                     }, colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.error
-                    ), modifier = Modifier.fillMaxWidth()
+                    ), modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .fillMaxWidth()
                 ) {
                     Text(text = "Leave The Match", color = MaterialTheme.colorScheme.onError)
                 }
-
+                Spacer(modifier = Modifier.height(16.dp))
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
         }
     } else {
         LoadingScreen()

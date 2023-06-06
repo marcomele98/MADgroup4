@@ -151,10 +151,6 @@ fun Navigation(
 
     ) {
 
-    LaunchedEffect(users) {
-        println(users.value)
-    }
-
 
     val navController = rememberAnimatedNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -213,17 +209,17 @@ fun Navigation(
     }
     setfromLink(false)
 
-    LaunchedEffect(stuff) {
-        println("aaaaa " + stuff)
-    }
-
 
     LaunchedEffect(loading) {
         when (loading) {
             is Status.Loading -> navController.navigate("Loading")
             is Status.Error -> {
                 coroutineScope.launch {
-                    if ((loading as Status.Error).nextRoute != null) navController.navigate((loading as Status.Error).nextRoute!!)
+                    if ((loading as Status.Error).nextRoute != null && (loading as Status.Error).nextRoute != "back")
+                        navController.navigate((loading as Status.Error).nextRoute!!)
+                    else if ((loading as Status.Error).nextRoute == "back") {
+                        navController.popBackStack()
+                    }
                     snackbarHostState.showSnackbar(
                         SnackbarVisualsWithError(
                             "Error: ${(loading as Status.Error).message}"
@@ -582,7 +578,9 @@ fun Navigation(
                             reservations = reservations.value?.filter { it.reservation?.reservationInfo?.status == "Invited" },
                             setReservation = setReservationWithCourt,
                             navController = navController,
-                            modifier = Modifier.padding(horizontal = 16.dp),
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .padding(top = 10.dp),
                             text = "No invites yet",
                             nextRoute = "Reservation Details"
                         )
@@ -594,7 +592,9 @@ fun Navigation(
                             reservations = reservations.value?.filter { it.reservation?.reservationInfo?.status == "Reviewable" },
                             setReservation = setReservationWithCourt,
                             navController = navController,
-                            modifier = Modifier.padding(horizontal = 16.dp),
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .padding(top = 10.dp),
                             text = "No reviewable reservations",
                             nextRoute = "Reservation Details"
                         )

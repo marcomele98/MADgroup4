@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.SportsTennis
 import androidx.compose.material.icons.filled.SportsVolleyball
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.google.firebase.Timestamp
+import it.polito.madgroup4.R
 import it.polito.madgroup4.model.Slot
 import java.io.FileDescriptor
 import java.io.IOException
@@ -129,6 +130,17 @@ fun getAllSlots(
     }
 
     return listOfSlots
+}
+
+fun courtSelector(name: String): Int {
+    return when (name) {
+        "Campo Panetti" -> R.drawable.panetti
+        "Campo Sicilia" -> R.drawable.sicilia
+        "Palazzetto Grugliasco" -> R.drawable.grugliasco
+        "Campo Albonico" -> R.drawable.albonico
+        "Campo Braccini" -> R.drawable.braccini
+        else -> R.drawable.panetti
+    }
 }
 
 fun imageSelector(sport: String): ImageVector {

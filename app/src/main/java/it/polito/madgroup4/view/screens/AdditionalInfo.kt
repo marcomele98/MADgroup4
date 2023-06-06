@@ -94,7 +94,7 @@ fun AdditionalInfo(
                 item {
                     Text(
                         text = "Details",
-                        fontSize = 23.sp,
+                        fontSize = 21.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary,
                         fontStyle = FontStyle.Italic,
@@ -104,7 +104,7 @@ fun AdditionalInfo(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(start = 16.dp, end = 3.dp)
                     ) {
-                        Text(text = "Public match", fontSize = 22.sp)
+                        Text(text = "Public match", fontSize = 20.sp)
                         Spacer(modifier = Modifier.weight(1f))
                         Checkbox(checked = checked, onCheckedChange = {
                             setReservationInfo(reservationInfo.copy(public = !checked))
@@ -140,7 +140,7 @@ fun AdditionalInfo(
                             ) {
                                 Text(
                                     text = "Outsider users\nallowed",
-                                    fontSize = 22.sp,
+                                    fontSize = 20.sp,
                                 )
                                 Spacer(modifier = Modifier.weight(1f))
                                 NumberButton(
@@ -156,7 +156,7 @@ fun AdditionalInfo(
 
                             Text(
                                 text = "Suggested Level",
-                                fontSize = 22.sp,
+                                fontSize = 20.sp,
                             )
 
                             Spacer(modifier = Modifier.height(10.dp))
@@ -178,7 +178,7 @@ fun AdditionalInfo(
             item {
                 Text(
                     text = "Rent equipment",
-                    fontSize = 23.sp,
+                    fontSize = 21.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary,
                     fontStyle = FontStyle.Italic,
@@ -194,7 +194,7 @@ fun AdditionalInfo(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 ) {
-                    Text(text = "${name!!}  ${itemPrice!!}€", fontSize = 22.sp)
+                    Text(text = "${name!!}  ${itemPrice!!}€", fontSize = 20.sp)
                     Spacer(modifier = Modifier.weight(1f))
                     NumberButton(
                         initialQuantity = stuff?.get(it)?.quantity!!,

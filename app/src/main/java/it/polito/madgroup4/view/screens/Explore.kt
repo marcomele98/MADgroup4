@@ -62,53 +62,45 @@ fun Explore(
         if (calendarState.selectionState.selection.isEmpty()) calendarState.selectionState.selection =
             listOf(LocalDate.now())
 
-        if (calendarState.selectionState.selection[0] != selectedDate)
-            setSelectedDate(calendarState.selectionState.selection[0])
+        if (calendarState.selectionState.selection[0] != selectedDate) setSelectedDate(calendarState.selectionState.selection[0])
     }
 
 
-    Column(
-    ) {
+    Column(modifier = Modifier.fillMaxWidth()) {
 
-        Row(Modifier.padding(horizontal = 16.dp)) {
-            SportCardSelector(sport = selectedSport,
+        Row(
+            Modifier
+                .padding(horizontal = 16.dp)
+                .padding(top = 10.dp)) {
+            SportCardSelector(
+                sport = selectedSport,
                 onClick = { navController.navigate("Select Sport") })
         }
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(start = 16.dp, end = 29.dp)
+            modifier = Modifier.padding(start = 16.dp, end = 30.dp)
         ) {
             Text(
                 text = "Filter by date",
-                fontSize = 22.sp,
+                fontSize = 20.sp,
                 fontWeight = Bold,
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             )
-            Spacer(modifier = Modifier.weight(1f))
             Checkbox(checked = checked, onCheckedChange = {
                 setChecked(!checked)
             })
         }
 
 
-
-
         AnimatedVisibility(
-            visible = checked,
-            enter = fadeIn() + slideInVertically(
-                initialOffsetY = { -40 },
-                animationSpec = tween(
-                    durationMillis = 500,
-                    easing = FastOutSlowInEasing
+            visible = checked, enter = fadeIn() + slideInVertically(
+                initialOffsetY = { -40 }, animationSpec = tween(
+                    durationMillis = 500, easing = FastOutSlowInEasing
                 )
-            ),
-            exit = fadeOut() + slideOutVertically(
-                targetOffsetY = { -40 },
-                animationSpec = tween(
-                    durationMillis = 500,
-                    easing = FastOutSlowInEasing
+            ), exit = fadeOut() + slideOutVertically(
+                targetOffsetY = { -40 }, animationSpec = tween(
+                    durationMillis = 500, easing = FastOutSlowInEasing
                 )
             )
         ) {
@@ -134,11 +126,12 @@ fun Explore(
                     MyDay(
                         isActive = !dayState.date.isBefore(LocalDate.now()),
                         state = dayState,
-                        reservations = reservations?.firstOrNull() {
-                            it.reservation?.date?.toDate()?.toInstant()
-                                ?.atZone(ZoneId.systemDefault())
-                                ?.toLocalDate() == dayState.date
-                        }?.reservation,
+                        reservations = reservations?.filter { it.reservation?.sport == selectedSport }
+                            ?.firstOrNull() {
+                                it.reservation?.date?.toDate()?.toInstant()
+                                    ?.atZone(ZoneId.systemDefault())?.toLocalDate() == dayState.date
+                            }?.reservation,
+                        showReservations = true,
                     )
                 },
             )
