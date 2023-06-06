@@ -1,5 +1,6 @@
 package it.polito.madgroup4.view.screens
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -112,7 +113,9 @@ fun CreateReservation(
     }
 
     Column(
-        Modifier.padding(horizontal = 16.dp).padding(top = 10.dp)
+        Modifier
+            .padding(horizontal = 16.dp)
+            .padding(top = 10.dp)
     ) {
 
         Row() {
@@ -143,7 +146,8 @@ fun CreateReservation(
         PlayingCourtList(
             playingCourts = filteredCourts.map { it.playingCourt!!},
             onClick = onClick,
-            messageIfNoCourts = "No courts available for this sport on this day"
+            messageIfNoCourts = "No courts available for this sport on this day",
+            reservationVm = reservationVm
         )
 
 
@@ -154,8 +158,12 @@ fun CreateReservation(
 fun PlayingCourtList(
     playingCourts: List<Court>,
     onClick: (Int) -> Unit,
-    messageIfNoCourts: String
+    messageIfNoCourts: String,
+    reservationVm: ReservationViewModel
 ) {
+
+    val photos: State<Map<String, Bitmap>> = reservationVm.courtsPhotos.observeAsState(initial = emptyMap())
+
 
     Box(
         modifier = Modifier
@@ -179,7 +187,8 @@ fun PlayingCourtList(
                     playingCourts[index],
                     onClick = {
                         onClick(index)
-                    }
+                    },
+                    photo = photos.value[playingCourts[index].name],
                 )
             }
         }

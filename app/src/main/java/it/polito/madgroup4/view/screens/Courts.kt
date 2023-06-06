@@ -38,7 +38,8 @@ fun Courts(
         PlayingCourtList(
             playingCourts = filteredPlayingCourts,
             onClick = { setShowedCourt(filteredPlayingCourts[it]); navController.navigate("Playing Court Details") },
-            messageIfNoCourts = "No courts available for this sport"
+            messageIfNoCourts = "No courts available for this sport",
+            reservationVm = courtVm
         )
     }
 }

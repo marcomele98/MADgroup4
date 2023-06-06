@@ -484,7 +484,7 @@ fun Navigation(
                             reservationVm = reservationVm,
                             playingCourt = showedCourt,
                             setReviews = setReviews,
-                            navController = navController
+                            navController = navController,
                         )
                     }
 

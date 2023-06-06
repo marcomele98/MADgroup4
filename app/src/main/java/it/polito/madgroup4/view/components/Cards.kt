@@ -1,7 +1,11 @@
 package it.polito.madgroup4.view.components
 
+import android.graphics.Bitmap
+import android.provider.ContactsContract.DisplayPhoto
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,10 +14,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,6 +30,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -40,7 +49,6 @@ import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.model.Review
 import it.polito.madgroup4.model.Sport
 import it.polito.madgroup4.utility.calculateStartEndTime
-import it.polito.madgroup4.utility.courtSelector
 import it.polito.madgroup4.utility.formatTimestampToString
 import it.polito.madgroup4.utility.imageSelector
 
@@ -133,7 +141,7 @@ fun ReservationCard(
 
 @Composable
 fun PlayingCourtCard(
-    playingCourt: Court, onClick: () -> Unit, enabled: Boolean = true
+    playingCourt: Court, onClick: () -> Unit, enabled: Boolean = true, photo: Bitmap? = null
 ) {
 
     ElevatedCard(modifier = Modifier
@@ -144,7 +152,24 @@ fun PlayingCourtCard(
         }) {
 
 
-        Image(painter = painterResource(id = courtSelector(playingCourt.name!!)), contentDescription = "Court", Modifier.fillMaxSize())
+        if (photo != null) {
+            Image(
+                bitmap = photo!!.asImageBitmap(),
+                contentDescription = "Court",
+                Modifier.fillMaxSize()
+            )
+        } else {
+            Box(
+                modifier = Modifier
+                    .size(110.dp)
+                    .align(Alignment.CenterHorizontally)
+                    .fillMaxSize()
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center),
+                )
+            }
+        }
 
         Column(
             modifier = Modifier.padding(16.dp)
@@ -169,7 +194,11 @@ fun PlayingCourtCard(
             Spacer(modifier = Modifier.height(10.dp))
 
             if (playingCourt.reviewNumber != null && playingCourt.reviewNumber!! > 0) {
-                Evaluation(stars = playingCourt.review ?: 0f, label = "", reviews = playingCourt.reviewNumber!!)
+                Evaluation(
+                    stars = playingCourt.review ?: 0f,
+                    label = "",
+                    reviews = playingCourt.reviewNumber!!
+                )
             }
 
 
@@ -290,7 +319,10 @@ fun ReviewCard(
                         .padding(bottom = 8.dp)
                 ) {
                     Text(
-                        text = "@" + review.userId, fontSize = 16.sp, fontStyle = FontStyle.Italic, color = MaterialTheme.colorScheme.primary
+                        text = "@" + review.userId,
+                        fontSize = 16.sp,
+                        fontStyle = FontStyle.Italic,
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }
@@ -329,7 +361,7 @@ fun Evaluation(
                 text = label,
                 modifier = Modifier.width(80.dp),
                 fontSize = 18.sp,
-                )
+            )
             Spacer(modifier = Modifier.width(8.dp))
         }
 
@@ -340,7 +372,7 @@ fun Evaluation(
                 .inactiveColor(MaterialTheme.colorScheme.surfaceVariant).stepSize(StepSize.HALF)
                 .numStars(5).size(20.dp).padding(0.dp),
             onRatingChanged = {})
-        if(reviews != null) {
+        if (reviews != null) {
             Text(
                 text = "($reviews reviews)",
                 modifier = Modifier.padding(start = 4.dp),

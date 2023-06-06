@@ -132,7 +132,7 @@ fun getAllSlots(
     return listOfSlots
 }
 
-fun courtSelector(name: String): Int {
+/*fun courtSelector(name: String): Int {
     return when (name) {
         "Campo Panetti" -> R.drawable.panetti
         "Campo Sicilia" -> R.drawable.sicilia
@@ -141,7 +141,7 @@ fun courtSelector(name: String): Int {
         "Campo Braccini" -> R.drawable.braccini
         else -> R.drawable.panetti
     }
-}
+}*/
 
 fun imageSelector(sport: String): ImageVector {
     return when (sport) {

@@ -1,8 +1,10 @@
 package it.polito.madgroup4.viewmodel
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.AsyncTask
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -34,6 +36,7 @@ import okhttp3.RequestBody
 import okhttp3.Response
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.File
 import java.time.LocalTime
 import java.util.Date
 
@@ -75,21 +78,21 @@ class ReservationViewModel : ViewModel() {
 
     private var courtListener: ListenerRegistration? = null
 
-//    private var _courtsPhotos = MutableLiveData<List<Bitmap>>().apply { value = emptyList() }
-//    val courtsPhotos: LiveData<List<Bitmap>> = _courtsPhotos
-//
-//
-//    private var storage = Firebase.storage("gs://madgroup4-5de93.appspot.com")
-//    private var storageRef = storage.reference
+    private var _courtsPhotos = MutableLiveData<Map<String,Bitmap>>().apply { value = mutableMapOf() }
+    val courtsPhotos: LiveData<Map<String,Bitmap>> = _courtsPhotos
+
+
+    private var storage = Firebase.storage("gs://madgroup4-5de93.appspot.com")
+    private var storageRef = storage.reference
 
     init {
         db.collection("courts").get().addOnSuccessListener { documents ->
+            val courts = documents.map { it.toObject(Court::class.java) }
             courtListener = db.collection("reservations").addSnapshotListener { r, e ->
                 if (e != null) throw e
                 else {
                     val reviews =
                         r?.map { it.toObject(Reservation::class.java) }?.map { it.review }
-                    val courts = documents.map { it.toObject(Court::class.java) }
 
                     courts.forEach { court ->
                         val courtReviews =
@@ -108,7 +111,18 @@ class ReservationViewModel : ViewModel() {
                         court.reviewNumber = courtReviews.size
                     }
                     _allCourts.value = courts
+                }
+            }
 
+            for (court in courts) {
+                val pathReference = storageRef.child("images").child("${court.name?.replace(" ", "_")}.jpg")
+                val localFile = File.createTempFile("images", "jpg")
+                pathReference.getFile(localFile).addOnSuccessListener {
+                    // Local temp file has been created
+                    _courtsPhotos.value = _courtsPhotos.value?.plus(Pair(court.name!!, BitmapFactory.decodeFile(localFile.absolutePath)))
+                }.addOnFailureListener {
+                    // Handle any errors
+                    Log.i("test", "error", it)
                 }
             }
         }

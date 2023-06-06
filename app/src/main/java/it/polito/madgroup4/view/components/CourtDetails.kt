@@ -1,12 +1,15 @@
 package it.polito.madgroup4.view.components
 
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,12 +22,14 @@ import androidx.compose.material.icons.filled.Euro
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Mail
 import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -39,7 +44,6 @@ import com.gowtham.ratingbar.RatingBarStyle
 import com.gowtham.ratingbar.StepSize
 import it.polito.madgroup4.model.Court
 import it.polito.madgroup4.model.Review
-import it.polito.madgroup4.utility.courtSelector
 import it.polito.madgroup4.utility.floatEquals
 import it.polito.madgroup4.utility.imageSelector
 
@@ -48,6 +52,7 @@ fun CourtDetails(
     playingCourt: Court,
     reviews: List<Review>,
     onClick: () -> Unit,
+    photo: Bitmap? = null
 ) {
     val avgVal: Float = reviews.flatMap {
         listOf(
@@ -87,10 +92,22 @@ fun CourtDetails(
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            Image(
-                painter = painterResource(courtSelector(playingCourt.name!!)),
-                contentDescription = "Court"
-            )
+            if (photo != null) {
+                Image(
+                    bitmap = photo!!.asImageBitmap(),
+                    contentDescription = "Court",
+                )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .size(110.dp)
+                        .fillMaxSize()
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center),
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(15.dp))
 
