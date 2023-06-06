@@ -49,8 +49,10 @@ import it.polito.madgroup4.model.ReservationWithCourt
 import it.polito.madgroup4.model.Review
 import it.polito.madgroup4.model.Sport
 import it.polito.madgroup4.utility.calculateStartEndTime
+import it.polito.madgroup4.utility.formatDate
 import it.polito.madgroup4.utility.formatTimestampToString
 import it.polito.madgroup4.utility.imageSelector
+import java.text.SimpleDateFormat
 
 
 @Composable
@@ -58,12 +60,16 @@ fun ReservationCard(
     reservation: ReservationWithCourt,
     setReservation: (String) -> Unit,
     navController: NavController,
-    nextRoute: String
+    nextRoute: String,
+    date: Boolean? = false
 ) {
 
     val startEndTime = calculateStartEndTime(
         reservation.playingCourt!!.openingTime!!, reservation.reservation!!.slotNumber
     )
+
+    val formatter = SimpleDateFormat("dd/MM/yyyy")
+
 
     ElevatedCard(modifier = Modifier
         .padding(bottom = 10.dp)
@@ -130,9 +136,21 @@ fun ReservationCard(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            Text(
-                text = startEndTime, fontSize = 18.sp
-            )
+            if (date == true) {
+                Text(
+                    text = "${formatter.format(formatDate(reservation.reservation.date.toDate()))}",
+                    fontSize = 18.sp
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                Text(
+                    text = startEndTime,
+                    fontSize = 18.sp
+                )
+            } else {
+                Text(
+                    text = startEndTime, fontSize = 18.sp
+                )
+            }
 
         }
     }

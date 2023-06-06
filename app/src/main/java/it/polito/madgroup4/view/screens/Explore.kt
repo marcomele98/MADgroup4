@@ -156,6 +156,7 @@ fun Explore(
             navController = navController,
             nextRoute = "Public Match Details",
             text = "No public matches found",
+            date = !checked
         )
     }
 }

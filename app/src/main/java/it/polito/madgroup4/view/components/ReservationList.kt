@@ -28,7 +28,8 @@ fun ReservationList(
     navController: NavController,
     modifier: Modifier = Modifier,
     text: String = "No reservations for the selected date",
-    nextRoute: String = "Reservation Details"
+    nextRoute: String = "Reservation Details",
+    date: Boolean? = false
 ) {
 
     Box(
@@ -57,7 +58,7 @@ fun ReservationList(
                     .fillMaxSize()
             ) {
                 items(reservations.size) { index ->
-                    ReservationCard(reservations[index], setReservation, navController, nextRoute)
+                    ReservationCard(reservations[index], setReservation, navController, nextRoute, date)
                     if (index == reservations.size - 1) {
                         Spacer(modifier = Modifier.height(70.dp))
                     }

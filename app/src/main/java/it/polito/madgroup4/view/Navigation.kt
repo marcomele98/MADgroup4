@@ -582,7 +582,8 @@ fun Navigation(
                                 .padding(horizontal = 16.dp)
                                 .padding(top = 10.dp),
                             text = "No invites yet",
-                            nextRoute = "Reservation Details"
+                            nextRoute = "Reservation Details",
+                            date = true
                         )
                     }
 
@@ -596,7 +597,8 @@ fun Navigation(
                                 .padding(horizontal = 16.dp)
                                 .padding(top = 10.dp),
                             text = "No reviewable reservations",
-                            nextRoute = "Reservation Details"
+                            nextRoute = "Reservation Details",
+                            date = true
                         )
                     }
 
